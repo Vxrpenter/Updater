@@ -1,0 +1,7 @@
+[versions]
+okhttp = "5.1.0"
+slf4j =  "2.0.17"
+
+[libraries]
+okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp"}
+slf4j-api = { group = "org.slf4j", name = "slf4j-api", version.ref = "slf4j"}
