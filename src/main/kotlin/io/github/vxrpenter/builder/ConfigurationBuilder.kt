@@ -18,15 +18,15 @@
 
 package io.github.vxrpenter.builder
 
-import io.github.vxrpenter.data.Configuration
+import io.github.vxrpenter.data.UpdaterConfiguration
 import kotlin.time.Duration
 
 class ConfigurationBuilder {
     var sequential: Duration? = null
 
-    fun build(): Configuration {
+    fun build(): UpdaterConfiguration {
         require(sequential != null) { "'sequential' cannot be null" }
 
-        return Configuration(sequential)
+        return UpdaterConfiguration(sequential)
     }
 }

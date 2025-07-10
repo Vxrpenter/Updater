@@ -19,7 +19,7 @@
 package io.github.vxrpenter
 
 import io.github.vxrpenter.builder.ConfigurationBuilder
-import io.github.vxrpenter.data.Configuration
+import io.github.vxrpenter.data.UpdaterConfiguration
 import io.github.vxrpenter.data.UpdateSchema
 import io.github.vxrpenter.data.Upstream
 import kotlin.time.Duration
@@ -37,9 +37,9 @@ inline fun Updater(
     return UpdaterImpl(conf)
 }
 
-sealed class Updater(configuration: Configuration) {
+sealed class Updater(configuration: UpdaterConfiguration) {
 
-    companion object Default : Updater(configuration =  Configuration(sequential = null) )
+    companion object Default : Updater(configuration =  UpdaterConfiguration(sequential = null) )
 
     fun light(schema: UpdateSchema, upstream: Upstream) {
 
@@ -50,4 +50,4 @@ sealed class Updater(configuration: Configuration) {
     }
 }
 
-class UpdaterImpl(configuration: Configuration) : Updater(configuration)
+class UpdaterImpl(configuration: UpdaterConfiguration) : Updater(configuration)
