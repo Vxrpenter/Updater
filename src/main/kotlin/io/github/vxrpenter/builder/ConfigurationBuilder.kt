@@ -18,15 +18,44 @@
 
 package io.github.vxrpenter.builder
 
+import io.github.vxrpenter.builder.ConfigurationBuilder.InlineUpdaterConfigurationTimeOut
 import io.github.vxrpenter.data.UpdaterConfiguration
+import io.github.vxrpenter.data.UpdaterConfigurationTimeOut
+import java.util.concurrent.TimeUnit
 import kotlin.time.Duration
 
 class ConfigurationBuilder {
     var sequential: Duration? = null
+    var readTimeOut: UpdaterConfigurationTimeOut? = null
+    var writeTimeOut: UpdaterConfigurationTimeOut? = null
+
+    fun readTimeout(
+        timeout: Long? = null,
+        unit: TimeUnit? = null,
+        build: InlineUpdaterConfigurationTimeOut.() -> Unit
+    ) { readTimeOut = timeoutProcessing(timeout, unit, build) }
+
+    fun writeTimeout(
+        timeout: Long? = null,
+        unit: TimeUnit? = null,
+        build: InlineUpdaterConfigurationTimeOut.() -> Unit
+    ) { writeTimeOut = timeoutProcessing(timeout, unit, build) }
+
+    data class InlineUpdaterConfigurationTimeOut(
+        var timeout: Long? = null,
+        var unit: TimeUnit? = null
+    )
 
     fun build(): UpdaterConfiguration {
         require(sequential != null) { "'sequential' cannot be null" }
 
         return UpdaterConfiguration(sequential)
+    }
+
+    private fun timeoutProcessing(timeout: Long? = null, unit: TimeUnit? = null, build: InlineUpdaterConfigurationTimeOut.() -> Unit): UpdaterConfigurationTimeOut {
+        val timeout = InlineUpdaterConfigurationTimeOut(timeout, unit).apply(build)
+        require(timeout.timeout != null) { "'timeout' cannot be null" }
+        require(timeout.unit != null) { "'unit' cannot be null" }
+        return UpdaterConfigurationTimeOut(timeout.timeout!!, timeout.unit!!)
     }
 }

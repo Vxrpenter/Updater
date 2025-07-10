@@ -16,8 +16,16 @@
 
 package io.github.vxrpenter.data
 
+import java.util.concurrent.TimeUnit
 import kotlin.time.Duration
 
 data class UpdaterConfiguration(
-    val sequential: Duration? = null
+    val sequential: Duration? = null,
+    val readTimeOut: UpdaterConfigurationTimeOut? = null,
+    val writeTimeOut: UpdaterConfigurationTimeOut? = null
+)
+
+data class UpdaterConfigurationTimeOut(
+    val timeout: Long,
+    val unit: TimeUnit
 )
