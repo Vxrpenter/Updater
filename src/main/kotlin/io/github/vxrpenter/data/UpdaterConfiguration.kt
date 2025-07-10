@@ -18,6 +18,6 @@ package io.github.vxrpenter.data
 
 import kotlin.time.Duration
 
-data class Configuration(
+data class UpdaterConfiguration(
     val sequential: Duration? = null
 )
