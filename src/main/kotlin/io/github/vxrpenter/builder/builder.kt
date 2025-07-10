@@ -74,7 +74,7 @@ inline fun Schema(
 
 /**
  * The [Upstream] function is an easy way to create a [io.github.vxrpenter.data.Upstream] configuration for the
- * [UpdaterBuilder]/[io.github.vxrpenter.Updater.light] or [io.github.vxrpenter.Updater.default] functions.
+ * [ConfigurationBuilder]/[io.github.vxrpenter.Updater.light] or [io.github.vxrpenter.Updater.default] functions.
  *
  * Example Usage:
  * ```kotlin
@@ -137,7 +137,6 @@ class SchemaBuilder {
         var priority: GroupPriority? = null
     )
 
-    @OptIn(Internal::class)
     fun build(): UpdateSchema {
         require(!this.name.isNullOrBlank()) { "'name' cannot be null" }
         require(!this.prefix.isNullOrBlank()) { "'prefix' cannot be null" }
@@ -152,7 +151,6 @@ class UpstreamBuilder {
     var repository: String? = null
     var tagUrl: String? = null
 
-    @OptIn(Internal::class)
     fun build(): Upstream {
         require(this.type != null) { "'type' cannot be null" }
         if (type == UpstreamType.GITHUB) require(!this.repository.isNullOrBlank()) { "'repository' cannot be null" }
