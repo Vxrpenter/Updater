@@ -22,11 +22,9 @@ import io.github.vxrpenter.data.Upstream
 import io.github.vxrpenter.enum.ModrinthProjectType
 import io.github.vxrpenter.handler.data.ModrinthVersionSerializer
 import kotlinx.serialization.SerializationException
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import kotlin.text.replace
 
 class ModrinthRequestHandler {
     private val json = Json { ignoreUnknownKeys = true }

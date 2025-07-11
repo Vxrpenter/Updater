@@ -19,12 +19,10 @@
 package io.github.vxrpenter
 
 import io.github.vxrpenter.builder.ConfigurationBuilder
-import io.github.vxrpenter.data.UpdaterConfiguration
 import io.github.vxrpenter.data.UpdateSchema
-import io.github.vxrpenter.data.UpdaterConfigurationTimeOut
+import io.github.vxrpenter.data.UpdaterConfiguration
 import io.github.vxrpenter.data.Upstream
 import okhttp3.OkHttpClient
-import java.util.concurrent.TimeUnit
 import kotlin.time.Duration
 
 inline fun Updater(

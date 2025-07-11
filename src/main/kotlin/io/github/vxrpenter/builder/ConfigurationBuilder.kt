@@ -18,7 +18,6 @@
 
 package io.github.vxrpenter.builder
 
-import io.github.vxrpenter.builder.ConfigurationBuilder.InlineUpdaterConfigurationTimeOut
 import io.github.vxrpenter.data.UpdaterConfiguration
 import io.github.vxrpenter.data.UpdaterConfigurationTimeOut
 import java.util.concurrent.TimeUnit
