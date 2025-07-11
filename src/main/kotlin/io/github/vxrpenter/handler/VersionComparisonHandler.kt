@@ -16,57 +16,66 @@
 
 package io.github.vxrpenter.handler
 
+import io.github.vxrpenter.annotations.Internal
 import io.github.vxrpenter.data.SchemaGroup
 import io.github.vxrpenter.data.UpdateSchema
 import io.github.vxrpenter.enum.GroupPriority
 import io.github.vxrpenter.exceptions.VersionSizeMisMatchException
+import kotlin.collections.set
 
 class VersionComparisonHandler {
+    @OptIn(Internal::class)
     fun compareVersions(schema: UpdateSchema, currentVersion: String, newVersion: String): Boolean {
-        var splittetCurrentVersion = currentVersion.split(schema.divider)
-        var splittetNewVersion = newVersion.split(schema.divider)
+        val versionBuilder = VersionSplitBuilder(schema = schema, list = listOf(currentVersion, newVersion))
+
+        val splittetCurrentVersion = versionBuilder.splittetVersionList[0]
+        val splittetNewVersion = versionBuilder.splittetVersionList[1]
+        val versionGroupMap = versionBuilder.versionGroupMap
 
         if (splittetCurrentVersion.size != splittetNewVersion.size) throw VersionSizeMisMatchException("Could not compare version strings: '$currentVersion' and '$newVersion'",
             Throwable("Size of split version strings does not match up, cannot compare currentVersion (${splittetCurrentVersion.size}) to newVersion (${splittetNewVersion.size})"))
 
-
-        val versionGroupMap: HashMap<List<String>, SchemaGroup> = hashMapOf()
-
-        for (group in schema.groups) {
-            val groupElement = "${group.divider}${group.name}"
-            if (currentVersion.contains(groupElement)) {
-                if (group.divider == schema.divider) splittetCurrentVersion = currentVersion.replace(groupElement, "").split(schema.divider)
-                versionGroupMap[splittetCurrentVersion] = group
-            }
-            if (newVersion.contains(groupElement)) {
-                if (group.divider == schema.divider) splittetNewVersion = newVersion.replace(groupElement, "").split(schema.divider)
-                versionGroupMap[splittetNewVersion] = group
-            }
-
+        val currentVersionMap: HashMap<Int, Boolean> = hashMapOf()
+        val newVersionMap: HashMap<Int, Boolean> = hashMapOf()
+        for ((index, version) in splittetCurrentVersion.withIndex()) {
+            currentVersionMap[index] = version >= splittetNewVersion[index]
+            newVersionMap[index] = version < splittetNewVersion[index]
         }
 
-        var count = 0
-        val currentVersionList: HashMap<Int, Boolean> = hashMapOf()
-        val newVersionList: HashMap<Int, Boolean> = hashMapOf()
-        for (version in splittetCurrentVersion) {
-            currentVersionList[count] = version >= splittetNewVersion[count]
-            newVersionList[count] = version < splittetNewVersion[count]
-            count = count+1
-        }
-
-        currentVersionList.forEach { currentVersion ->
+        currentVersionMap.forEach { currentVersion ->
             val currentVersionDifferentiation = currentVersion.value
-            val newVersionDifferentiation = newVersionList[currentVersion.key]!!
+            val newVersionDifferentiation = newVersionMap[currentVersion.key]!!
 
             val currentVersionPriority = GroupPriority.findValue(versionGroupMap[splittetCurrentVersion]!!.priority)!!
             val newVersionPriority = GroupPriority.findValue(versionGroupMap[splittetNewVersion]!!.priority)!!
 
-            if (!currentVersionDifferentiation && newVersionDifferentiation && currentVersionPriority < newVersionPriority) return true
+            if (!currentVersionDifferentiation && newVersionDifferentiation && currentVersionPriority <= newVersionPriority) return true
         }
+
         return false
     }
 
+    @OptIn(Internal::class)
     fun returnPrioritisedVersion(schema: UpdateSchema, list: List<String>): String {
-        return "false"
+        TODO()
+    }
+
+    @Internal
+    internal class VersionSplitBuilder(schema: UpdateSchema, list: List<String>, makeDividerCheck: Boolean = true) {
+        val splittetVersionList = mutableListOf<List<String>>()
+        val versionGroupMap: HashMap<List<String>, SchemaGroup> = hashMapOf()
+
+        init {
+            list.forEach { version -> splittetVersionList.add((version.split(schema.divider))) }
+
+            for (group in schema.groups) {
+                val groupElement = "${group.divider}${group.name}"
+
+                for ((index, version) in list.withIndex()) {
+                    if (group.divider == schema.divider && makeDividerCheck) splittetVersionList[index] = version.replace(groupElement, "").split(schema.divider)
+                    versionGroupMap[splittetVersionList[index]] = group
+                }
+            }
+        }
     }
 }
