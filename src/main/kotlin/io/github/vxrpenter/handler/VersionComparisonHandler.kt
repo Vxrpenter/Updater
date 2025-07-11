@@ -56,8 +56,24 @@ class VersionComparisonHandler {
     }
 
     @OptIn(Internal::class)
-    fun returnPrioritisedVersion(schema: UpdateSchema, list: List<String>): String {
-        TODO()
+    fun returnPrioritisedVersion(list: List<Pair<String, SchemaGroup>>): String {
+        var currentPrioritizedVersion = ""
+        var currenPrioritizedGroup: SchemaGroup? = null
+
+        for (pair in list) {
+            if (currentPrioritizedVersion.isBlank()) currentPrioritizedVersion = pair.first
+            if (currenPrioritizedGroup == null) currenPrioritizedGroup = pair.second
+
+            val currentPrioritiedPriority = GroupPriority.findValue(currenPrioritizedGroup.priority)!!
+            val priority = GroupPriority.findValue(pair.second.priority)!!
+
+            if (currentPrioritiedPriority < priority) {
+                currentPrioritizedVersion = pair.first
+                currenPrioritizedGroup = pair.second
+            }
+        }
+
+        return currentPrioritizedVersion
     }
 
     @Internal
