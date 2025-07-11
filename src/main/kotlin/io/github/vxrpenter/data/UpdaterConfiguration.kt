@@ -21,8 +21,8 @@ import kotlin.time.Duration
 
 data class UpdaterConfiguration(
     val sequential: Duration? = null,
-    val readTimeOut: UpdaterConfigurationTimeOut? = null,
-    val writeTimeOut: UpdaterConfigurationTimeOut? = null
+    val readTimeOut: UpdaterConfigurationTimeOut = UpdaterConfigurationTimeOut(timeout = 30, unit = TimeUnit.SECONDS),
+    val writeTimeOut: UpdaterConfigurationTimeOut = UpdaterConfigurationTimeOut(timeout = 30, unit = TimeUnit.SECONDS)
 )
 
 data class UpdaterConfigurationTimeOut(

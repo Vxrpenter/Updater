@@ -16,11 +16,9 @@
 
 package io.github.vxrpenter.data
 
-import io.github.vxrpenter.enum.ModrinthProjectType
-import io.github.vxrpenter.enum.UpstreamType
-
-data class Upstream(
-    val type: UpstreamType,
-    val modrinthProjectType: ModrinthProjectType? = null,
-    val projectId: String? = null
+data class Update (
+    val success: Boolean,
+    val versionUpdate: Boolean? = null,
+    val version: String? = null,
+    val url: String? = null
 )
