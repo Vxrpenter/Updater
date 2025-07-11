@@ -36,6 +36,7 @@ class GitHubRequestHandler {
         val request = Request.Builder().url(url).build()
 
         client.newCall(request).execute().use { response ->
+            println(response)
             if (!response.isSuccessful) return Update(success = false)
 
             try {
@@ -47,6 +48,7 @@ class GitHubRequestHandler {
 
                 return Update(success = true, versionUpdate = versionUpdate, version = version, url = releaseUrl)
             } catch (e: SerializationException) {
+                println(e)
                 return Update(success = false)
             }
         }

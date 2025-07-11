@@ -19,11 +19,19 @@
 package io.github.vxrpenter
 
 import io.github.vxrpenter.builder.ConfigurationBuilder
+import io.github.vxrpenter.data.Update
 import io.github.vxrpenter.data.UpdateSchema
 import io.github.vxrpenter.data.UpdaterConfiguration
 import io.github.vxrpenter.data.Upstream
+import io.github.vxrpenter.enum.UpstreamType
+import io.github.vxrpenter.handler.GitHubRequestHandler
+import io.github.vxrpenter.handler.HangarRequestHandler
+import io.github.vxrpenter.handler.ModrinthRequestHandler
+import io.github.vxrpenter.handler.SpigotRequestHandler
 import okhttp3.OkHttpClient
 import kotlin.time.Duration
+import kotlinx.coroutines.*
+import org.slf4j.LoggerFactory
 
 inline fun Updater(
     sequential: Duration? = null,
@@ -39,6 +47,7 @@ inline fun Updater(
 }
 
 sealed class Updater(val configuration: UpdaterConfiguration) {
+    private val logger = LoggerFactory.getLogger(Updater::class.java)
     // Defining client
     var client: OkHttpClient? = null
 
@@ -53,12 +62,71 @@ sealed class Updater(val configuration: UpdaterConfiguration) {
     companion object Default : Updater(configuration =  UpdaterConfiguration())
 
     fun light(currentVersion: String, schema: UpdateSchema, upstream: Upstream) {
-
+        TODO("Purpose is not that clear, will be removed if no usage is found in future development cycles.")
     }
 
     fun default(currentVersion: String, schema: UpdateSchema, upstream: Upstream) {
+        if (configuration.sequential != null) {
+            val updatesScope = CoroutineScope(CoroutineExceptionHandler { _, exception ->
+                LoggerFactory.getLogger(Updater::class.java).error("An error occurred in the update coroutine", exception)
+            })
 
+            InnerUpdater(currentVersion = currentVersion, schema = schema, upstream = upstream)
+            Timer().runWithTimer(period = configuration.sequential, coroutineScope = updatesScope) {
+                InnerUpdater(currentVersion = currentVersion, schema = schema, upstream = upstream)
+            }
+        } else {
+            InnerUpdater(currentVersion = currentVersion, schema = schema, upstream = upstream)
+        }
+    }
+
+    private fun InnerUpdater(currentVersion: String, schema: UpdateSchema, upstream: Upstream) {
+        val update = returnUpdate(currentVersion = currentVersion, schema = schema, upstream = upstream)
+
+        if (!update.success) return
+        val versionUpdate = update.versionUpdate!!
+        if (!versionUpdate) return
+
+        val version = update.version!!
+        val url = update.url!!
+
+        logger.warn(configuration.newUpdateNotification, version, url)
+    }
+
+    fun returnUpdate(currentVersion: String, schema: UpdateSchema, upstream: Upstream): Update {
+        return when(upstream.type) {
+            UpstreamType.GITHUB -> GitHubRequestHandler().githubRequester(client = client!!, currentVersion = currentVersion, schema = schema, upstream = upstream)
+            UpstreamType.MODRINTH -> ModrinthRequestHandler().modrinthRequester(client = client!!, currentVersion = currentVersion, schema = schema, upstream = upstream)
+            UpstreamType.HANGAR -> HangarRequestHandler().hangarRequester(client = client!!, currentVersion = currentVersion, schema = schema, upstream = upstream)
+            UpstreamType.SPIGOT -> SpigotRequestHandler().spigotRequester(client = client!!, currentVersion = currentVersion, schema = schema, upstream = upstream)
+        }
     }
 }
 
 class UpdaterImpl(configuration: UpdaterConfiguration) : Updater(configuration)
+
+internal class Timer{
+    fun runWithTimer(period: Duration, coroutineScope: CoroutineScope, task: suspend () -> Unit) = runBlocking {
+        var taskExecuted = false
+
+        val currentTask: suspend () -> Unit = {
+            task()
+
+            taskExecuted = true
+        }
+
+        startTimer(period, coroutineScope, currentTask)
+        assert(taskExecuted)
+    }
+
+    private fun startTimer(period: Duration, coroutineScope: CoroutineScope, task: suspend () -> Unit) {
+        coroutineScope.launch {
+            launch {
+                while (isActive) {
+                    task()
+                    delay(period)
+                }
+            }
+        }
+    }
+}
