@@ -17,5 +17,8 @@
 package io.github.vxrpenter.enum
 
 enum class UpstreamType {
-    GITHUB
+    GITHUB,
+    MODRINTH,
+    HANGAR,
+    SPIGOT
 }
