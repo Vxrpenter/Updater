@@ -16,7 +16,9 @@
 
 package io.github.vxrpenter.handler
 
+import io.github.vxrpenter.data.SchemaGroup
 import io.github.vxrpenter.data.UpdateSchema
+import io.github.vxrpenter.enum.GroupPriority
 import io.github.vxrpenter.exceptions.VersionSizeMisMatchException
 
 class VersionComparisonHandler {
@@ -25,14 +27,22 @@ class VersionComparisonHandler {
         var splittetNewVersion = newVersion.split(schema.divider)
 
         if (splittetCurrentVersion.size != splittetNewVersion.size) throw VersionSizeMisMatchException("Could not compare version strings: '$currentVersion' and '$newVersion'",
-            Throwable("Size of splitted version strings does not match up, cannot compare currentVersion (${splittetCurrentVersion.size}) to newVersion (${splittetNewVersion.size})"))
+            Throwable("Size of split version strings does not match up, cannot compare currentVersion (${splittetCurrentVersion.size}) to newVersion (${splittetNewVersion.size})"))
+
+
+        val versionGroupMap: HashMap<List<String>, SchemaGroup> = hashMapOf()
 
         for (group in schema.groups) {
-            if (group.divider != schema.divider) continue
-
             val groupElement = "${group.divider}${group.name}"
-            if (currentVersion.contains(groupElement)) splittetCurrentVersion = currentVersion.replace(groupElement, "").split(schema.divider)
-            if (currentVersion.contains(groupElement)) splittetNewVersion = newVersion.replace(groupElement, "").split(schema.divider)
+            if (currentVersion.contains(groupElement)) {
+                if (group.divider == schema.divider) splittetCurrentVersion = currentVersion.replace(groupElement, "").split(schema.divider)
+                versionGroupMap[splittetCurrentVersion] = group
+            }
+            if (newVersion.contains(groupElement)) {
+                if (group.divider == schema.divider) splittetNewVersion = newVersion.replace(groupElement, "").split(schema.divider)
+                versionGroupMap[splittetNewVersion] = group
+            }
+
         }
 
         var count = 0
@@ -48,7 +58,10 @@ class VersionComparisonHandler {
             val currentVersionDifferentiation = currentVersion.value
             val newVersionDifferentiation = newVersionList[currentVersion.key]!!
 
-            if (!currentVersionDifferentiation && newVersionDifferentiation) return true
+            val currentVersionPriority = GroupPriority.findValue(versionGroupMap[splittetCurrentVersion]!!.priority)!!
+            val newVersionPriority = GroupPriority.findValue(versionGroupMap[splittetNewVersion]!!.priority)!!
+
+            if (!currentVersionDifferentiation && newVersionDifferentiation && currentVersionPriority < newVersionPriority) return true
         }
         return false
     }
