@@ -22,7 +22,8 @@ import kotlin.time.Duration
 data class UpdaterConfiguration(
     val sequential: Duration? = null,
     val readTimeOut: UpdaterConfigurationTimeOut = UpdaterConfigurationTimeOut(timeout = 30, unit = TimeUnit.SECONDS),
-    val writeTimeOut: UpdaterConfigurationTimeOut = UpdaterConfigurationTimeOut(timeout = 30, unit = TimeUnit.SECONDS)
+    val writeTimeOut: UpdaterConfigurationTimeOut = UpdaterConfigurationTimeOut(timeout = 30, unit = TimeUnit.SECONDS),
+    val newUpdateNotification: String = "New update has been found. Version {} can be downloaded from {}"
 )
 
 data class UpdaterConfigurationTimeOut(

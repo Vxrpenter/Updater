@@ -17,7 +17,9 @@
 package io.github.vxrpenter.handler.data
 
 import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class ModrinthVersionSerializer(
     @SerialName("version_name")
     val versionNumber: String

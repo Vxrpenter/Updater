@@ -25,8 +25,9 @@ import kotlin.time.Duration
 
 class ConfigurationBuilder {
     var sequential: Duration? = null
-    var readTimeOut: UpdaterConfigurationTimeOut? = null
-    var writeTimeOut: UpdaterConfigurationTimeOut? = null
+    var readTimeOut: UpdaterConfigurationTimeOut = UpdaterConfiguration().readTimeOut
+    var writeTimeOut: UpdaterConfigurationTimeOut? = UpdaterConfiguration().writeTimeOut
+    var newUpdateNotification: String = UpdaterConfiguration().newUpdateNotification
 
     fun readTimeout(
         timeout: Long? = null,
@@ -46,7 +47,7 @@ class ConfigurationBuilder {
     )
 
     fun build(): UpdaterConfiguration {
-        require(sequential != null) { "'sequential' cannot be null" }
+        require(!newUpdateNotification.isBlank()) { "'newUpdateNotification' cannot be empty" }
 
         return UpdaterConfiguration(sequential)
     }
