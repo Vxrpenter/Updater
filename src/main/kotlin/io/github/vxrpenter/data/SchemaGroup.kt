@@ -20,6 +20,7 @@ import io.github.vxrpenter.enum.GroupPriority
 
 data class SchemaGroup(
     val name: String,
-    val divider: String,
-    val priority: GroupPriority
+    val priority: GroupPriority,
+    val divider: String? = null,
+    val channel: String? = null
 )
