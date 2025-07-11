@@ -14,6 +14,7 @@ dependencies {
     api(libs.okhttp)
     api(libs.slf4j.api)
     api(libs.kotlinx.serialization)
+    api(libs.kotlinx.coroutines)
 }
 
 tasks.test {
