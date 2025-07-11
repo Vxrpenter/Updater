@@ -14,11 +14,6 @@
  * Note: This is no legal advice, please read the license conditions
  */
 
-package io.github.vxrpenter.data
+package io.github.vxrpenter.exceptions
 
-data class UpdateSchema(
-    val name: String,
-    val prefix: String,
-    val divider: String,
-    val groups: Collection<SchemaGroup>
-)
+open class UpdaterException(message: String, cause: Throwable? = null) : Exception(message, cause)

@@ -58,6 +58,7 @@ import io.github.vxrpenter.enum.UpstreamType
 inline fun Schema(
     name: String? = null,
     prefix: String? = null,
+    divider: String = ".",
     groups: Collection<SchemaGroup> = emptyList(),
     @OptIn(Internal::class)
     builder: SchemaBuilder.() -> Unit = {},
@@ -116,6 +117,7 @@ inline fun Upstream(
 class SchemaBuilder {
     var name: String? = null
     var prefix: String? = null
+    var divider: String? = null
     var groups: MutableCollection<SchemaGroup> = mutableListOf()
 
     inline fun group(
@@ -143,8 +145,9 @@ class SchemaBuilder {
         require(!this.name.isNullOrBlank()) { "'name' cannot be null" }
         require(!this.prefix.isNullOrBlank()) { "'prefix' cannot be null" }
         require(!this.groups.isEmpty()) { "'groups' cannot be empty" }
+        require(!this.divider.isNullOrBlank()) { "'divider' cannot be empty" }
 
-        return UpdateSchema(name = name!!, prefix = prefix!!, groups = groups.toList())
+        return UpdateSchema(name = name!!, prefix = prefix!!, divider = divider!!, groups = groups.toList())
     }
 }
 

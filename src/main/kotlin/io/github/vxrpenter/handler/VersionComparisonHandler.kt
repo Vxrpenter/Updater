@@ -17,13 +17,45 @@
 package io.github.vxrpenter.handler
 
 import io.github.vxrpenter.data.UpdateSchema
+import io.github.vxrpenter.exceptions.VersionSizeMisMatchException
 
 class VersionComparisonHandler {
     fun compareVersions(schema: UpdateSchema, currentVersion: String, newVersion: String): Boolean {
-        return TODO()
+        var splittetCurrentVersion = currentVersion.split(schema.divider)
+        var splittetNewVersion = newVersion.split(schema.divider)
+
+        if (splittetCurrentVersion.size != splittetNewVersion.size) throw VersionSizeMisMatchException("Could not compare version strings: '$currentVersion' and '$newVersion'",
+            Throwable("Size of splitted version strings does not match up, cannot compare currentVersion (${splittetCurrentVersion.size}) to newVersion (${splittetNewVersion.size})"))
+
+        for (group in schema.groups) {
+            if (group.divider != schema.divider) continue
+
+            val groupElement = "${group.divider}${group.name}"
+            if (currentVersion.contains(groupElement)) splittetCurrentVersion = currentVersion.replace(groupElement, "").split(schema.divider)
+            if (currentVersion.contains(groupElement)) splittetNewVersion = newVersion.replace(groupElement, "").split(schema.divider)
+        }
+
+        var count = 0
+        val currentVersionList: HashMap<Int, Boolean> = hashMapOf()
+        val newVersionList: HashMap<Int, Boolean> = hashMapOf()
+        for (version in splittetCurrentVersion) {
+            currentVersionList[count] = version >= splittetNewVersion[count]
+            newVersionList[count] = version < splittetNewVersion[count]
+            count = count+1
+        }
+
+        currentVersionList.forEach { currentVersion ->
+            val currentVersionDifferentiation = currentVersion.value
+            val newVersionDifferentiation = newVersionList[currentVersion.key]!!
+
+            println("$currentVersionDifferentiation || $newVersionDifferentiation")
+
+            if (!currentVersionDifferentiation && newVersionDifferentiation) return true
+        }
+        return false
     }
 
     fun returnPrioritisedVersion(schema: UpdateSchema, list: List<String>): String {
-        return TODO()
+        return "false"
     }
 }
