@@ -48,8 +48,6 @@ class VersionComparisonHandler {
             val currentVersionDifferentiation = currentVersion.value
             val newVersionDifferentiation = newVersionList[currentVersion.key]!!
 
-            println("$currentVersionDifferentiation || $newVersionDifferentiation")
-
             if (!currentVersionDifferentiation && newVersionDifferentiation) return true
         }
         return false
