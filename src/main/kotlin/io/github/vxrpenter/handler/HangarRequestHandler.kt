@@ -16,6 +16,7 @@
 
 package io.github.vxrpenter.handler
 
+import io.github.vxrpenter.data.SchemaGroup
 import io.github.vxrpenter.data.Update
 import io.github.vxrpenter.data.UpdateSchema
 import io.github.vxrpenter.data.Upstream
@@ -27,7 +28,7 @@ class HangarRequestHandler {
         val projectId = upstream.projectId
         require(!projectId.isNullOrBlank()) { "'projectId' for request with ${upstream.type}, cannot be null" }
 
-        val versions: MutableList<String> = mutableListOf()
+        val versions: MutableList<Pair<String, SchemaGroup>> = mutableListOf()
         for (group in schema.groups) {
             require(!group.channel.isNullOrBlank()) { "'channel' for request with ${upstream.type}, cannot be null" }
 
@@ -38,11 +39,11 @@ class HangarRequestHandler {
                 if (!response.isSuccessful) return Update(success = false)
 
                 val version = response.body.string()
-                versions.add(version)
+                versions.add(Pair(version, group))
             }
         }
 
-        val version = VersionComparisonHandler().returnPrioritisedVersion(schema = schema, list = versions)
+        val version = VersionComparisonHandler().returnPrioritisedVersion(list = versions)
         val versionUpdate: Boolean = VersionComparisonHandler().compareVersions(schema = schema, currentVersion = currentVersion, newVersion = version)
         val releaseUrl = "https://hangar.papermc.io/${projectId}/versions/$version"
 
