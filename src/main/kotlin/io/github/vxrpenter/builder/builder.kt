@@ -23,6 +23,7 @@ import io.github.vxrpenter.data.UpdateSchema
 import io.github.vxrpenter.data.SchemaGroup
 import io.github.vxrpenter.data.Upstream
 import io.github.vxrpenter.enum.GroupPriority
+import io.github.vxrpenter.enum.ModrinthProjectType
 import io.github.vxrpenter.enum.UpstreamType
 
 /**
@@ -97,16 +98,16 @@ inline fun Schema(
  */
 inline fun Upstream(
     type: UpstreamType? = null,
-    repository: String? = null,
-    tagUrl: String? = null,
+    projectId: String? = null,
+    modrinthProjectType: ModrinthProjectType? = null,
     builder: UpstreamBuilder.() -> Unit
 ): Upstream {
     val internalBuilder = UpstreamBuilder()
     internalBuilder.builder()
 
     type?.let { internalBuilder.type = type }
-    repository?.let { internalBuilder.repository = repository }
-    tagUrl?.let { internalBuilder.tagUrl = tagUrl }
+    projectId?.let { internalBuilder.projectId = projectId }
+    modrinthProjectType?.let { internalBuilder.modrinthProjectType = modrinthProjectType }
 
     val upstream = internalBuilder.build()
     return upstream
@@ -121,20 +122,21 @@ class SchemaBuilder {
         name: String? = null,
         divider: String? = null,
         priority: GroupPriority? = null,
+        channel: String? = null,
         build: InlineSchemaGroup.() -> Unit
     ) {
-        val group = InlineSchemaGroup(name, divider, priority).apply(build)
+        val group = InlineSchemaGroup(name = name, priority = priority, divider = divider, channel = channel).apply(build)
         require(!group.name.isNullOrBlank()) { "SchemaGroup.Name cannot be null" }
-        require(!group.divider.isNullOrBlank()) { "'SchemaGroup.divider' cannot be null" }
         require(group.priority != null) { "'SchemaGroup.priority' cannot be null" }
 
-        groups.add(SchemaGroup(group.name!!, group.divider!!, group.priority!!))
+        groups.add(SchemaGroup(name = group.name!!, priority =  group.priority!!, divider = group.divider, channel = group.channel))
     }
 
     data class InlineSchemaGroup(
         var name: String? = null,
         var divider: String? = null,
-        var priority: GroupPriority? = null
+        var priority: GroupPriority? = null,
+        var channel: String? = null
     )
 
     fun build(): UpdateSchema {
@@ -142,19 +144,20 @@ class SchemaBuilder {
         require(!this.prefix.isNullOrBlank()) { "'prefix' cannot be null" }
         require(!this.groups.isEmpty()) { "'groups' cannot be empty" }
 
-        return UpdateSchema(name!!, prefix!!, groups.toList())
+        return UpdateSchema(name = name!!, prefix = prefix!!, groups = groups.toList())
     }
 }
 
 class UpstreamBuilder {
     var type: UpstreamType? = null
-    var repository: String? = null
-    var tagUrl: String? = null
+    var projectId: String? = null
+    var modrinthProjectType: ModrinthProjectType? = null
 
     fun build(): Upstream {
         require(this.type != null) { "'type' cannot be null" }
-        if (type == UpstreamType.GITHUB) require(!this.repository.isNullOrBlank()) { "'repository' cannot be null" }
+        require(this.projectId != null) { "'projectId' cannot be null" }
+        if (type!! == UpstreamType.MODRINTH) require(this.modrinthProjectType != null) { "'modrinthProjectType' cannot be null" }
 
-        return Upstream(type!!, repository!!, tagUrl!!)
+        return Upstream(type = type!!, projectId = projectId)
     }
 }

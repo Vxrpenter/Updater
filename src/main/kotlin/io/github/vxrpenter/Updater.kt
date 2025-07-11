@@ -45,9 +45,6 @@ sealed class Updater(val configuration: UpdaterConfiguration) {
     var client: OkHttpClient? = null
 
     init {
-        require(configuration.readTimeOut != null) { "'readTimeOut' cannot be null" }
-        require(configuration.writeTimeOut != null) { "'writeTimeOut' cannot be null" }
-
         client = OkHttpClient.Builder()
             .readTimeout(configuration.readTimeOut.timeout, configuration.readTimeOut.unit)
             .writeTimeout(configuration.writeTimeOut.timeout, configuration.writeTimeOut.unit)
@@ -55,24 +52,13 @@ sealed class Updater(val configuration: UpdaterConfiguration) {
     }
 
     // Default configuration object
-    companion object Default : Updater(configuration =  UpdaterConfiguration(readTimeOut = UpdaterConfigurationTimeOut(timeout = 30, unit = TimeUnit.SECONDS), writeTimeOut = UpdaterConfigurationTimeOut(timeout = 30, unit = TimeUnit.SECONDS)) )
+    companion object Default : Updater(configuration =  UpdaterConfiguration())
 
-    fun light(schema: UpdateSchema, upstream: Upstream) {
-
-    }
-
-    fun default(schema: UpdateSchema, upstream: Upstream) {
+    fun light(currentVersion: String, schema: UpdateSchema, upstream: Upstream) {
 
     }
 
-    // Logic behind GitHub requests
-    private fun githubRequester(schema: UpdateSchema, upstream: Upstream) {
-        val repository = upstream.repository
-        require(!repository.isNullOrBlank()) { "'repository' cannot be null" }
-        val tagUrl = upstream.tagUrl
-
-        val url: String = if (tagUrl.isNullOrBlank()) "${repository.replace("https://github.com", "https://api.github.com")}/git/refs/tags" else tagUrl
-
+    fun default(currentVersion: String, schema: UpdateSchema, upstream: Upstream) {
 
     }
 }
