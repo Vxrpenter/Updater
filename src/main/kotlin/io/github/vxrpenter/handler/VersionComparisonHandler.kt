@@ -21,7 +21,6 @@ import io.github.vxrpenter.data.SchemaGroup
 import io.github.vxrpenter.data.UpdateSchema
 import io.github.vxrpenter.enum.GroupPriority
 import io.github.vxrpenter.exceptions.VersionSizeMisMatchException
-import kotlin.collections.set
 
 class VersionComparisonHandler {
     @OptIn(Internal::class)

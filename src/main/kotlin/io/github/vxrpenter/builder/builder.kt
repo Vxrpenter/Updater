@@ -19,8 +19,8 @@
 package io.github.vxrpenter.builder
 
 import io.github.vxrpenter.annotations.Internal
-import io.github.vxrpenter.data.UpdateSchema
 import io.github.vxrpenter.data.SchemaGroup
+import io.github.vxrpenter.data.UpdateSchema
 import io.github.vxrpenter.data.Upstream
 import io.github.vxrpenter.enum.GroupPriority
 import io.github.vxrpenter.enum.ModrinthProjectType
