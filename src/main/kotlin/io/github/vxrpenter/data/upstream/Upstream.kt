@@ -14,19 +14,18 @@
  * Note: This is no legal advice, please read the license conditions
  */
 
-package io.github.vxrpenter.data
+package io.github.vxrpenter.data.upstream
 
-import java.util.concurrent.TimeUnit
-import kotlin.time.Duration
+import io.github.vxrpenter.data.Update
+import io.github.vxrpenter.data.UpdateSchema
+import io.github.vxrpenter.exceptions.IncorrectUpstreamInheritance
+import io.ktor.client.HttpClient
 
-data class UpdaterConfiguration(
-    val periodic: Duration? = null,
-    val readTimeOut: UpdaterConfigurationTimeOut = UpdaterConfigurationTimeOut(timeout = 30, unit = TimeUnit.SECONDS),
-    val writeTimeOut: UpdaterConfigurationTimeOut = UpdaterConfigurationTimeOut(timeout = 30, unit = TimeUnit.SECONDS),
-    val newUpdateNotification: String = "New update has been found. Version {} can be downloaded from {}"
-)
-
-data class UpdaterConfigurationTimeOut(
-    val timeout: Long,
-    val unit: TimeUnit
-)
+open class Upstream() {
+    open suspend fun fetch(client: HttpClient, currentVersion: String, schema: UpdateSchema): Update {
+        throw IncorrectUpstreamInheritance(
+            "Upstream has been inherited incorrectly",
+            Throwable("No fetch function defined")
+        )
+    }
+}

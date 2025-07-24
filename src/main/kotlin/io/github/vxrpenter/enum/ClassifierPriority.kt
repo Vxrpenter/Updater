@@ -18,7 +18,7 @@
 
 package io.github.vxrpenter.enum
 
-enum class GroupPriority(val priority: Int) {
+enum class ClassifierPriority(val priority: Int) {
     NONE(0),
     MINIMAL(1),
     LOW(2),
@@ -30,19 +30,19 @@ enum class GroupPriority(val priority: Int) {
         /**
          * Finds the specified enum name from its GroupPriority.
          *
-         * @param value The GroupPriority e.g. (4, 5, etc.)
-         * @see io.github.vxrpenter.enum.GroupPriority
-         * @return the GroupPriority (nullable)
+         * @param value The ClassifierPriority e.g. (4, 5, etc.)
+         * @see io.github.vxrpenter.enum.ClassifierPriority
+         * @return the ClassifierPriority (nullable)
          */
-        fun findEnum(value: Int): GroupPriority? = GroupPriority.entries.find { it.priority == value }
+        fun findEnum(value: Int): ClassifierPriority? = ClassifierPriority.entries.find { it.priority == value }
 
         /**
-         * Finds the specified GroupPriority from its enum
+         * Finds the specified ClassifierPriority from its enum
          *
          * @param enum The enum e.g. (HIGH, HIGHEST etc.)
-         * @see io.github.vxrpenter.enum.GroupPriority
-         * @return the GroupPriority (nullable)
+         * @see io.github.vxrpenter.enum.ClassifierPriority
+         * @return the ClassifierPriority (nullable)
          */
-        fun findValue(enum: GroupPriority): Int? = GroupPriority.entries.find { it.name == enum.name }?.priority
+        fun findValue(enum: ClassifierPriority): Int? = ClassifierPriority.entries.find { it.name == enum.name }?.priority
     }
 }

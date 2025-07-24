@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.time.Duration
 
 class ConfigurationBuilder {
-    var sequential: Duration? = null
+    var periodic: Duration? = null
     var readTimeOut: UpdaterConfigurationTimeOut = UpdaterConfiguration().readTimeOut
     var writeTimeOut: UpdaterConfigurationTimeOut? = UpdaterConfiguration().writeTimeOut
     var newUpdateNotification: String = UpdaterConfiguration().newUpdateNotification
@@ -49,13 +49,13 @@ class ConfigurationBuilder {
     fun build(): UpdaterConfiguration {
         require(!newUpdateNotification.isBlank()) { "'newUpdateNotification' cannot be empty" }
 
-        return UpdaterConfiguration(sequential)
+        return UpdaterConfiguration(periodic)
     }
 
     private fun timeoutProcessing(timeout: Long? = null, unit: TimeUnit? = null, build: InlineUpdaterConfigurationTimeOut.() -> Unit): UpdaterConfigurationTimeOut {
         val timeout = InlineUpdaterConfigurationTimeOut(timeout, unit).apply(build)
-        require(timeout.timeout != null) { "'timeout' cannot be null" }
-        require(timeout.unit != null) { "'unit' cannot be null" }
+        requireNotNull(timeout.timeout != null)
+        requireNotNull(timeout.unit != null)
         return UpdaterConfigurationTimeOut(timeout.timeout!!, timeout.unit!!)
     }
 }

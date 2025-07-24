@@ -18,61 +18,57 @@
 
 package io.github.vxrpenter
 
+import io.github.vxrpenter.annotations.ExperimentalScheduler
 import io.github.vxrpenter.builder.ConfigurationBuilder
 import io.github.vxrpenter.data.Update
 import io.github.vxrpenter.data.UpdateSchema
 import io.github.vxrpenter.data.UpdaterConfiguration
-import io.github.vxrpenter.data.Upstream
-import io.github.vxrpenter.enum.UpstreamType
-import io.github.vxrpenter.handler.GitHubRequestHandler
-import io.github.vxrpenter.handler.HangarRequestHandler
-import io.github.vxrpenter.handler.ModrinthRequestHandler
-import io.github.vxrpenter.handler.SpigotRequestHandler
-import okhttp3.OkHttpClient
-import kotlin.time.Duration
+import io.github.vxrpenter.data.upstream.Upstream
+import io.github.vxrpenter.handler.VersionComparisonHandler
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.okhttp.OkHttp
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.*
+import kotlinx.serialization.json.Json
 import org.slf4j.LoggerFactory
 
-inline fun Updater(
-    sequential: Duration? = null,
-    builder: ConfigurationBuilder.() -> Unit
-): Updater {
-    val internalBuilder = ConfigurationBuilder()
-    internalBuilder.builder()
-
-    sequential?.let { internalBuilder.sequential = sequential }
-
-    val conf = internalBuilder.build()
-    return UpdaterImpl(conf)
-}
-
-sealed class Updater(val configuration: UpdaterConfiguration) {
+sealed class Updater(private var configuration: UpdaterConfiguration) {
     private val logger = LoggerFactory.getLogger(Updater::class.java)
     // Defining client
-    var client: OkHttpClient? = null
+    private var client: HttpClient = createClient()
 
-    init {
-        client = OkHttpClient.Builder()
-            .readTimeout(configuration.readTimeOut.timeout, configuration.readTimeOut.unit)
-            .writeTimeout(configuration.writeTimeOut.timeout, configuration.writeTimeOut.unit)
-            .build()
+    fun createClient(): HttpClient {
+        return HttpClient(OkHttp) {
+            install(ContentNegotiation) {
+                json(Json { ignoreUnknownKeys = true })
+            }
+
+            engine { config {
+                readTimeout(configuration.readTimeOut.timeout, configuration.readTimeOut.unit)
+                writeTimeout(configuration.readTimeOut.timeout, configuration.readTimeOut.unit)
+            }}
+        }
     }
 
     // Default configuration object
     companion object Default : Updater(configuration =  UpdaterConfiguration())
 
-    fun light(currentVersion: String, schema: UpdateSchema, upstream: Upstream) {
-        TODO("Purpose is not that clear, will be removed if no usage is found in future development cycles.")
-    }
+    @OptIn(ExperimentalScheduler::class)
+    suspend fun default(currentVersion: String, schema: UpdateSchema, upstream: Upstream, builder: ConfigurationBuilder.() -> Unit) {
+        // Configuration Builder
+        val internalBuilder = ConfigurationBuilder()
+        internalBuilder.builder()
+        configuration = internalBuilder.build()
+        client = createClient()
 
-    fun default(currentVersion: String, schema: UpdateSchema, upstream: Upstream) {
-        if (configuration.sequential != null) {
+        // Logic
+        if (configuration.periodic != null) {
             val updatesScope = CoroutineScope(CoroutineExceptionHandler { _, exception ->
                 LoggerFactory.getLogger(Updater::class.java).error("An error occurred in the update coroutine", exception)
             })
 
-            InnerUpdater(currentVersion = currentVersion, schema = schema, upstream = upstream)
-            Timer().runWithTimer(period = configuration.sequential, coroutineScope = updatesScope) {
+            Timer.schedule(period = configuration.periodic!!, coroutineScope = updatesScope) {
                 InnerUpdater(currentVersion = currentVersion, schema = schema, upstream = upstream)
             }
         } else {
@@ -80,53 +76,60 @@ sealed class Updater(val configuration: UpdaterConfiguration) {
         }
     }
 
-    private fun InnerUpdater(currentVersion: String, schema: UpdateSchema, upstream: Upstream) {
-        val update = returnUpdate(currentVersion = currentVersion, schema = schema, upstream = upstream)
+    @OptIn(ExperimentalScheduler::class)
+    suspend fun multiUpstream(currentVersion: String, schema: UpdateSchema, upstreams: Collection<Upstream>, builder: (ConfigurationBuilder.() -> Unit)? = null) {
+        // Configuration Builder
+        if (builder != null) {
+            val internalBuilder = ConfigurationBuilder()
+            internalBuilder.builder()
+            configuration = internalBuilder.build()
+            client = createClient()
+        }
+        // Logic
+        if (configuration.periodic != null) {
+            val updatesScope = CoroutineScope(CoroutineExceptionHandler { _, exception ->
+                LoggerFactory.getLogger(Updater::class.java).error("An error occurred in the update coroutine", exception)
+            })
+
+            Timer.schedule(period = configuration.periodic!!, coroutineScope = updatesScope) {
+                multiUpstreamUpdater(currentVersion = currentVersion, schema = schema, upstreams = upstreams)
+            }
+        } else {
+            multiUpstreamUpdater(currentVersion = currentVersion, schema = schema, upstreams = upstreams)
+        }
+    }
+
+    private suspend fun multiUpstreamUpdater(currentVersion: String, schema: UpdateSchema, upstreams: Collection<Upstream>) {
+        val fetchedUpdates: MutableCollection<Update> = mutableListOf()
+        val fetchedVersions: MutableCollection<String> = mutableListOf()
+
+        for (upstream in upstreams) {
+            val update = upstream.fetch(client = client!!, currentVersion = currentVersion, schema = schema)
+            if (!update.success || !update.versionUpdate!!) continue
+
+            fetchedUpdates.add(update)
+            fetchedVersions.add(update.version!!)
+        }
+
+        val highestVersion = VersionComparisonHandler.compareVersionCollection(schema, fetchedVersions)
+        for (update in fetchedUpdates) {
+            if (update.version!! != highestVersion) continue
+
+            logger.warn(configuration.newUpdateNotification, update.version, update.url)
+        }
+    }
+
+    private suspend fun InnerUpdater(currentVersion: String, schema: UpdateSchema, upstream: Upstream) {
+        val update = upstream.fetch(client = client!!, currentVersion = currentVersion, schema = schema)
 
         if (!update.success) return
         val versionUpdate = update.versionUpdate!!
         if (!versionUpdate) return
 
-        val version = update.version!!
-        val url = update.url!!
-
-        logger.warn(configuration.newUpdateNotification, version, url)
+        logger.warn(configuration.newUpdateNotification, update.version, update.url)
     }
 
-    fun returnUpdate(currentVersion: String, schema: UpdateSchema, upstream: Upstream): Update {
-        return when(upstream.type) {
-            UpstreamType.GITHUB -> GitHubRequestHandler().githubRequester(client = client!!, currentVersion = currentVersion, schema = schema, upstream = upstream)
-            UpstreamType.MODRINTH -> ModrinthRequestHandler().modrinthRequester(client = client!!, currentVersion = currentVersion, schema = schema, upstream = upstream)
-            UpstreamType.HANGAR -> HangarRequestHandler().hangarRequester(client = client!!, currentVersion = currentVersion, schema = schema, upstream = upstream)
-            UpstreamType.SPIGOT -> SpigotRequestHandler().spigotRequester(client = client!!, currentVersion = currentVersion, schema = schema, upstream = upstream)
-        }
-    }
 }
 
 class UpdaterImpl(configuration: UpdaterConfiguration) : Updater(configuration)
 
-internal class Timer{
-    fun runWithTimer(period: Duration, coroutineScope: CoroutineScope, task: suspend () -> Unit) = runBlocking {
-        var taskExecuted = false
-
-        val currentTask: suspend () -> Unit = {
-            task()
-
-            taskExecuted = true
-        }
-
-        startTimer(period, coroutineScope, currentTask)
-        assert(taskExecuted)
-    }
-
-    private fun startTimer(period: Duration, coroutineScope: CoroutineScope, task: suspend () -> Unit) {
-        coroutineScope.launch {
-            launch {
-                while (isActive) {
-                    task()
-                    delay(period)
-                }
-            }
-        }
-    }
-}

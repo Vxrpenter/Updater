@@ -18,13 +18,9 @@
 
 package io.github.vxrpenter.builder
 
-import io.github.vxrpenter.annotations.Internal
-import io.github.vxrpenter.data.SchemaGroup
+import io.github.vxrpenter.data.SchemaClassifier
 import io.github.vxrpenter.data.UpdateSchema
-import io.github.vxrpenter.data.Upstream
-import io.github.vxrpenter.enum.GroupPriority
-import io.github.vxrpenter.enum.ModrinthProjectType
-import io.github.vxrpenter.enum.UpstreamType
+import io.github.vxrpenter.enum.ClassifierPriority
 
 /**
  * The [Schema] function is an easy way to creating a [UpdateSchema], by providing simple solutions and
@@ -34,13 +30,13 @@ import io.github.vxrpenter.enum.UpstreamType
  * ```kotlin
  * val schema = Schema {
  *     name = "MyCustomSchema"
- *     prefix = "v."
- *     group {
+ *     prefix = "v"
+ *     classifier {
  *         name = "alpha"
  *         divider = "-"
  *         priority = GroupPriority.LOW
  *     }
- *     group {
+ *     classifier {
  *         name = "beta"
  *         divider = "-"
  *         priority = GroupPriority.HIGH
@@ -48,119 +44,57 @@ import io.github.vxrpenter.enum.UpstreamType
  * }
  * ```
  *
- * @param name The name of the [UpdateSchema]
- * @param groups A list of [SchemaGroup]
+ * @param [SchemaBuilder.name] The name of the [UpdateSchema]
+ * @param [SchemaBuilder.prefix] The removable prefix
+ * @param [SchemaBuilder.classifiers] A list of [SchemaClassifier]
  * @param builder The [SchemaBuilder] (ignore)
  *
  * @author Vxrpenter
  * @since 0.1.0
  */
 inline fun Schema(
-    name: String? = null,
-    prefix: String? = null,
-    divider: String = ".",
-    groups: Collection<SchemaGroup> = emptyList(),
-    @OptIn(Internal::class)
     builder: SchemaBuilder.() -> Unit = {},
 ) : UpdateSchema {
     val internalBuilder = SchemaBuilder()
-
-    name?.let { internalBuilder.name = name }
-    prefix?.let { internalBuilder.prefix = prefix }
-    groups.isEmpty().let { internalBuilder.groups = groups.toMutableList() }
-
     internalBuilder.builder()
     val schema = internalBuilder.build()
     return schema
-}
-
-/**
- * The [Upstream] function is an easy way to create a [io.github.vxrpenter.data.Upstream] configuration for the
- * [ConfigurationBuilder]/[io.github.vxrpenter.Updater.light] or [io.github.vxrpenter.Updater.default] functions.
- *
- * Example Usage:
- * ```kotlin
- * val upstream = Upstream {
- *     type = UpstreamType.GITHUB
- *     repository = "https://github.com/Vxrpenter/Updater"
- *     // This is only important if release tags are uploaded elsewhere (must still be in the selected
- *     // types api format)
- *     tagUrl = "https://api.github.com/repos/Vxrpenter/Updater/git/refs/tags"
- * }
- * ```
- *
- * @param type The [UpstreamType] of the upstream
- * @param repository The link to the upstream repository (only needed for GitHub and GitLab)
- * @param tagUrl The link to the upstream tags (only needed for GitHub and GitLab)
- * @param builder The [UpstreamBuilder] (ignore)
- *
- * @author Vxrpenter
- * @since 0.1.0
- */
-inline fun Upstream(
-    type: UpstreamType? = null,
-    projectId: String? = null,
-    modrinthProjectType: ModrinthProjectType? = null,
-    builder: UpstreamBuilder.() -> Unit
-): Upstream {
-    val internalBuilder = UpstreamBuilder()
-    internalBuilder.builder()
-
-    type?.let { internalBuilder.type = type }
-    projectId?.let { internalBuilder.projectId = projectId }
-    modrinthProjectType?.let { internalBuilder.modrinthProjectType = modrinthProjectType }
-
-    val upstream = internalBuilder.build()
-    return upstream
 }
 
 class SchemaBuilder {
     var name: String? = null
     var prefix: String? = null
     var divider: String? = null
-    var groups: MutableCollection<SchemaGroup> = mutableListOf()
+    var classifiers: MutableCollection<SchemaClassifier> = mutableListOf()
 
-    inline fun group(
+    inline fun classifier(
         name: String? = null,
         divider: String? = null,
-        priority: GroupPriority? = null,
+        priority: ClassifierPriority? = null,
         channel: String? = null,
-        build: InlineSchemaGroup.() -> Unit
+        build: InlineSchemaClassifier.() -> Unit
     ) {
-        val group = InlineSchemaGroup(name = name, priority = priority, divider = divider, channel = channel).apply(build)
-        require(!group.name.isNullOrBlank()) { "SchemaGroup.Name cannot be null" }
-        require(group.priority != null) { "'SchemaGroup.priority' cannot be null" }
+        val classifier = InlineSchemaClassifier(name = name, priority = priority, divider = divider, channel = channel).apply(build)
+        requireNotNull(!classifier.name.isNullOrBlank())
+        requireNotNull(classifier.priority != null)
 
-        groups.add(SchemaGroup(name = group.name!!, priority =  group.priority!!, divider = group.divider, channel = group.channel))
+        classifiers.add(SchemaClassifier(name = classifier.name!!, priority =  classifier.priority!!, divider = classifier.divider, channel = classifier.channel))
     }
 
-    data class InlineSchemaGroup(
+    data class InlineSchemaClassifier(
         var name: String? = null,
         var divider: String? = null,
-        var priority: GroupPriority? = null,
+        var priority: ClassifierPriority? = null,
         var channel: String? = null
     )
 
     fun build(): UpdateSchema {
-        require(!this.name.isNullOrBlank()) { "'name' cannot be null" }
-        require(!this.prefix.isNullOrBlank()) { "'prefix' cannot be null" }
-        require(!this.groups.isEmpty()) { "'groups' cannot be empty" }
+        requireNotNull(this.name)
+        requireNotNull(this.prefix)
+        require(this.prefix!!.isNotEmpty()) { "'prefix' cannot be empty" }
+        require(!this.classifiers.isEmpty()) { "'classifiers' cannot be empty" }
         require(!this.divider.isNullOrBlank()) { "'divider' cannot be empty" }
 
-        return UpdateSchema(name = name!!, prefix = prefix!!, divider = divider!!, groups = groups.toList())
-    }
-}
-
-class UpstreamBuilder {
-    var type: UpstreamType? = null
-    var projectId: String? = null
-    var modrinthProjectType: ModrinthProjectType? = null
-
-    fun build(): Upstream {
-        require(this.type != null) { "'type' cannot be null" }
-        require(this.projectId != null) { "'projectId' cannot be null" }
-        if (type!! == UpstreamType.MODRINTH) require(this.modrinthProjectType != null) { "'modrinthProjectType' cannot be null" }
-
-        return Upstream(type = type!!, projectId = projectId)
+        return UpdateSchema(name = name!!, prefix = prefix!!, divider = divider!!, classifiers = classifiers.toList())
     }
 }

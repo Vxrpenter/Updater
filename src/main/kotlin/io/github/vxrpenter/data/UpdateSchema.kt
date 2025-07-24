@@ -20,5 +20,5 @@ data class UpdateSchema(
     val name: String,
     val prefix: String,
     val divider: String,
-    val groups: Collection<SchemaGroup>
+    val classifiers: Collection<SchemaClassifier>
 )

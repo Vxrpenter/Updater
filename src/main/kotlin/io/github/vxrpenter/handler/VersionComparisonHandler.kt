@@ -16,20 +16,20 @@
 
 package io.github.vxrpenter.handler
 
-import io.github.vxrpenter.annotations.Internal
-import io.github.vxrpenter.data.SchemaGroup
+import io.github.vxrpenter.data.SchemaClassifier
 import io.github.vxrpenter.data.UpdateSchema
-import io.github.vxrpenter.enum.GroupPriority
+import io.github.vxrpenter.enum.ClassifierPriority
 import io.github.vxrpenter.exceptions.VersionSizeMisMatchException
 
-class VersionComparisonHandler {
-    @OptIn(Internal::class)
+open class VersionComparisonHandler {
+    companion object Default: VersionComparisonHandler()
+
     fun compareVersions(schema: UpdateSchema, currentVersion: String, newVersion: String): Boolean {
         val versionBuilder = VersionSplitBuilder(schema = schema, list = listOf(currentVersion, newVersion))
 
         val splittetCurrentVersion = versionBuilder.splittetVersionList[0]
         val splittetNewVersion = versionBuilder.splittetVersionList[1]
-        val versionGroupMap = versionBuilder.versionGroupMap
+        val versionClassifierMap = versionBuilder.versionClassifierMap
 
         if (splittetCurrentVersion.size != splittetNewVersion.size) throw VersionSizeMisMatchException("Could not compare version strings: '$currentVersion' and '$newVersion'",
             Throwable("Size of split version strings does not match up, cannot compare currentVersion (${splittetCurrentVersion.size}) to newVersion (${splittetNewVersion.size})"))
@@ -45,8 +45,8 @@ class VersionComparisonHandler {
             val currentVersionDifferentiation = currentVersion.value
             val newVersionDifferentiation = newVersionMap[currentVersion.key]!!
 
-            val currentVersionPriority = GroupPriority.findValue(versionGroupMap[splittetCurrentVersion]!!.priority)!!
-            val newVersionPriority = GroupPriority.findValue(versionGroupMap[splittetNewVersion]!!.priority)!!
+            val currentVersionPriority = ClassifierPriority.findValue(versionClassifierMap[splittetCurrentVersion]!!.priority)!!
+            val newVersionPriority = ClassifierPriority.findValue(versionClassifierMap[splittetNewVersion]!!.priority)!!
 
             if (!currentVersionDifferentiation && newVersionDifferentiation && currentVersionPriority <= newVersionPriority) return true
         }
@@ -54,41 +54,57 @@ class VersionComparisonHandler {
         return false
     }
 
-    @OptIn(Internal::class)
-    fun returnPrioritisedVersion(list: List<Pair<String, SchemaGroup>>): String {
-        var currentPrioritizedVersion = ""
-        var currenPrioritizedGroup: SchemaGroup? = null
+    fun returnPrioritisedVersion(list: Collection<Pair<String, SchemaClassifier>>): String {
+        var prioritizedVersion = ""
+        var prioritisedClassifier: SchemaClassifier? = null
 
         for (pair in list) {
-            if (currentPrioritizedVersion.isBlank()) currentPrioritizedVersion = pair.first
-            if (currenPrioritizedGroup == null) currenPrioritizedGroup = pair.second
+            if (prioritizedVersion.isBlank()) prioritizedVersion = pair.first
+            if (prioritisedClassifier == null) prioritisedClassifier = pair.second
 
-            val currentPrioritiedPriority = GroupPriority.findValue(currenPrioritizedGroup.priority)!!
-            val priority = GroupPriority.findValue(pair.second.priority)!!
+            val currentPrioritiedPriority = ClassifierPriority.findValue(prioritisedClassifier.priority)!!
+            val priority = ClassifierPriority.findValue(pair.second.priority)!!
 
             if (currentPrioritiedPriority < priority) {
-                currentPrioritizedVersion = pair.first
-                currenPrioritizedGroup = pair.second
+                prioritizedVersion = pair.first
+                prioritisedClassifier = pair.second
             }
         }
 
-        return currentPrioritizedVersion
+        return prioritizedVersion
     }
 
-    @Internal
-    internal class VersionSplitBuilder(schema: UpdateSchema, list: List<String>, makeDividerCheck: Boolean = true) {
+    fun compareVersionCollection(schema: UpdateSchema, versions: Collection<String>): String {
+        var prioritizedVersion = ""
+
+        for (version in versions) {
+            if (prioritizedVersion.isBlank()) {
+                prioritizedVersion = version
+                continue
+            }
+
+            if (compareVersions(schema, prioritizedVersion, version)) prioritizedVersion = version
+        }
+
+        return prioritizedVersion
+    }
+
+    internal class VersionSplitBuilder(schema: UpdateSchema, list: Collection<String>, makeDividerCheck: Boolean = true) {
         val splittetVersionList = mutableListOf<List<String>>()
-        val versionGroupMap: HashMap<List<String>, SchemaGroup> = hashMapOf()
+        val versionClassifierMap: HashMap<List<String>, SchemaClassifier> = hashMapOf()
 
         init {
-            list.forEach { version -> splittetVersionList.add((version.split(schema.divider))) }
+            list.forEach { version ->
+                // Split version using the divider
+                splittetVersionList.add((version.replace(schema.prefix, "").split(schema.divider)))
+            }
 
-            for (group in schema.groups) {
-                val groupElement = "${group.divider}${group.name}"
+            for (classifier in schema.classifiers) {
+                val classifierElement = "${classifier.divider}${classifier.name}"
 
                 for ((index, version) in list.withIndex()) {
-                    if (group.divider == schema.divider && makeDividerCheck) splittetVersionList[index] = version.replace(groupElement, "").split(schema.divider)
-                    versionGroupMap[splittetVersionList[index]] = group
+                    if (classifier.divider == schema.divider && makeDividerCheck) splittetVersionList[index] = version.replace(classifierElement, "").split(schema.divider)
+                    versionClassifierMap[splittetVersionList[index]] = classifier
                 }
             }
         }
