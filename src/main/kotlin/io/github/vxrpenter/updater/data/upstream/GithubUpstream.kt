@@ -20,6 +20,7 @@ package io.github.vxrpenter.updater.data.upstream
 
 import io.github.vxrpenter.updater.data.Update
 import io.github.vxrpenter.updater.data.UpdateSchema
+import io.github.vxrpenter.updater.enum.UpstreamPriority
 import io.github.vxrpenter.updater.handler.VersionComparisonHandler
 import io.github.vxrpenter.updater.handler.data.GitHubReleaseSerializer
 import io.ktor.client.HttpClient
@@ -29,7 +30,8 @@ import kotlinx.serialization.SerializationException
 
 data class GithubUpstream(
     val user: String,
-    val repo: String
+    val repo: String,
+    override val upstreamPriority: UpstreamPriority = UpstreamPriority.NONE
 ) : Upstream() {
     override suspend fun fetch(client: HttpClient, currentVersion: String, schema: UpdateSchema): Update {
         val project = "$user/$repo"
