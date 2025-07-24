@@ -21,13 +21,15 @@ package io.github.vxrpenter.updater.data.upstream
 import io.github.vxrpenter.updater.data.SchemaClassifier
 import io.github.vxrpenter.updater.data.Update
 import io.github.vxrpenter.updater.data.UpdateSchema
+import io.github.vxrpenter.updater.enum.UpstreamPriority
 import io.github.vxrpenter.updater.handler.VersionComparisonHandler
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
 
 data class HangarUpstream(
-    val projectId: String
+    val projectId: String,
+    override val upstreamPriority: UpstreamPriority = UpstreamPriority.NONE
 ) : Upstream() {
     override suspend fun fetch(client: HttpClient, currentVersion: String, schema: UpdateSchema): Update {
         val versions: MutableList<Pair<String, SchemaClassifier>> = mutableListOf()

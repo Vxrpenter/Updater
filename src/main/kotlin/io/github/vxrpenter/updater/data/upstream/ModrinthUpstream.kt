@@ -21,6 +21,7 @@ package io.github.vxrpenter.updater.data.upstream
 import io.github.vxrpenter.updater.data.Update
 import io.github.vxrpenter.updater.data.UpdateSchema
 import io.github.vxrpenter.updater.enum.ModrinthProjectType
+import io.github.vxrpenter.updater.enum.UpstreamPriority
 import io.github.vxrpenter.updater.handler.VersionComparisonHandler
 import io.github.vxrpenter.updater.handler.data.ModrinthVersionSerializer
 import io.ktor.client.HttpClient
@@ -30,7 +31,8 @@ import io.ktor.serialization.JsonConvertException
 
 data class ModrinthUpstream(
     val projectId: String,
-    val modrinthProjectType: ModrinthProjectType
+    val modrinthProjectType: ModrinthProjectType,
+    override val upstreamPriority: UpstreamPriority = UpstreamPriority.NONE
 ) : Upstream() {
     override suspend fun fetch(client: HttpClient, currentVersion: String, schema: UpdateSchema): Update {
         val url = "https://api.modrinth.com/v2/project/${projectId}/version"

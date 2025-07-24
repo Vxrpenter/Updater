@@ -18,10 +18,13 @@ package io.github.vxrpenter.updater.data.upstream
 
 import io.github.vxrpenter.updater.data.Update
 import io.github.vxrpenter.updater.data.UpdateSchema
+import io.github.vxrpenter.updater.enum.UpstreamPriority
 import io.github.vxrpenter.updater.exceptions.IncorrectUpstreamInheritance
 import io.ktor.client.HttpClient
 
 open class Upstream() {
+    open val upstreamPriority: UpstreamPriority = UpstreamPriority.NONE
+
     open suspend fun fetch(client: HttpClient, currentVersion: String, schema: UpdateSchema): Update {
         throw IncorrectUpstreamInheritance(
             "Upstream has been inherited incorrectly",
