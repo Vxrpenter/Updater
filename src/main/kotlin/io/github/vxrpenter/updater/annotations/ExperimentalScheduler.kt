@@ -14,19 +14,11 @@
  * Note: This is no legal advice, please read the license conditions
  */
 
-package io.github.vxrpenter.data
+package io.github.vxrpenter.updater.annotations
 
-import java.util.concurrent.TimeUnit
-import kotlin.time.Duration
-
-data class UpdaterConfiguration(
-    val periodic: Duration? = null,
-    val readTimeOut: UpdaterConfigurationTimeOut = UpdaterConfigurationTimeOut(timeout = 30, unit = TimeUnit.SECONDS),
-    val writeTimeOut: UpdaterConfigurationTimeOut = UpdaterConfigurationTimeOut(timeout = 30, unit = TimeUnit.SECONDS),
-    val newUpdateNotification: String = "New update has been found. Version {} can be downloaded from {}"
+@RequiresOptIn(
+    message = "This is an experimental scheduler, for the usage in automatic update detection, use with caution.",
+    level = RequiresOptIn.Level.ERROR
 )
-
-data class UpdaterConfigurationTimeOut(
-    val timeout: Long,
-    val unit: TimeUnit
-)
+@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
+annotation class ExperimentalScheduler

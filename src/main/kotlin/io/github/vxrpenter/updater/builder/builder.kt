@@ -16,11 +16,11 @@
 
 @file:Suppress("unused", "FunctionName")
 
-package io.github.vxrpenter.builder
+package io.github.vxrpenter.updater.builder
 
-import io.github.vxrpenter.data.SchemaClassifier
-import io.github.vxrpenter.data.UpdateSchema
-import io.github.vxrpenter.enum.ClassifierPriority
+import io.github.vxrpenter.updater.data.SchemaClassifier
+import io.github.vxrpenter.updater.data.UpdateSchema
+import io.github.vxrpenter.updater.enum.ClassifierPriority
 
 /**
  * The [Schema] function is an easy way to creating a [UpdateSchema], by providing simple solutions and
@@ -78,7 +78,14 @@ class SchemaBuilder {
         requireNotNull(!classifier.name.isNullOrBlank())
         requireNotNull(classifier.priority != null)
 
-        classifiers.add(SchemaClassifier(name = classifier.name!!, priority =  classifier.priority!!, divider = classifier.divider, channel = classifier.channel))
+        classifiers.add(
+            SchemaClassifier(
+                name = classifier.name!!,
+                priority = classifier.priority!!,
+                divider = classifier.divider,
+                channel = classifier.channel
+            )
+        )
     }
 
     data class InlineSchemaClassifier(

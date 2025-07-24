@@ -14,13 +14,19 @@
  * Note: This is no legal advice, please read the license conditions
  */
 
-package io.github.vxrpenter.handler.data
+package io.github.vxrpenter.updater.data
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
+import java.util.concurrent.TimeUnit
+import kotlin.time.Duration
 
-@Serializable
-data class ModrinthVersionSerializer(
-    @SerialName("version_number")
-    val versionNumber: String
+data class UpdaterConfiguration(
+    val periodic: Duration? = null,
+    val readTimeOut: UpdaterConfigurationTimeOut = UpdaterConfigurationTimeOut(timeout = 30, unit = TimeUnit.SECONDS),
+    val writeTimeOut: UpdaterConfigurationTimeOut = UpdaterConfigurationTimeOut(timeout = 30, unit = TimeUnit.SECONDS),
+    val newUpdateNotification: String = "New update has been found. Version {} can be downloaded from {}"
+)
+
+data class UpdaterConfigurationTimeOut(
+    val timeout: Long,
+    val unit: TimeUnit
 )

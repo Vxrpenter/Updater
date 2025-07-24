@@ -14,6 +14,11 @@
  * Note: This is no legal advice, please read the license conditions
  */
 
-package io.github.vxrpenter.exceptions
+package io.github.vxrpenter.updater.data
 
-class IncorrectUpstreamInheritance(message: String, cause: Throwable? = null) : UpdaterException(message, cause)
+data class Update (
+    val success: Boolean,
+    val versionUpdate: Boolean? = null,
+    val version: String? = null,
+    val url: String? = null
+)

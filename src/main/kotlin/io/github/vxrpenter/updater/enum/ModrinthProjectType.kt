@@ -14,9 +14,9 @@
  * Note: This is no legal advice, please read the license conditions
  */
 
-package io.github.vxrpenter.enum
+@file:Suppress("unused", "FunctionName")
 
-
+package io.github.vxrpenter.updater.enum
 
 enum class ModrinthProjectType(val type: String) {
     MOD("mod"),
@@ -32,18 +32,18 @@ enum class ModrinthProjectType(val type: String) {
          * Finds the specified enum name from its ModrinthProjectType.
          *
          * @param value The ModrinthProjectType e.g. (modpack, plugin, etc.)
-         * @see io.github.vxrpenter.enum.ClassifierPriority
+         * @see ClassifierPriority
          * @return the ModrinthProjectType (nullable)
          */
-        fun findEnum(value: String): ModrinthProjectType? = ModrinthProjectType.entries.find { it.type == value }
+        fun findEnum(value: String): ModrinthProjectType? = entries.find { it.type == value }
 
         /**
          * Finds the specified ModrinthProjectType from its enum
          *
          * @param enum The enum e.g. (MODPACK, PLUGIN etc.)
-         * @see io.github.vxrpenter.enum.ModrinthProjectType
+         * @see io.github.vxrpenter.updater.enum.ModrinthProjectType
          * @return the ModrinthProjectType (nullable)
          */
-        fun findValue(enum: ModrinthProjectType): String? = ModrinthProjectType.entries.find { it.name == enum.name }?.type
+        fun findValue(enum: ModrinthProjectType): String? = entries.find { it.name == enum.name }?.type
     }
 }

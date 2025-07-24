@@ -14,18 +14,13 @@
  * Note: This is no legal advice, please read the license conditions
  */
 
-package io.github.vxrpenter.data.upstream
+package io.github.vxrpenter.updater.handler.data
 
-import io.github.vxrpenter.data.Update
-import io.github.vxrpenter.data.UpdateSchema
-import io.github.vxrpenter.exceptions.IncorrectUpstreamInheritance
-import io.ktor.client.HttpClient
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-open class Upstream() {
-    open suspend fun fetch(client: HttpClient, currentVersion: String, schema: UpdateSchema): Update {
-        throw IncorrectUpstreamInheritance(
-            "Upstream has been inherited incorrectly",
-            Throwable("No fetch function defined")
-        )
-    }
-}
+@Serializable
+data class ModrinthVersionSerializer(
+    @SerialName("version_number")
+    val versionNumber: String
+)

@@ -14,6 +14,13 @@
  * Note: This is no legal advice, please read the license conditions
  */
 
-package io.github.vxrpenter.exceptions
+package io.github.vxrpenter.updater.data
 
-class VersionSizeMisMatchException(message: String, cause: Throwable? = null) : UpdaterException(message, cause)
+import io.github.vxrpenter.updater.enum.ClassifierPriority
+
+data class SchemaClassifier(
+    val name: String,
+    val priority: ClassifierPriority,
+    val divider: String? = null,
+    val channel: String? = null
+)
