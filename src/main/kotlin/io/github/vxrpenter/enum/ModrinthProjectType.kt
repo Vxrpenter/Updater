@@ -16,6 +16,8 @@
 
 package io.github.vxrpenter.enum
 
+
+
 enum class ModrinthProjectType(val type: String) {
     MOD("mod"),
     RESOURCEPACK("resourcepack"),
@@ -24,6 +26,7 @@ enum class ModrinthProjectType(val type: String) {
     MODPACK("modpack"),
     PLUGIN("plugin");
 
+    @Suppress("unused")
     companion object {
         /**
          * Finds the specified enum name from its ModrinthProjectType.

@@ -104,7 +104,7 @@ sealed class Updater(private var configuration: UpdaterConfiguration) {
         val fetchedVersions: MutableCollection<String> = mutableListOf()
 
         for (upstream in upstreams) {
-            val update = upstream.fetch(client = client!!, currentVersion = currentVersion, schema = schema)
+            val update = upstream.fetch(client = client, currentVersion = currentVersion, schema = schema)
             if (!update.success || !update.versionUpdate!!) continue
 
             fetchedUpdates.add(update)
@@ -120,7 +120,7 @@ sealed class Updater(private var configuration: UpdaterConfiguration) {
     }
 
     private suspend fun InnerUpdater(currentVersion: String, schema: UpdateSchema, upstream: Upstream) {
-        val update = upstream.fetch(client = client!!, currentVersion = currentVersion, schema = schema)
+        val update = upstream.fetch(client = client, currentVersion = currentVersion, schema = schema)
 
         if (!update.success) return
         val versionUpdate = update.versionUpdate!!

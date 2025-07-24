@@ -14,6 +14,8 @@
  * Note: This is no legal advice, please read the license conditions
  */
 
+@file:Suppress("unused", "FunctionName")
+
 package io.github.vxrpenter.data.upstream
 
 import io.github.vxrpenter.data.Update
@@ -24,9 +26,7 @@ import io.github.vxrpenter.handler.data.ModrinthVersionSerializer
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
-import io.ktor.client.statement.bodyAsText
 import io.ktor.serialization.JsonConvertException
-import kotlinx.serialization.SerializationException
 
 data class ModrinthUpstream(
     val projectId: String,
