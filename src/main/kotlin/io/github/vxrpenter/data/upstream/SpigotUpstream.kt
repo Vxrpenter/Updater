@@ -14,6 +14,8 @@
  * Note: This is no legal advice, please read the license conditions
  */
 
+@file:Suppress("unused", "FunctionName")
+
 package io.github.vxrpenter.data.upstream
 
 import io.github.vxrpenter.data.Update
