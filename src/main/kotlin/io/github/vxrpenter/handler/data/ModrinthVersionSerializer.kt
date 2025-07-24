@@ -21,6 +21,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ModrinthVersionSerializer(
-    @SerialName("version_name")
+    @SerialName("version_number")
     val versionNumber: String
 )

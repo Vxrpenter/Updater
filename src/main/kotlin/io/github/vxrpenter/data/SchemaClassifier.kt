@@ -16,17 +16,11 @@
 
 package io.github.vxrpenter.data
 
-import java.util.concurrent.TimeUnit
-import kotlin.time.Duration
+import io.github.vxrpenter.enum.ClassifierPriority
 
-data class UpdaterConfiguration(
-    val periodic: Duration? = null,
-    val readTimeOut: UpdaterConfigurationTimeOut = UpdaterConfigurationTimeOut(timeout = 30, unit = TimeUnit.SECONDS),
-    val writeTimeOut: UpdaterConfigurationTimeOut = UpdaterConfigurationTimeOut(timeout = 30, unit = TimeUnit.SECONDS),
-    val newUpdateNotification: String = "New update has been found. Version {} can be downloaded from {}"
-)
-
-data class UpdaterConfigurationTimeOut(
-    val timeout: Long,
-    val unit: TimeUnit
+data class SchemaClassifier(
+    val name: String,
+    val priority: ClassifierPriority,
+    val divider: String? = null,
+    val channel: String? = null
 )

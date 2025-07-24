@@ -14,13 +14,6 @@
  * Note: This is no legal advice, please read the license conditions
  */
 
-package io.github.vxrpenter.data
+package io.github.vxrpenter.exceptions
 
-import io.github.vxrpenter.enum.GroupPriority
-
-data class SchemaGroup(
-    val name: String,
-    val priority: GroupPriority,
-    val divider: String? = null,
-    val channel: String? = null
-)
+class IncorrectUpstreamInheritance(message: String, cause: Throwable? = null) : UpdaterException(message, cause)
