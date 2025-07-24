@@ -11,10 +11,16 @@ repositories {
 }
 
 dependencies {
-    api(libs.okhttp)
     api(libs.slf4j.api)
     api(libs.kotlinx.serialization)
     api(libs.kotlinx.coroutines)
+
+    api(libs.ktor.client.core)
+    api(libs.ktor.client.engine.okhttp)
+    api(libs.ktor.client.content.negotiation)
+    api(libs.ktor.serialization.kotlinx.json)
+
+    // Implementation for testing
     implementation("ch.qos.logback:logback-classic:1.5.18")
 }
 
