@@ -16,13 +16,13 @@
 
 @file:Suppress("unused", "FunctionName")
 
-package io.github.vxrpenter.data.upstream
+package io.github.vxrpenter.updater.data.upstream
 
-import io.github.vxrpenter.data.Update
-import io.github.vxrpenter.data.UpdateSchema
-import io.github.vxrpenter.enum.ModrinthProjectType
-import io.github.vxrpenter.handler.VersionComparisonHandler
-import io.github.vxrpenter.handler.data.ModrinthVersionSerializer
+import io.github.vxrpenter.updater.data.Update
+import io.github.vxrpenter.updater.data.UpdateSchema
+import io.github.vxrpenter.updater.enum.ModrinthProjectType
+import io.github.vxrpenter.updater.handler.VersionComparisonHandler
+import io.github.vxrpenter.updater.handler.data.ModrinthVersionSerializer
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -41,8 +41,8 @@ data class ModrinthUpstream(
             val body = call.body<List<ModrinthVersionSerializer>>()
 
             val version = body.first().versionNumber
-            val versionUpdate: Boolean = VersionComparisonHandler.compareVersions(schema = schema, currentVersion = currentVersion, newVersion = version)
-            val releaseUrl = "https://modrinth.com/${ModrinthProjectType.findValue(modrinthProjectType)}/$projectId/version/$version"
+            val versionUpdate: Boolean = VersionComparisonHandler.Default.compareVersions(schema = schema, currentVersion = currentVersion, newVersion = version)
+            val releaseUrl = "https://modrinth.com/${ModrinthProjectType.Companion.findValue(modrinthProjectType)}/$projectId/version/$version"
 
             return Update(success = true, versionUpdate = versionUpdate, version = version, url = releaseUrl)
         } catch (_: JsonConvertException) {

@@ -14,11 +14,11 @@
  * Note: This is no legal advice, please read the license conditions
  */
 
-package io.github.vxrpenter.enum
+package io.github.vxrpenter.updater.data
 
-enum class UpstreamType {
-    GITHUB,
-    MODRINTH,
-    HANGAR,
-    SPIGOT
-}
+data class UpdateSchema(
+    val name: String,
+    val prefix: String,
+    val divider: String,
+    val classifiers: Collection<SchemaClassifier>
+)

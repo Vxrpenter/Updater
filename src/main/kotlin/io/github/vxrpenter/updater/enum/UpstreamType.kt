@@ -14,13 +14,13 @@
  * Note: This is no legal advice, please read the license conditions
  */
 
-package io.github.vxrpenter.data
+@file:Suppress("unused", "FunctionName")
 
-import io.github.vxrpenter.enum.ClassifierPriority
+package io.github.vxrpenter.updater.enum
 
-data class SchemaClassifier(
-    val name: String,
-    val priority: ClassifierPriority,
-    val divider: String? = null,
-    val channel: String? = null
-)
+enum class UpstreamType {
+    GITHUB,
+    MODRINTH,
+    HANGAR,
+    SPIGOT
+}

@@ -14,13 +14,18 @@
  * Note: This is no legal advice, please read the license conditions
  */
 
-package io.github.vxrpenter.handler.data
+package io.github.vxrpenter.updater.data.upstream
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
+import io.github.vxrpenter.updater.data.Update
+import io.github.vxrpenter.updater.data.UpdateSchema
+import io.github.vxrpenter.updater.exceptions.IncorrectUpstreamInheritance
+import io.ktor.client.HttpClient
 
-@Serializable
-data class GitHubReleaseSerializer(
-    @SerialName("tag_name")
-    val tagName: String
-)
+open class Upstream() {
+    open suspend fun fetch(client: HttpClient, currentVersion: String, schema: UpdateSchema): Update {
+        throw IncorrectUpstreamInheritance(
+            "Upstream has been inherited incorrectly",
+            Throwable("No fetch function defined")
+        )
+    }
+}

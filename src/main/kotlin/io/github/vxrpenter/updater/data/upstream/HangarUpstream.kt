@@ -16,12 +16,12 @@
 
 @file:Suppress("unused", "FunctionName")
 
-package io.github.vxrpenter.data.upstream
+package io.github.vxrpenter.updater.data.upstream
 
-import io.github.vxrpenter.data.SchemaClassifier
-import io.github.vxrpenter.data.Update
-import io.github.vxrpenter.data.UpdateSchema
-import io.github.vxrpenter.handler.VersionComparisonHandler
+import io.github.vxrpenter.updater.data.SchemaClassifier
+import io.github.vxrpenter.updater.data.Update
+import io.github.vxrpenter.updater.data.UpdateSchema
+import io.github.vxrpenter.updater.handler.VersionComparisonHandler
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
@@ -39,8 +39,8 @@ data class HangarUpstream(
             versions.add(Pair(call.bodyAsText(), classifier))
         }
 
-        val version = VersionComparisonHandler.returnPrioritisedVersion(list = versions)
-        val versionUpdate: Boolean = VersionComparisonHandler.compareVersions(schema = schema, currentVersion = currentVersion, newVersion = version)
+        val version = VersionComparisonHandler.Default.returnPrioritisedVersion(list = versions)
+        val versionUpdate: Boolean = VersionComparisonHandler.Default.compareVersions(schema = schema, currentVersion = currentVersion, newVersion = version)
         val releaseUrl = "https://hangar.papermc.io/${projectId}/versions/$version"
 
         return Update(success = true, versionUpdate = versionUpdate, version = version, url = releaseUrl)

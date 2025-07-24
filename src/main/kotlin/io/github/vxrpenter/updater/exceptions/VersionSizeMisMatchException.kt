@@ -14,11 +14,6 @@
  * Note: This is no legal advice, please read the license conditions
  */
 
-package io.github.vxrpenter.data
+package io.github.vxrpenter.updater.exceptions
 
-data class Update (
-    val success: Boolean,
-    val versionUpdate: Boolean? = null,
-    val version: String? = null,
-    val url: String? = null
-)
+class VersionSizeMisMatchException(message: String, cause: Throwable? = null) : UpdaterException(message, cause)

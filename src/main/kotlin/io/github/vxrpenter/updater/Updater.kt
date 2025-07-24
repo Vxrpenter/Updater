@@ -16,15 +16,15 @@
 
 @file:Suppress("unused", "FunctionName")
 
-package io.github.vxrpenter
+package io.github.vxrpenter.updater
 
-import io.github.vxrpenter.annotations.ExperimentalScheduler
-import io.github.vxrpenter.builder.ConfigurationBuilder
-import io.github.vxrpenter.data.Update
-import io.github.vxrpenter.data.UpdateSchema
-import io.github.vxrpenter.data.UpdaterConfiguration
-import io.github.vxrpenter.data.upstream.Upstream
-import io.github.vxrpenter.handler.VersionComparisonHandler
+import io.github.vxrpenter.updater.annotations.ExperimentalScheduler
+import io.github.vxrpenter.updater.builder.ConfigurationBuilder
+import io.github.vxrpenter.updater.data.Update
+import io.github.vxrpenter.updater.data.UpdateSchema
+import io.github.vxrpenter.updater.data.UpdaterConfiguration
+import io.github.vxrpenter.updater.data.upstream.Upstream
+import io.github.vxrpenter.updater.handler.VersionComparisonHandler
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -52,7 +52,7 @@ sealed class Updater(private var configuration: UpdaterConfiguration) {
     }
 
     // Default configuration object
-    companion object Default : Updater(configuration =  UpdaterConfiguration())
+    companion object Default : Updater(configuration = UpdaterConfiguration())
 
     @OptIn(ExperimentalScheduler::class)
     suspend fun default(currentVersion: String, schema: UpdateSchema, upstream: Upstream, builder: ConfigurationBuilder.() -> Unit) {
@@ -111,7 +111,7 @@ sealed class Updater(private var configuration: UpdaterConfiguration) {
             fetchedVersions.add(update.version!!)
         }
 
-        val highestVersion = VersionComparisonHandler.compareVersionCollection(schema, fetchedVersions)
+        val highestVersion = VersionComparisonHandler.Default.compareVersionCollection(schema, fetchedVersions)
         for (update in fetchedUpdates) {
             if (update.version!! != highestVersion) continue
 

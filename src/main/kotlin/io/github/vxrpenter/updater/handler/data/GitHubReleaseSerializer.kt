@@ -14,11 +14,13 @@
  * Note: This is no legal advice, please read the license conditions
  */
 
-package io.github.vxrpenter.annotations
+package io.github.vxrpenter.updater.handler.data
 
-@RequiresOptIn(
-    message = "This is an experimental scheduler, for the usage in automatic update detection, use with caution.",
-    level = RequiresOptIn.Level.ERROR
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class GitHubReleaseSerializer(
+    @SerialName("tag_name")
+    val tagName: String
 )
-@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
-annotation class ExperimentalScheduler

@@ -14,9 +14,9 @@
  * Note: This is no legal advice, please read the license conditions
  */
 
-package io.github.vxrpenter
+package io.github.vxrpenter.updater
 
-import io.github.vxrpenter.annotations.ExperimentalScheduler
+import io.github.vxrpenter.updater.annotations.ExperimentalScheduler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive

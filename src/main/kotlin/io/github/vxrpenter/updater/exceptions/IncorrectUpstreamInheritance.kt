@@ -14,11 +14,6 @@
  * Note: This is no legal advice, please read the license conditions
  */
 
-package io.github.vxrpenter.data
+package io.github.vxrpenter.updater.exceptions
 
-data class UpdateSchema(
-    val name: String,
-    val prefix: String,
-    val divider: String,
-    val classifiers: Collection<SchemaClassifier>
-)
+class IncorrectUpstreamInheritance(message: String, cause: Throwable? = null) : UpdaterException(message, cause)

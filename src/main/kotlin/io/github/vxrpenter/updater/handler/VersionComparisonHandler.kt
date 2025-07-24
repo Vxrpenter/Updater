@@ -14,12 +14,12 @@
  * Note: This is no legal advice, please read the license conditions
  */
 
-package io.github.vxrpenter.handler
+package io.github.vxrpenter.updater.handler
 
-import io.github.vxrpenter.data.SchemaClassifier
-import io.github.vxrpenter.data.UpdateSchema
-import io.github.vxrpenter.enum.ClassifierPriority
-import io.github.vxrpenter.exceptions.VersionSizeMisMatchException
+import io.github.vxrpenter.updater.data.SchemaClassifier
+import io.github.vxrpenter.updater.data.UpdateSchema
+import io.github.vxrpenter.updater.enum.ClassifierPriority
+import io.github.vxrpenter.updater.exceptions.VersionSizeMisMatchException
 
 open class VersionComparisonHandler {
     companion object Default: VersionComparisonHandler()
@@ -31,8 +31,10 @@ open class VersionComparisonHandler {
         val splittetNewVersion = versionBuilder.splittetVersionList[1]
         val versionClassifierMap = versionBuilder.versionClassifierMap
 
-        if (splittetCurrentVersion.size != splittetNewVersion.size) throw VersionSizeMisMatchException("Could not compare version strings: '$currentVersion' and '$newVersion'",
-            Throwable("Size of split version strings does not match up, cannot compare currentVersion (${splittetCurrentVersion.size}) to newVersion (${splittetNewVersion.size})"))
+        if (splittetCurrentVersion.size != splittetNewVersion.size) throw VersionSizeMisMatchException(
+            "Could not compare version strings: '$currentVersion' and '$newVersion'",
+            Throwable("Size of split version strings does not match up, cannot compare currentVersion (${splittetCurrentVersion.size}) to newVersion (${splittetNewVersion.size})")
+        )
 
         val currentVersionMap: HashMap<Int, Boolean> = hashMapOf()
         val newVersionMap: HashMap<Int, Boolean> = hashMapOf()
@@ -45,8 +47,8 @@ open class VersionComparisonHandler {
             val currentVersionDifferentiation = currentVersion.value
             val newVersionDifferentiation = newVersionMap[currentVersion.key]!!
 
-            val currentVersionPriority = ClassifierPriority.findValue(versionClassifierMap[splittetCurrentVersion]!!.priority)!!
-            val newVersionPriority = ClassifierPriority.findValue(versionClassifierMap[splittetNewVersion]!!.priority)!!
+            val currentVersionPriority = ClassifierPriority.Companion.findValue(versionClassifierMap[splittetCurrentVersion]!!.priority)!!
+            val newVersionPriority = ClassifierPriority.Companion.findValue(versionClassifierMap[splittetNewVersion]!!.priority)!!
 
             if (!currentVersionDifferentiation && newVersionDifferentiation && currentVersionPriority <= newVersionPriority) return true
         }
@@ -62,8 +64,8 @@ open class VersionComparisonHandler {
             if (prioritizedVersion.isBlank()) prioritizedVersion = pair.first
             if (prioritisedClassifier == null) prioritisedClassifier = pair.second
 
-            val currentPrioritiedPriority = ClassifierPriority.findValue(prioritisedClassifier.priority)!!
-            val priority = ClassifierPriority.findValue(pair.second.priority)!!
+            val currentPrioritiedPriority = ClassifierPriority.Companion.findValue(prioritisedClassifier.priority)!!
+            val priority = ClassifierPriority.Companion.findValue(pair.second.priority)!!
 
             if (currentPrioritiedPriority < priority) {
                 prioritizedVersion = pair.first

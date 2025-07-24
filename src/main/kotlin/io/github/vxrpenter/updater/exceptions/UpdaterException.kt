@@ -14,6 +14,6 @@
  * Note: This is no legal advice, please read the license conditions
  */
 
-package io.github.vxrpenter.exceptions
+package io.github.vxrpenter.updater.exceptions
 
 open class UpdaterException(message: String, cause: Throwable? = null) : Exception(message, cause)
