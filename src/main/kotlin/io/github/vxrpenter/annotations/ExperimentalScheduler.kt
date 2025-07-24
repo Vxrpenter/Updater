@@ -17,8 +17,8 @@
 package io.github.vxrpenter.annotations
 
 @RequiresOptIn(
-    message = "This is an internal tool. It's usage is discouraged and it's application limited.",
+    message = "This is an experimental scheduler, for the usage in automatic update detection, use with caution.",
     level = RequiresOptIn.Level.ERROR
 )
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
-annotation class Internal
+annotation class ExperimentalScheduler
