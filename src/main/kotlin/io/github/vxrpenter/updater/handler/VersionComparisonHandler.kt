@@ -19,7 +19,6 @@
 package io.github.vxrpenter.updater.handler
 
 import io.github.vxrpenter.updater.data.SchemaClassifier
-import io.github.vxrpenter.updater.data.UpdateSchema
 import io.github.vxrpenter.updater.enum.ClassifierPriority
 
 open class VersionComparisonHandler {

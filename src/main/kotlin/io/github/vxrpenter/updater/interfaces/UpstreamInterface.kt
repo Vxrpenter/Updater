@@ -18,7 +18,7 @@ package io.github.vxrpenter.updater.interfaces
 
 import io.github.vxrpenter.updater.data.UpdateSchema
 import io.github.vxrpenter.updater.enum.UpstreamPriority
-import io.ktor.client.HttpClient
+import io.ktor.client.*
 
 interface UpstreamInterface {
     val upstreamPriority: UpstreamPriority
@@ -31,7 +31,7 @@ interface UpstreamInterface {
 
     fun update(version: VersionInterface): UpdateInterface
 
-    fun components(schema: UpdateSchema, value: kotlin.String): Collection<String> {
+    fun components(schema: UpdateSchema, value: String): Collection<String> {
         val version = value.replace(schema.prefix, "")
         var preSplit = version
 
@@ -39,7 +39,7 @@ interface UpstreamInterface {
             val classifierElement = "${classifier.divider}${classifier.name}"
             if (!version.contains(classifierElement)) continue
 
-            preSplit = version.split(classifierElement, "").first()
+            preSplit = version.split(classifierElement).first()
         }
 
         return preSplit.split(schema.divider)

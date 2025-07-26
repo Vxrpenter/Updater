@@ -16,8 +16,6 @@
 
 package io.github.vxrpenter.updater.interfaces
 
-import kotlin.String
-
 interface UpdateInterface {
     val value: kotlin.String
     val url: String

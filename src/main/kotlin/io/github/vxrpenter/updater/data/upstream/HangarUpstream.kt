@@ -21,22 +21,22 @@ package io.github.vxrpenter.updater.data.upstream
 import io.github.vxrpenter.updater.data.SchemaClassifier
 import io.github.vxrpenter.updater.data.UpdateSchema
 import io.github.vxrpenter.updater.data.update.DefaultUpdate
-import io.github.vxrpenter.updater.interfaces.Version
 import io.github.vxrpenter.updater.data.version.DefaultClassifier
 import io.github.vxrpenter.updater.data.version.DefaultVersion
 import io.github.vxrpenter.updater.enum.UpstreamPriority
 import io.github.vxrpenter.updater.handler.VersionComparisonHandler
-import io.github.vxrpenter.updater.interfaces.Upstream
-import io.ktor.client.HttpClient
-import io.ktor.client.request.get
-import io.ktor.client.statement.bodyAsText
+import io.github.vxrpenter.updater.interfaces.UpstreamInterface
+import io.github.vxrpenter.updater.interfaces.VersionInterface
+import io.ktor.client.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
 
-private val versions = mutableListOf<Pair<String, SchemaClassifier>>()
+private val versions = mutableListOf<Pair<kotlin.String, SchemaClassifier>>()
 
 data class HangarUpstream(
-    val projectId: String,
+    val projectId: kotlin.String,
     override val upstreamPriority: UpstreamPriority = UpstreamPriority.NONE
-) : Upstream {
+) : UpstreamInterface {
     override suspend fun fetch(client: HttpClient, schema: UpdateSchema): DefaultVersion? {
         for (classifier in schema.classifiers) {
             val url = "https://hangar.papermc.io/api/v1/projects/${projectId}/latest?channel=${classifier.channel}"
@@ -53,19 +53,23 @@ data class HangarUpstream(
         return DefaultVersion(value, components, classifier)
     }
 
-    override suspend fun compareVersions(version: Version, other: Version, client: HttpClient, schema: UpdateSchema): Pair<Int, DefaultVersion>? {
+    override suspend fun compareVersions(version: VersionInterface, other: VersionInterface, client: HttpClient, schema: UpdateSchema): Pair<Int, DefaultVersion>? {
         val compare = version.compareTo(other)
         return Pair(compare, version as DefaultVersion)
     }
 
-    override fun update(version: Version): DefaultUpdate {
+    override fun toVersion(version: String, schema: UpdateSchema): DefaultVersion {
+        return DefaultVersion(version, components(schema, version), classifier(schema, version))
+    }
+
+    override fun update(version: VersionInterface): DefaultUpdate {
         val version = VersionComparisonHandler.returnPrioritisedVersion(list = versions)
         val releaseUrl = "https://hangar.papermc.io/${projectId}/versions/$version"
 
         return DefaultUpdate(version, releaseUrl)
     }
 
-    override fun classifier(schema: UpdateSchema, value: String): DefaultClassifier? {
+    override fun classifier(schema: UpdateSchema, value: kotlin.String): DefaultClassifier? {
         val version = value.replace(schema.prefix, "")
 
         for (classifier in schema.classifiers) {

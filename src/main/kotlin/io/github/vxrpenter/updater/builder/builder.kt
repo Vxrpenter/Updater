@@ -81,10 +81,10 @@ class SchemaBuilder {
 
         classifiers.add(
             SchemaClassifier(
-                name = name!!,
-                priority = priority!!,
-                divider = divider!!,
-                componentDivider = componentDivider!!,
+                name = classifier.name!!,
+                priority = classifier.priority!!,
+                divider = classifier.divider!!,
+                componentDivider = classifier.componentDivider,
                 channel = classifier.channel
             )
         )

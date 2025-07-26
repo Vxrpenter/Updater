@@ -19,12 +19,11 @@ package io.github.vxrpenter.updater.interfaces
 import io.github.vxrpenter.updater.builder.ConfigurationBuilder
 import io.github.vxrpenter.updater.data.UpdateSchema
 import io.github.vxrpenter.updater.data.UpdaterConfiguration
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.okhttp.OkHttp
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.serialization.kotlinx.json.json
+import io.ktor.client.*
+import io.ktor.client.engine.okhttp.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
-import kotlin.String
 
 interface UpdaterInterface {
     var configuration: UpdaterConfiguration
