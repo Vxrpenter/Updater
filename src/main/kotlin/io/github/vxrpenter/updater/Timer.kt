@@ -17,11 +17,7 @@
 package io.github.vxrpenter.updater
 
 import io.github.vxrpenter.updater.annotations.ExperimentalScheduler
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import kotlin.time.Duration
 
 @ExperimentalScheduler

@@ -16,15 +16,15 @@
 
 package io.github.vxrpenter.updater.data.version
 
-import io.github.vxrpenter.updater.interfaces.Classifier
 import io.github.vxrpenter.updater.enum.ClassifierPriority
+import io.github.vxrpenter.updater.interfaces.ClassifierInterface
 
 data class DefaultClassifier(
     val value: String,
     val priority: ClassifierPriority,
     val components: Collection<String>
-) : Classifier {
-    override fun compareTo(other: Classifier): Int { other as DefaultClassifier
+) : ClassifierInterface {
+    override fun compareTo(other: ClassifierInterface): Int { other as DefaultClassifier
         if (components.isEmpty()) return priority.value.compareTo(other.priority.value)
 
         components.zip(other.components).forEach { (subVersion, otherSubVersion) ->

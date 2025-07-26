@@ -16,15 +16,14 @@
 
 package io.github.vxrpenter.updater.data.version
 
-import io.github.vxrpenter.updater.interfaces.Version
+import io.github.vxrpenter.updater.interfaces.VersionInterface
 
 data class DefaultVersion(
-    val value: String,
+    override val value: String,
     val components: Collection<String>,
     val classifier: DefaultClassifier?
-) : Version {
-    override fun compareTo(other: Version): Int { other as DefaultVersion
-
+) : VersionInterface {
+    override fun compareTo(other: VersionInterface): Int { other as DefaultVersion
         components.zip(other.components).forEach { (subVersion, otherSubVersion) ->
             if (subVersion != otherSubVersion) return subVersion.compareTo(otherSubVersion)
         }

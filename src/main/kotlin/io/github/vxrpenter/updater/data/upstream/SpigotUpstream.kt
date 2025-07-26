@@ -20,19 +20,19 @@ package io.github.vxrpenter.updater.data.upstream
 
 import io.github.vxrpenter.updater.data.UpdateSchema
 import io.github.vxrpenter.updater.data.update.DefaultUpdate
-import io.github.vxrpenter.updater.interfaces.Version
 import io.github.vxrpenter.updater.data.version.DefaultClassifier
 import io.github.vxrpenter.updater.data.version.DefaultVersion
 import io.github.vxrpenter.updater.enum.UpstreamPriority
-import io.github.vxrpenter.updater.interfaces.Upstream
-import io.ktor.client.HttpClient
-import io.ktor.client.request.get
-import io.ktor.client.statement.bodyAsText
+import io.github.vxrpenter.updater.interfaces.UpstreamInterface
+import io.github.vxrpenter.updater.interfaces.VersionInterface
+import io.ktor.client.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
 
 data class SpigotUpstream(
-    val projectId: String,
+    val projectId: kotlin.String,
     override val upstreamPriority: UpstreamPriority = UpstreamPriority.NONE
-): Upstream {
+): UpstreamInterface {
     override suspend fun fetch(client: HttpClient, schema: UpdateSchema): DefaultVersion? {
         val url = "https://api.spigotmc.org/legacy/update.php?resource=$projectId"
         val call = client.get(url)
@@ -45,18 +45,22 @@ data class SpigotUpstream(
         return DefaultVersion(value, components, classifier)
     }
 
-    override fun update(version: Version): DefaultUpdate { version as DefaultVersion
+    override fun update(version: VersionInterface): DefaultUpdate { version as DefaultVersion
         val releaseUrl = "https://www.spigotmc.org/resources/$projectId/history"
 
         return DefaultUpdate(version.value, releaseUrl)
     }
 
-    override suspend fun compareVersions(version: Version, other: Version, client: HttpClient, schema: UpdateSchema): Pair<Int, DefaultVersion>? {
+    override suspend fun compareVersions(version: VersionInterface, other: VersionInterface, client: HttpClient, schema: UpdateSchema): Pair<Int, DefaultVersion>? {
         val compare = version.compareTo(other)
         return Pair(compare, version as DefaultVersion)
     }
 
-    override fun classifier(schema: UpdateSchema, value: String): DefaultClassifier? {
+    override fun toVersion(version: String, schema: UpdateSchema): DefaultVersion {
+        return DefaultVersion(version, components(schema, version), classifier(schema, version))
+    }
+
+    override fun classifier(schema: UpdateSchema, value: kotlin.String): DefaultClassifier? {
         val version = value.replace(schema.prefix, "")
 
         for (classifier in schema.classifiers) {
