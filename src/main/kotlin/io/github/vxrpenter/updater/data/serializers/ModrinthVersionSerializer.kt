@@ -14,13 +14,13 @@
  * Note: This is no legal advice, please read the license conditions
  */
 
-package io.github.vxrpenter.updater.handler.data
+package io.github.vxrpenter.updater.data.serializers
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class GitHubReleaseSerializer(
-    @SerialName("tag_name")
-    val tagName: String
+data class ModrinthVersionSerializer(
+    @SerialName("version_number")
+    val versionNumber: String
 )

@@ -14,14 +14,23 @@
  * Note: This is no legal advice, please read the license conditions
  */
 
-package io.github.vxrpenter.updater.data
+package io.github.vxrpenter.updater.data.version
 
+import io.github.vxrpenter.updater.interfaces.Classifier
 import io.github.vxrpenter.updater.enum.ClassifierPriority
 
-data class SchemaClassifier(
-    val name: String,
+data class DefaultClassifier(
+    val value: String,
     val priority: ClassifierPriority,
-    val divider: String,
-    val componentDivider: String = ".",
-    val channel: String? = null
-)
+    val components: Collection<String>
+) : Classifier {
+    override fun compareTo(other: Classifier): Int { other as DefaultClassifier
+        if (components.isEmpty()) return priority.value.compareTo(other.priority.value)
+
+        components.zip(other.components).forEach { (subVersion, otherSubVersion) ->
+            if (subVersion != otherSubVersion) return subVersion.compareTo(otherSubVersion)
+        }
+
+        return 0
+    }
+}

@@ -14,6 +14,13 @@
  * Note: This is no legal advice, please read the license conditions
  */
 
-package io.github.vxrpenter.updater.exceptions
+package io.github.vxrpenter.updater.data.serializers
 
-class VersionSizeMisMatchException(message: String, cause: Throwable? = null) : UpdaterException(message, cause)
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class GitHubReleaseSerializer(
+    @SerialName("tag_name")
+    val tagName: String
+)

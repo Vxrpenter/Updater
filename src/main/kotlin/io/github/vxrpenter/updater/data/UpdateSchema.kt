@@ -19,6 +19,6 @@ package io.github.vxrpenter.updater.data
 data class UpdateSchema(
     val name: String,
     val prefix: String,
-    val divider: String,
+    val divider: String = ".",
     val classifiers: Collection<SchemaClassifier>
 )

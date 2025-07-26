@@ -16,4 +16,4 @@
 
 package io.github.vxrpenter.updater.exceptions
 
-class IncorrectUpstreamInheritance(message: String, cause: Throwable? = null) : UpdaterException(message, cause)
+class VersionSizeMisMatch(message: String, cause: Throwable? = null) : UpdaterException(message, cause)

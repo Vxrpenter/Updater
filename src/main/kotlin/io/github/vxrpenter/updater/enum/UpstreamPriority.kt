@@ -25,24 +25,4 @@ enum class UpstreamPriority(val priority: Int) {
     MIDDLE(3),
     HIGH(4),
     HIGHEST(5);
-
-    companion object {
-        /**
-         * Finds the specified enum name from its GroupPriority.
-         *
-         * @param value The UpstreamPriority e.g. (4, 5, etc.)
-         * @see io.github.vxrpenter.updater.enum.UpstreamPriority
-         * @return the UpstreamPriority (nullable)
-         */
-        fun findEnum(value: Int): UpstreamPriority? = entries.find { it.priority == value }
-
-        /**
-         * Finds the specified UpstreamPriority from its enum
-         *
-         * @param enum The enum e.g. (HIGH, HIGHEST etc.)
-         * @see io.github.vxrpenter.updater.enum.UpstreamPriority
-         * @return the UpstreamPriority (nullable)
-         */
-        fun findValue(enum: UpstreamPriority): Int? = entries.find { it.name == enum.name }?.priority
-    }
 }

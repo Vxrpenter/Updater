@@ -18,7 +18,7 @@
 
 package io.github.vxrpenter.updater.enum
 
-enum class ClassifierPriority(val priority: Int) {
+enum class ClassifierPriority(val value: Int) {
     NONE(0),
     MINIMAL(1),
     LOW(2),
@@ -34,7 +34,7 @@ enum class ClassifierPriority(val priority: Int) {
          * @see io.github.vxrpenter.updater.enum.ClassifierPriority
          * @return the ClassifierPriority (nullable)
          */
-        fun findEnum(value: Int): ClassifierPriority? = entries.find { it.priority == value }
+        fun findEnum(value: Int): ClassifierPriority? = entries.find { it.value == value }
 
         /**
          * Finds the specified ClassifierPriority from its enum
@@ -43,6 +43,6 @@ enum class ClassifierPriority(val priority: Int) {
          * @see io.github.vxrpenter.updater.enum.ClassifierPriority
          * @return the ClassifierPriority (nullable)
          */
-        fun findValue(enum: ClassifierPriority): Int? = entries.find { it.name == enum.name }?.priority
+        fun findValue(enum: ClassifierPriority): Int? = entries.find { it.name == enum.name }?.value
     }
 }

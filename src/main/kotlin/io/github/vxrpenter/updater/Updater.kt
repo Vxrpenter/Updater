@@ -20,54 +20,32 @@ package io.github.vxrpenter.updater
 
 import io.github.vxrpenter.updater.annotations.ExperimentalScheduler
 import io.github.vxrpenter.updater.builder.ConfigurationBuilder
-import io.github.vxrpenter.updater.data.Update
 import io.github.vxrpenter.updater.data.UpdateSchema
 import io.github.vxrpenter.updater.data.UpdaterConfiguration
-import io.github.vxrpenter.updater.data.upstream.Upstream
+import io.github.vxrpenter.updater.interfaces.Upstream
+import io.github.vxrpenter.updater.enum.UpstreamPriority
+import io.github.vxrpenter.updater.exceptions.UnsuccessfulVersionFetch
 import io.github.vxrpenter.updater.handler.VersionComparisonHandler
+import io.github.vxrpenter.updater.interfaces.UpdaterInterface
+import io.github.vxrpenter.updater.interfaces.Version
 import io.ktor.client.HttpClient
-import io.ktor.client.engine.okhttp.OkHttp
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.*
-import kotlinx.serialization.json.Json
 import org.slf4j.LoggerFactory
 
-sealed class Updater(private var configuration: UpdaterConfiguration) {
+sealed class Updater(override var configuration: UpdaterConfiguration) : UpdaterInterface {
     private val logger = LoggerFactory.getLogger(Updater::class.java)
-    // Defining client
-    private var client: HttpClient = createClient()
-
-    fun createClient(): HttpClient {
-        return HttpClient(OkHttp) {
-            install(ContentNegotiation) {
-                json(Json { ignoreUnknownKeys = true })
-            }
-
-            engine { config {
-                readTimeout(configuration.readTimeOut.timeout, configuration.readTimeOut.unit)
-                writeTimeout(configuration.readTimeOut.timeout, configuration.readTimeOut.unit)
-            }}
-        }
-    }
+    private val updatesScope = CoroutineScope(CoroutineExceptionHandler { _, exception -> logger.error("An error occurred in the update coroutine", exception) })
+    override var client: HttpClient = createClient()
 
     // Default configuration object
     companion object Default : Updater(configuration = UpdaterConfiguration())
 
     @OptIn(ExperimentalScheduler::class)
-    suspend fun default(currentVersion: String, schema: UpdateSchema, upstream: Upstream, builder: ConfigurationBuilder.() -> Unit) {
-        // Configuration Builder
-        val internalBuilder = ConfigurationBuilder()
-        internalBuilder.builder()
-        configuration = internalBuilder.build()
-        client = createClient()
+    override suspend fun default(currentVersion: String, schema: UpdateSchema, upstream: Upstream, builder: (ConfigurationBuilder.() -> Unit)?) {
+        if (builder != null) runBuilder(builder)
 
         // Logic
         if (configuration.periodic != null) {
-            val updatesScope = CoroutineScope(CoroutineExceptionHandler { _, exception ->
-                LoggerFactory.getLogger(Updater::class.java).error("An error occurred in the update coroutine", exception)
-            })
-
             Timer.schedule(period = configuration.periodic!!, coroutineScope = updatesScope) {
                 InnerUpdater(currentVersion = currentVersion, schema = schema, upstream = upstream)
             }
@@ -77,20 +55,11 @@ sealed class Updater(private var configuration: UpdaterConfiguration) {
     }
 
     @OptIn(ExperimentalScheduler::class)
-    suspend fun multiUpstream(currentVersion: String, schema: UpdateSchema, upstreams: Collection<Upstream>, builder: (ConfigurationBuilder.() -> Unit)? = null) {
-        // Configuration Builder
-        if (builder != null) {
-            val internalBuilder = ConfigurationBuilder()
-            internalBuilder.builder()
-            configuration = internalBuilder.build()
-            client = createClient()
-        }
+    override suspend fun multiUpstream(currentVersion: String, schema: UpdateSchema, upstreams: Collection<Upstream>, builder: (ConfigurationBuilder.() -> Unit)?) {
+        if (builder != null) runBuilder(builder)
+
         // Logic
         if (configuration.periodic != null) {
-            val updatesScope = CoroutineScope(CoroutineExceptionHandler { _, exception ->
-                LoggerFactory.getLogger(Updater::class.java).error("An error occurred in the update coroutine", exception)
-            })
-
             Timer.schedule(period = configuration.periodic!!, coroutineScope = updatesScope) {
                 multiUpstreamUpdater(currentVersion = currentVersion, schema = schema, upstreams = upstreams)
             }
@@ -99,37 +68,41 @@ sealed class Updater(private var configuration: UpdaterConfiguration) {
         }
     }
 
-    private suspend fun multiUpstreamUpdater(currentVersion: String, schema: UpdateSchema, upstreams: Collection<Upstream>) {
-        val fetchedUpdates: MutableCollection<Update> = mutableListOf()
-        val fetchedVersions: MutableCollection<String> = mutableListOf()
+    private suspend fun multiUpstreamUpdater(currentVersion: Version, schema: UpdateSchema, upstreams: Collection<Upstream>) {
+        val versions = mutableListOf<Pair<Version, Upstream>>()
 
         for (upstream in upstreams) {
-            val update = upstream.fetch(client = client, currentVersion = currentVersion, schema = schema)
-            if (!update.success || !update.versionUpdate!!) continue
-
-            fetchedUpdates.add(update)
-            fetchedVersions.add(update.version!!)
+            val version = upstream.fetch(client, schema)
+            version ?: throw UnsuccessfulVersionFetch("Could not fetch version from upstream", Throwable("Either upstream not available or serializer out of date"))
+            versions.add(Pair(version, upstream))
         }
 
-        val highestVersion = VersionComparisonHandler.Default.compareVersionCollection(schema, fetchedVersions)
-        for (update in fetchedUpdates) {
-            if (update.version!! != highestVersion) continue
+        var prio = versions.first()
 
-            logger.warn(configuration.newUpdateNotification, update.version, update.url)
+        val redundantVersions = mutableListOf<Pair<Version, Upstream>>()
+        for ((version, upstream) in versions) {
+            if (currentVersion.compareTo(version) != -1) {
+                redundantVersions.add(Pair(version, upstream))
+                continue
+            }
+
+            if (prio.first.compareTo(version) != -1 || prio.first.compareTo(version) != 0) prio = Pair(version, upstream)
         }
+        versions.removeAll(redundantVersions)
+
+        val update = prio.second.update(prio.first)
+
+        logger.warn(configuration.newUpdateNotification, update.value, update.url)
     }
 
-    private suspend fun InnerUpdater(currentVersion: String, schema: UpdateSchema, upstream: Upstream) {
-        val update = upstream.fetch(client = client, currentVersion = currentVersion, schema = schema)
+    private suspend fun InnerUpdater(currentVersion: Version, schema: UpdateSchema, upstream: Upstream) {
+        val version = upstream.fetch(client = client, schema = schema)
 
-        if (!update.success) return
-        val versionUpdate = update.versionUpdate!!
-        if (!versionUpdate) return
+        version ?: throw UnsuccessfulVersionFetch("Could not fetch version from upstream", Throwable("Either upstream not available or serializer out of date"))
+        if (version.compareTo(currentVersion) != -1) return
 
-        logger.warn(configuration.newUpdateNotification, update.version, update.url)
+        val update = upstream.update(version)
+
+        logger.warn(configuration.newUpdateNotification, update.value, update.url)
     }
-
 }
-
-class UpdaterImpl(configuration: UpdaterConfiguration) : Updater(configuration)
-
