@@ -33,8 +33,8 @@ import io.ktor.client.request.*
 import kotlinx.serialization.SerializationException
 
 data class GithubUpstream (
-    val user: kotlin.String,
-    val repo: kotlin.String,
+    val user: String,
+    val repo: String,
     override val upstreamPriority: UpstreamPriority = UpstreamPriority.NONE
 ) : UpstreamInterface {
     override suspend fun fetch(client: HttpClient, schema: UpdateSchema): DefaultVersion? {
@@ -72,7 +72,7 @@ data class GithubUpstream (
         return DefaultUpdate(value = version.value, url = releaseUrl)
     }
 
-    override fun classifier(schema: UpdateSchema, value: kotlin.String): DefaultClassifier? {
+    override fun classifier(schema: UpdateSchema, value: String): DefaultClassifier? {
         val version = value.replace(schema.prefix, "")
 
         for (classifier in schema.classifiers) {

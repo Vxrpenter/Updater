@@ -45,5 +45,5 @@ interface UpstreamInterface {
         return preSplit.split(schema.divider)
     }
 
-    fun classifier(schema: UpdateSchema, value: kotlin.String): ClassifierInterface?
+    fun classifier(schema: UpdateSchema, value: String): ClassifierInterface?
 }
