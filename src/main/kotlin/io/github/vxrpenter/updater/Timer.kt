@@ -26,28 +26,27 @@ import kotlin.time.Duration
 
 @ExperimentalScheduler
 internal open class Timer{
+    companion object {
+        fun schedule(period: Duration, coroutineScope: CoroutineScope, task: suspend () -> Unit) = runBlocking {
+            var taskExecuted = false
 
-    companion object Default: Timer()
+            val currentTask: suspend () -> Unit = {
+                task()
 
-    fun schedule(period: Duration, coroutineScope: CoroutineScope, task: suspend () -> Unit) = runBlocking {
-        var taskExecuted = false
+                taskExecuted = true
+            }
 
-        val currentTask: suspend () -> Unit = {
-            task()
-
-            taskExecuted = true
+            startTimer(period, coroutineScope, currentTask)
+            assert(taskExecuted)
         }
 
-        startTimer(period, coroutineScope, currentTask)
-        assert(taskExecuted)
-    }
-
-    private fun startTimer(period: Duration, coroutineScope: CoroutineScope, task: suspend () -> Unit) {
-        coroutineScope.launch {
-            launch {
-                while (isActive) {
-                    task()
-                    delay(period)
+        private fun startTimer(period: Duration, coroutineScope: CoroutineScope, task: suspend () -> Unit) {
+            coroutineScope.launch {
+                launch {
+                    while (isActive) {
+                        task()
+                        delay(period)
+                    }
                 }
             }
         }

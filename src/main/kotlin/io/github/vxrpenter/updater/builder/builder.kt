@@ -64,25 +64,27 @@ inline fun Schema(
 class SchemaBuilder {
     var name: String? = null
     var prefix: String? = null
-    var divider: String? = null
+    var divider: String = "."
     var classifiers: MutableCollection<SchemaClassifier> = mutableListOf()
 
     inline fun classifier(
         name: String? = null,
         divider: String? = null,
         priority: ClassifierPriority? = null,
+        componentDivider: String = ".",
         channel: String? = null,
         build: InlineSchemaClassifier.() -> Unit
     ) {
         val classifier = InlineSchemaClassifier(name = name, priority = priority, divider = divider, channel = channel).apply(build)
-        requireNotNull(!classifier.name.isNullOrBlank())
-        requireNotNull(classifier.priority != null)
+        requireNotNull(classifier.name)
+        requireNotNull(classifier.priority)
 
         classifiers.add(
             SchemaClassifier(
-                name = classifier.name!!,
-                priority = classifier.priority!!,
-                divider = classifier.divider,
+                name = name!!,
+                priority = priority!!,
+                divider = divider!!,
+                componentDivider = componentDivider!!,
                 channel = classifier.channel
             )
         )
@@ -92,6 +94,7 @@ class SchemaBuilder {
         var name: String? = null,
         var divider: String? = null,
         var priority: ClassifierPriority? = null,
+        var componentDivider: String = ".",
         var channel: String? = null
     )
 
@@ -100,7 +103,6 @@ class SchemaBuilder {
         requireNotNull(this.prefix)
         require(this.prefix!!.isNotEmpty()) { "'prefix' cannot be empty" }
         require(!this.classifiers.isEmpty()) { "'classifiers' cannot be empty" }
-        require(!this.divider.isNullOrBlank()) { "'divider' cannot be empty" }
 
         return UpdateSchema(name = name!!, prefix = prefix!!, divider = divider!!, classifiers = classifiers.toList())
     }

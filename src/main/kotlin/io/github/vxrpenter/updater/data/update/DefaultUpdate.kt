@@ -14,14 +14,11 @@
  * Note: This is no legal advice, please read the license conditions
  */
 
-package io.github.vxrpenter.updater.data
+package io.github.vxrpenter.updater.data.update
 
-import io.github.vxrpenter.updater.enum.ClassifierPriority
+import io.github.vxrpenter.updater.interfaces.Update
 
-data class SchemaClassifier(
-    val name: String,
-    val priority: ClassifierPriority,
-    val divider: String,
-    val componentDivider: String = ".",
-    val channel: String? = null
-)
+data class DefaultUpdate(
+    override val value: String,
+    override val url: String,
+): Update

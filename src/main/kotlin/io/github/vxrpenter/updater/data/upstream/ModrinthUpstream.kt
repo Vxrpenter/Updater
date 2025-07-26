@@ -18,12 +18,15 @@
 
 package io.github.vxrpenter.updater.data.upstream
 
-import io.github.vxrpenter.updater.data.Update
 import io.github.vxrpenter.updater.data.UpdateSchema
+import io.github.vxrpenter.updater.data.update.DefaultUpdate
+import io.github.vxrpenter.updater.interfaces.Version
+import io.github.vxrpenter.updater.data.version.DefaultClassifier
+import io.github.vxrpenter.updater.data.version.DefaultVersion
 import io.github.vxrpenter.updater.enum.ModrinthProjectType
 import io.github.vxrpenter.updater.enum.UpstreamPriority
-import io.github.vxrpenter.updater.handler.VersionComparisonHandler
-import io.github.vxrpenter.updater.handler.data.ModrinthVersionSerializer
+import io.github.vxrpenter.updater.data.serializers.ModrinthVersionSerializer
+import io.github.vxrpenter.updater.interfaces.Upstream
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -33,22 +36,49 @@ data class ModrinthUpstream(
     val projectId: String,
     val modrinthProjectType: ModrinthProjectType,
     override val upstreamPriority: UpstreamPriority = UpstreamPriority.NONE
-) : Upstream() {
-    override suspend fun fetch(client: HttpClient, currentVersion: String, schema: UpdateSchema): Update {
+) : Upstream {
+    override suspend fun fetch(client: HttpClient, schema: UpdateSchema): DefaultVersion? {
         val url = "https://api.modrinth.com/v2/project/${projectId}/version"
         val call = client.get(url)
-        if (call.status.value == 400) return Update(success = false)
+        if (call.status.value == 400) return null
 
         try {
             val body = call.body<List<ModrinthVersionSerializer>>()
 
-            val version = body.first().versionNumber
-            val versionUpdate: Boolean = VersionComparisonHandler.Default.compareVersions(schema = schema, currentVersion = currentVersion, newVersion = version)
-            val releaseUrl = "https://modrinth.com/${ModrinthProjectType.Companion.findValue(modrinthProjectType)}/$projectId/version/$version"
+            val value = body.first().versionNumber
+            val components = components(schema, value)
+            val classifier = classifier(schema, value)
 
-            return Update(success = true, versionUpdate = versionUpdate, version = version, url = releaseUrl)
+            return DefaultVersion(value, components, classifier)
         } catch (_: JsonConvertException) {
-            return Update(success = false)
+            return null
         }
+    }
+
+    override suspend fun compareVersions(version: Version, other: Version, client: HttpClient, schema: UpdateSchema): Pair<Int, DefaultVersion>? {
+        val compare = version.compareTo(other)
+        return Pair(compare, version as DefaultVersion)
+    }
+
+    override fun update(version: Version): DefaultUpdate { version as DefaultVersion
+        val releaseUrl = "https://modrinth.com/${ModrinthProjectType.Companion.findValue(modrinthProjectType)}/$projectId/version/$version"
+
+        return DefaultUpdate(version.value, releaseUrl)
+    }
+
+    override fun classifier(schema: UpdateSchema, value: String): DefaultClassifier? {
+        val version = value.replace(schema.prefix, "")
+
+        for (classifier in schema.classifiers) {
+            val classifierElement = "${classifier.divider}${classifier.name}"
+            if (!version.contains(classifierElement)) continue
+
+            val value = "$classifierElement${version.split(classifierElement).last()}"
+            val components = version.split(classifierElement).last().split(classifier.componentDivider)
+
+            return DefaultClassifier(value, classifier.priority, components)
+        }
+
+        return null
     }
 }

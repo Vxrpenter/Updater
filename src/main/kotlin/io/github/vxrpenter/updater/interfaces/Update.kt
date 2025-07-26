@@ -14,13 +14,9 @@
  * Note: This is no legal advice, please read the license conditions
  */
 
-package io.github.vxrpenter.updater.handler.data
+package io.github.vxrpenter.updater.interfaces
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
-
-@Serializable
-data class ModrinthVersionSerializer(
-    @SerialName("version_number")
-    val versionNumber: String
-)
+interface Update {
+    val value: String
+    val url: String
+}
