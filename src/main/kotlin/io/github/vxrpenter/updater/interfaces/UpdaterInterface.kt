@@ -44,7 +44,7 @@ interface UpdaterInterface {
     }
 
     suspend fun default(currentVersion: String, schema: UpdateSchema, upstream: UpstreamInterface, builder: (ConfigurationBuilder.() -> Unit)? = null)
-    suspend fun multiUpstream(currentVersion: String, schema: UpdateSchema, upstreams: Collection<UpstreamInterface>, builder: (ConfigurationBuilder.() -> Unit)? = null)
+    //suspend fun multiUpstream(currentVersion: String, schema: UpdateSchema, upstreams: Collection<UpstreamInterface>, builder: (ConfigurationBuilder.() -> Unit)? = null)
 
     fun runBuilder(builder: ConfigurationBuilder.() -> Unit) {
         val internalBuilder = ConfigurationBuilder()
