@@ -24,6 +24,7 @@ import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
+import kotlin.String
 
 interface UpdaterInterface {
     var configuration: UpdaterConfiguration
@@ -42,8 +43,8 @@ interface UpdaterInterface {
         }
     }
 
-    suspend fun default(currentVersion: Version, schema: UpdateSchema, upstream: Upstream, builder: (ConfigurationBuilder.() -> Unit)? = null)
-    suspend fun multiUpstream(currentVersion: Version, schema: UpdateSchema, upstreams: Collection<Upstream>, builder: (ConfigurationBuilder.() -> Unit)? = null)
+    suspend fun default(currentVersion: String, schema: UpdateSchema, upstream: UpstreamInterface, builder: (ConfigurationBuilder.() -> Unit)? = null)
+    suspend fun multiUpstream(currentVersion: String, schema: UpdateSchema, upstreams: Collection<UpstreamInterface>, builder: (ConfigurationBuilder.() -> Unit)? = null)
 
     fun runBuilder(builder: ConfigurationBuilder.() -> Unit) {
         val internalBuilder = ConfigurationBuilder()

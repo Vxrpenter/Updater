@@ -16,6 +16,6 @@
 
 package io.github.vxrpenter.updater.interfaces
 
-interface Version {
-    operator fun compareTo(other: Version): Int
+interface ClassifierInterface {
+    operator fun compareTo(other: ClassifierInterface): Int
 }

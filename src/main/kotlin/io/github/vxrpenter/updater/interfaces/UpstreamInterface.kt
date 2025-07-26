@@ -20,28 +20,30 @@ import io.github.vxrpenter.updater.data.UpdateSchema
 import io.github.vxrpenter.updater.enum.UpstreamPriority
 import io.ktor.client.HttpClient
 
-interface Upstream {
+interface UpstreamInterface {
     val upstreamPriority: UpstreamPriority
 
-    suspend fun fetch(client: HttpClient, schema: UpdateSchema): Version?
+    suspend fun fetch(client: HttpClient, schema: UpdateSchema): VersionInterface?
 
-    suspend fun compareVersions(version: Version, other: Version, client: HttpClient, schema: UpdateSchema): Pair<Int, Version>?
+    suspend fun compareVersions(version: VersionInterface, other: VersionInterface, client: HttpClient, schema: UpdateSchema): Pair<Int, VersionInterface>?
 
-    fun update(version: Version): Update
+    fun toVersion(version: String, schema: UpdateSchema): VersionInterface
 
-    fun components(schema: UpdateSchema, value: String): Collection<String> {
+    fun update(version: VersionInterface): UpdateInterface
+
+    fun components(schema: UpdateSchema, value: kotlin.String): Collection<String> {
         val version = value.replace(schema.prefix, "")
+        var preSplit = version
 
         for (classifier in schema.classifiers) {
             val classifierElement = "${classifier.divider}${classifier.name}"
             if (!version.contains(classifierElement)) continue
 
-            val preSplit = version.split(classifierElement, "").first()
-            return preSplit.split(schema.divider)
+            preSplit = version.split(classifierElement, "").first()
         }
 
-        return emptyList()
+        return preSplit.split(schema.divider)
     }
 
-    fun classifier(schema: UpdateSchema, value: String): Classifier?
+    fun classifier(schema: UpdateSchema, value: kotlin.String): ClassifierInterface?
 }
