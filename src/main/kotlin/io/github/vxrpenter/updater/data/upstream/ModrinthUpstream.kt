@@ -33,7 +33,7 @@ import io.ktor.client.request.*
 import io.ktor.serialization.*
 
 data class ModrinthUpstream(
-    val projectId: kotlin.String,
+    val projectId: String,
     val modrinthProjectType: ModrinthProjectType,
     override val upstreamPriority: UpstreamPriority = UpstreamPriority.NONE
 ) : UpstreamInterface {
@@ -70,7 +70,7 @@ data class ModrinthUpstream(
         return DefaultUpdate(version.value, releaseUrl)
     }
 
-    override fun classifier(schema: UpdateSchema, value: kotlin.String): DefaultClassifier? {
+    override fun classifier(schema: UpdateSchema, value: String): DefaultClassifier? {
         val version = value.replace(schema.prefix, "")
 
         for (classifier in schema.classifiers) {

@@ -30,7 +30,7 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 
 data class SpigotUpstream(
-    val projectId: kotlin.String,
+    val projectId: String,
     override val upstreamPriority: UpstreamPriority = UpstreamPriority.NONE
 ): UpstreamInterface {
     override suspend fun fetch(client: HttpClient, schema: UpdateSchema): DefaultVersion? {
@@ -60,7 +60,7 @@ data class SpigotUpstream(
         return DefaultVersion(version, components(schema, version), classifier(schema, version))
     }
 
-    override fun classifier(schema: UpdateSchema, value: kotlin.String): DefaultClassifier? {
+    override fun classifier(schema: UpdateSchema, value: String): DefaultClassifier? {
         val version = value.replace(schema.prefix, "")
 
         for (classifier in schema.classifiers) {

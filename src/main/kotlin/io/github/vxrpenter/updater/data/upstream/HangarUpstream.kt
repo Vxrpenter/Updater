@@ -31,10 +31,10 @@ import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 
-private val versions = mutableListOf<Pair<kotlin.String, SchemaClassifier>>()
+private val versions = mutableListOf<Pair<String, SchemaClassifier>>()
 
 data class HangarUpstream(
-    val projectId: kotlin.String,
+    val projectId: String,
     override val upstreamPriority: UpstreamPriority = UpstreamPriority.NONE
 ) : UpstreamInterface {
     override suspend fun fetch(client: HttpClient, schema: UpdateSchema): DefaultVersion? {
@@ -69,7 +69,7 @@ data class HangarUpstream(
         return DefaultUpdate(version, releaseUrl)
     }
 
-    override fun classifier(schema: UpdateSchema, value: kotlin.String): DefaultClassifier? {
+    override fun classifier(schema: UpdateSchema, value: String): DefaultClassifier? {
         val version = value.replace(schema.prefix, "")
 
         for (classifier in schema.classifiers) {

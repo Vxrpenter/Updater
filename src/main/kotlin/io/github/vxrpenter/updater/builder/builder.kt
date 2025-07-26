@@ -104,6 +104,6 @@ class SchemaBuilder {
         require(this.prefix!!.isNotEmpty()) { "'prefix' cannot be empty" }
         require(!this.classifiers.isEmpty()) { "'classifiers' cannot be empty" }
 
-        return UpdateSchema(name = name!!, prefix = prefix!!, divider = divider!!, classifiers = classifiers.toList())
+        return UpdateSchema(name = name!!, prefix = prefix!!, divider = divider, classifiers = classifiers.toList())
     }
 }
