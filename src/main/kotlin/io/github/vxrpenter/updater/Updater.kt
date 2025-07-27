@@ -81,7 +81,7 @@ sealed class Updater(var configuration: UpdaterConfiguration)  {
      * @param builder the builder
      */
     @OptIn(ExperimentalScheduler::class)
-    suspend fun default(currentVersion: String, schema: UpdateSchema, upstream: Upstream, builder: (ConfigurationBuilder.() -> Unit)?) {
+    suspend fun default(currentVersion: String, schema: UpdateSchema, upstream: Upstream, builder: (ConfigurationBuilder.() -> Unit)? = null) {
         if (builder != null) runBuilder(builder)
 
         // Logic
