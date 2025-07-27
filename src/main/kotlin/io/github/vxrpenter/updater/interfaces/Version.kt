@@ -17,7 +17,7 @@
 package io.github.vxrpenter.updater.interfaces
 
 /**
- * A generic interface that implements a comparable version.
+ * An interface that implements a comparable version.
  */
 interface Version {
     /**

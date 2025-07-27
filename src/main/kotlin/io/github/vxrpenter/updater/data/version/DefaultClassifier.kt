@@ -19,9 +19,18 @@ package io.github.vxrpenter.updater.data.version
 import io.github.vxrpenter.updater.enum.ClassifierPriority
 import io.github.vxrpenter.updater.interfaces.Classifier
 
+/**
+ * The default classifier
+ */
 data class DefaultClassifier(
-    val value: String,
+    override val value: String,
+    /**
+     * Priority of the classifier
+     */
     val priority: ClassifierPriority,
+    /**
+     * Collection of the version components
+     */
     val components: Collection<String>
 ) : Classifier {
     override fun compareTo(other: Classifier): Int { other as DefaultClassifier
