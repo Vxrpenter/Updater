@@ -16,12 +16,11 @@
 
 package io.github.vxrpenter.updater.data
 
-import io.github.vxrpenter.updater.enum.ClassifierPriority
+import io.github.vxrpenter.updater.interfaces.UpdateSchema
 
-data class SchemaClassifier(
-    val name: String,
-    val priority: ClassifierPriority,
-    val divider: String,
-    val componentDivider: String = ".",
-    val channel: String? = null
-)
+data class DefaultUpdateSchema(
+    override val name: String,
+    override val prefix: String,
+    override val divider: String = ".",
+    override val classifiers: Collection<DefaultSchemaClassifier>
+) : UpdateSchema

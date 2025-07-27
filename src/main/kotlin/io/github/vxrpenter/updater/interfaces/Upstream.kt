@@ -16,7 +16,6 @@
 
 package io.github.vxrpenter.updater.interfaces
 
-import io.github.vxrpenter.updater.data.UpdateSchema
 import io.github.vxrpenter.updater.enum.UpstreamPriority
 import io.ktor.client.*
 
