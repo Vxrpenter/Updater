@@ -110,7 +110,7 @@ sealed class Updater(var configuration: UpdaterConfiguration)  {
         val version = upstream.fetch(client = client, schema = schema)
 
         version ?: throw UnsuccessfulVersionFetch("Could not fetch version from upstream", Throwable("Either upstream not available or serializer out of date"))
-        if (currentVersion <= version) return
+        if (currentVersion >= version) return
 
         val update = upstream.update(version)
 
