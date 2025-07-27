@@ -25,18 +25,37 @@ import io.github.vxrpenter.updater.data.version.DefaultClassifier
 import io.github.vxrpenter.updater.data.version.DefaultVersion
 import io.github.vxrpenter.updater.enum.ModrinthProjectType
 import io.github.vxrpenter.updater.enum.UpstreamPriority
-import io.github.vxrpenter.updater.interfaces.UpstreamInterface
+import io.github.vxrpenter.updater.exceptions.VersionTypeMismatch
+import io.github.vxrpenter.updater.interfaces.Update
+import io.github.vxrpenter.updater.interfaces.Upstream
 import io.github.vxrpenter.updater.interfaces.Version
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.serialization.*
 
+/**
+ * The Modrinth upstream.
+ */
 data class ModrinthUpstream(
+    /**
+     * Id of the project
+     */
     val projectId: String,
+    /**
+     * Type of the project
+     */
     val modrinthProjectType: ModrinthProjectType,
     override val upstreamPriority: UpstreamPriority = UpstreamPriority.NONE
-) : UpstreamInterface {
+) : Upstream {
+    /**
+     * Fetches a version object from the upstream.
+     *
+     * @param client defines the [HttpClient] used for the fetching
+     * @param schema defines the version deserialization
+     *
+     * @return the fetched [DefaultVersion]
+     */
     override suspend fun fetch(client: HttpClient, schema: UpdateSchema): DefaultVersion? {
         val url = "https://api.modrinth.com/v2/project/${projectId}/version"
         val call = client.get(url)
@@ -46,8 +65,8 @@ data class ModrinthUpstream(
             val body = call.body<List<ModrinthVersionSerializer>>()
 
             val value = body.first().versionNumber
-            val components = components(schema, value)
-            val classifier = classifier(schema, value)
+            val components = components(value, schema)
+            val classifier = classifier(value, schema)
 
             return DefaultVersion(value, components, classifier)
         } catch (_: JsonConvertException) {
@@ -55,17 +74,39 @@ data class ModrinthUpstream(
         }
     }
 
+    /**
+     * Converts a version string into a [DefaultVersion].
+     *
+     * @param version complete version
+     * @param schema defines the version deserialization
+     *
+     * @return the [DefaultVersion]
+     */
     override fun toVersion(version: String, schema: UpdateSchema): DefaultVersion {
-        return DefaultVersion(version, components(schema, version), classifier(schema, version))
+        return DefaultVersion(version, components(version, schema), classifier(version, schema))
     }
 
-    override fun update(version: Version): DefaultUpdate { version as DefaultVersion
+    /**
+     * Returns an [Update] from a [DefaultVersion].
+     *
+     * @param version the version
+     * @return the [Update]
+     * @throws VersionTypeMismatch when [version] is not [DefaultVersion]
+     */
+    override fun update(version: Version): DefaultUpdate { if (version !is DefaultVersion) throw VersionTypeMismatch("Version type ${version.javaClass} cannot be ${DefaultVersion::class.java}")
         val releaseUrl = "https://modrinth.com/${ModrinthProjectType.Companion.findValue(modrinthProjectType)}/$projectId/version/$version"
 
         return DefaultUpdate(version.value, releaseUrl)
     }
 
-    override fun classifier(schema: UpdateSchema, value: String): DefaultClassifier? {
+    /**
+     * Returns a [DefaultClassifier] from the given version.
+     *
+     * @param value complete version
+     * @param schema defines the version deserialization
+     * @return the [DefaultClassifier]
+     */
+    override fun classifier(value: String, schema: UpdateSchema): DefaultClassifier? {
         val version = value.replace(schema.prefix, "")
 
         for (classifier in schema.classifiers) {

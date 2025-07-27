@@ -16,4 +16,4 @@
 
 package io.github.vxrpenter.updater.exceptions
 
-class VersionSizeMisMatch(message: String, cause: Throwable? = null) : UpdaterException(message, cause)
+class VersionTypeMismatch(message: String, cause: Throwable? = null) : UpdaterException(message, cause)

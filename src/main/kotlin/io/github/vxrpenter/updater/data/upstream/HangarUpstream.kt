@@ -24,8 +24,10 @@ import io.github.vxrpenter.updater.data.update.DefaultUpdate
 import io.github.vxrpenter.updater.data.version.DefaultClassifier
 import io.github.vxrpenter.updater.data.version.DefaultVersion
 import io.github.vxrpenter.updater.enum.UpstreamPriority
+import io.github.vxrpenter.updater.exceptions.VersionTypeMismatch
 import io.github.vxrpenter.updater.handler.VersionComparisonHandler
-import io.github.vxrpenter.updater.interfaces.UpstreamInterface
+import io.github.vxrpenter.updater.interfaces.Update
+import io.github.vxrpenter.updater.interfaces.Upstream
 import io.github.vxrpenter.updater.interfaces.Version
 import io.ktor.client.*
 import io.ktor.client.request.*
@@ -33,10 +35,24 @@ import io.ktor.client.statement.*
 
 private val versions = mutableListOf<Pair<String, SchemaClassifier>>()
 
+/**
+ * The Hangar upstream.
+ */
 data class HangarUpstream(
+    /**
+     * Id of the project
+     */
     val projectId: String,
     override val upstreamPriority: UpstreamPriority = UpstreamPriority.NONE
-) : UpstreamInterface {
+) : Upstream {
+    /**
+     * Fetches a version object from the upstream.
+     *
+     * @param client defines the [HttpClient] used for the fetching
+     * @param schema defines the version deserialization
+     *
+     * @return the fetched [DefaultVersion]
+     */
     override suspend fun fetch(client: HttpClient, schema: UpdateSchema): DefaultVersion? {
         for (classifier in schema.classifiers) {
             val url = "https://hangar.papermc.io/api/v1/projects/${projectId}/latest?channel=${classifier.channel}"
@@ -47,24 +63,46 @@ data class HangarUpstream(
         }
 
         val value = VersionComparisonHandler.returnPrioritisedVersion(list = versions)
-        val components = components(schema, value)
-        val classifier = classifier(schema, value)
+        val components = components(value, schema)
+        val classifier = classifier(value, schema)
 
         return DefaultVersion(value, components, classifier)
     }
 
+    /**
+     * Converts a version string into a [DefaultVersion].
+     *
+     * @param version complete version
+     * @param schema defines the version deserialization
+     *
+     * @return the [DefaultVersion]
+     */
     override fun toVersion(version: String, schema: UpdateSchema): DefaultVersion {
-        return DefaultVersion(version, components(schema, version), classifier(schema, version))
+        return DefaultVersion(version, components(version, schema), classifier(version, schema))
     }
 
-    override fun update(version: Version): DefaultUpdate {
+    /**
+     * Returns an [Update] from a [DefaultVersion].
+     *
+     * @param version the version
+     * @return the [Update]
+     * @throws VersionTypeMismatch when [version] is not [DefaultVersion]
+     */
+    override fun update(version: Version): DefaultUpdate { if (version !is DefaultVersion) throw VersionTypeMismatch("Version type ${version.javaClass} cannot be ${DefaultVersion::class.java}")
         val version = VersionComparisonHandler.returnPrioritisedVersion(list = versions)
         val releaseUrl = "https://hangar.papermc.io/${projectId}/versions/$version"
 
         return DefaultUpdate(version, releaseUrl)
     }
 
-    override fun classifier(schema: UpdateSchema, value: String): DefaultClassifier? {
+    /**
+     * Returns a [DefaultClassifier] from the given version.
+     *
+     * @param value complete version
+     * @param schema defines the version deserialization
+     * @return the [DefaultClassifier]
+     */
+    override fun classifier(value: String, schema: UpdateSchema): DefaultClassifier? {
         val version = value.replace(schema.prefix, "")
 
         for (classifier in schema.classifiers) {

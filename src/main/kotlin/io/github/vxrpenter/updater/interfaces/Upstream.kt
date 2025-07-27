@@ -21,13 +21,13 @@ import io.github.vxrpenter.updater.enum.UpstreamPriority
 import io.ktor.client.*
 
 /**
- * The Upstream interface defines a remote that stores version information (and possible version files),
+ * The Upstream interface defines a remote that stores version information (and possible version files)
  * that allows
  * the fetching of this information through an api.
  */
-interface UpstreamInterface {
+interface Upstream {
     /**
-     * Priority that used when comparing versions from multiple upstreams.
+     * Priority is that used when comparing versions from multiple upstreams.
      */
     val upstreamPriority: UpstreamPriority
 
@@ -42,7 +42,7 @@ interface UpstreamInterface {
     suspend fun fetch(client: HttpClient, schema: UpdateSchema): Version?
 
     /**
-     * Converts a version string into a [Version]
+     * Converts a version string into a [Version].
      *
      * @param version complete version
      * @param schema defines the version deserialization
@@ -52,11 +52,21 @@ interface UpstreamInterface {
     fun toVersion(version: String, schema: UpdateSchema): Version
 
     /**
-     *
+     * Returns an [Update] from a [Version].
+     * 
+     * @param version the version
+     * @return the [Update]
      */
     fun update(version: Version): Update
 
-    fun components(schema: UpdateSchema, value: String): Collection<String> {
+    /**
+     * Returns a collection of version components from the given version.
+     * 
+     * @param value complete version
+     * @param schema defines the version deserialization
+     * @return the component collection
+     */
+    fun components(value: String, schema: UpdateSchema): Collection<String> {
         val version = value.replace(schema.prefix, "")
         var preSplit = version
 
@@ -70,5 +80,12 @@ interface UpstreamInterface {
         return preSplit.split(schema.divider)
     }
 
-    fun classifier(schema: UpdateSchema, value: String): Classifier?
+    /**
+     * Returns a [Classifier] from the given version.
+     *
+     * @param value complete version
+     * @param schema defines the version deserialization
+     * @return the [Classifier]
+     */
+    fun classifier(value: String, schema: UpdateSchema): Classifier?
 }
