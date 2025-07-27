@@ -16,6 +16,9 @@
 
 package io.github.vxrpenter.updater.schema
 
+import io.github.vxrpenter.updater.version.Version
+import io.github.vxrpenter.updater.upstream.HangarUpstream
+
 /**
  * The SchemaClassifier interface is a set of instructions
  * on how to deserialize a [io.github.vxrpenter.updater.version.Classifier] into it's individual components.
@@ -30,7 +33,7 @@ interface SchemaClassifier {
      */
     val priority: ClassifierPriority
     /**
-     * The symbol that is used to divide the classifier and the [io.github.vxrpenter.updater.version.Version],
+     * The symbol that is used to divide the classifier and the [Version],
      * e.g. `.` or `-`
      */
     val divider: String
@@ -39,7 +42,7 @@ interface SchemaClassifier {
      */
     val componentDivider: String
     /**
-     * A custom channel, only applicable for [io.github.vxrpenter.updater.upstream.HangarUpstream]
+     * A custom channel, only applicable for [HangarUpstream]
      */
     val channel: String?
 }
