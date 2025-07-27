@@ -18,6 +18,9 @@ package io.github.vxrpenter.updater.data.update
 
 import io.github.vxrpenter.updater.interfaces.Update
 
+/**
+ * The default update
+ */
 data class DefaultUpdate(
     override val value: String,
     override val url: String,

@@ -16,14 +16,26 @@
 
 package io.github.vxrpenter.updater.data.version
 
+import io.github.vxrpenter.updater.exceptions.VersionSizeMismatch
 import io.github.vxrpenter.updater.interfaces.Version
 
+/**
+ * The default version
+ */
 data class DefaultVersion(
     override val value: String,
+    /**
+     * Collection of the version components
+     */
     val components: Collection<String>,
+    /**
+     * Classifier contained in the version
+     */
     val classifier: DefaultClassifier?
 ) : Version {
     override fun compareTo(other: Version): Int { other as DefaultVersion
+        if (components.size != other.components.size || classifier?.components?.size != other.classifier?.components?.size) throw VersionSizeMismatch("Cannot compare versions",
+            Throwable("Size of version and/or classifier components are not equal"))
         components.zip(other.components).forEach { (subVersion, otherSubVersion) ->
             if (subVersion != otherSubVersion) return subVersion.compareTo(otherSubVersion)
         }
