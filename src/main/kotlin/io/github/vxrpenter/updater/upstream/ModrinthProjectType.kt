@@ -32,7 +32,7 @@ enum class ModrinthProjectType(val type: String) {
          * Finds the specified enum name from its ModrinthProjectType.
          *
          * @param value The ModrinthProjectType e.g. (modpack, plugin, etc.)
-         * @see ClassifierPriority
+         * @see io.github.vxrpenter.updater.schema.ClassifierPriority
          * @return the ModrinthProjectType (nullable)
          */
         fun findEnum(value: String): ModrinthProjectType? = entries.find { it.type == value }

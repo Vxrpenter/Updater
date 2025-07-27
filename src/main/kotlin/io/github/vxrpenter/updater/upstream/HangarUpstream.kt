@@ -16,37 +16,32 @@
 
 @file:Suppress("unused", "FunctionName")
 
-package io.github.vxrpenter.updater.data.upstream
+package io.github.vxrpenter.updater.upstream
 
-import io.github.vxrpenter.updater.data.update.DefaultUpdate
-import io.github.vxrpenter.updater.data.version.DefaultClassifier
-import io.github.vxrpenter.updater.data.version.DefaultVersion
-import io.github.vxrpenter.updater.enum.ModrinthProjectType
+import io.github.vxrpenter.updater.update.DefaultUpdate
+import io.github.vxrpenter.updater.version.DefaultClassifier
+import io.github.vxrpenter.updater.version.DefaultVersion
 import io.github.vxrpenter.updater.enum.UpstreamPriority
 import io.github.vxrpenter.updater.exceptions.VersionTypeMismatch
-import io.github.vxrpenter.updater.interfaces.Update
-import io.github.vxrpenter.updater.interfaces.UpdateSchema
-import io.github.vxrpenter.updater.interfaces.Upstream
-import io.github.vxrpenter.updater.interfaces.Version
+import io.github.vxrpenter.updater.version.VersionComparisonHandler
+import io.github.vxrpenter.updater.schema.SchemaClassifier
+import io.github.vxrpenter.updater.update.Update
+import io.github.vxrpenter.updater.schema.UpdateSchema
+import io.github.vxrpenter.updater.version.Version
 import io.ktor.client.*
-import io.ktor.client.call.*
 import io.ktor.client.request.*
-import io.ktor.serialization.*
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
+import io.ktor.client.statement.*
+
+private val versions = mutableListOf<Pair<String, SchemaClassifier>>()
 
 /**
- * The Modrinth upstream.
+ * The Hangar upstream.
  */
-data class ModrinthUpstream(
+data class HangarUpstream(
     /**
      * Id of the project
      */
     val projectId: String,
-    /**
-     * Type of the project
-     */
-    val modrinthProjectType: ModrinthProjectType,
     override val upstreamPriority: UpstreamPriority = UpstreamPriority.NONE
 ) : Upstream {
     /**
@@ -58,21 +53,19 @@ data class ModrinthUpstream(
      * @return the fetched [DefaultVersion]
      */
     override suspend fun fetch(client: HttpClient, schema: UpdateSchema): DefaultVersion? {
-        val url = "https://api.modrinth.com/v2/project/${projectId}/version"
-        val call = client.get(url)
-        if (call.status.value == 400) return null
+        for (classifier in schema.classifiers) {
+            val url = "https://hangar.papermc.io/api/v1/projects/${projectId}/latest?channel=${classifier.channel}"
+            val call = client.get(url)
+            if (call.status.value == 400) return null
 
-        try {
-            val body = call.body<List<Release>>()
-
-            val value = body.first().versionNumber
-            val components = components(value, schema)
-            val classifier = classifier(value, schema)
-
-            return DefaultVersion(value, components, classifier)
-        } catch (_: JsonConvertException) {
-            return null
+            versions.add(Pair(call.bodyAsText(), classifier))
         }
+
+        val value = VersionComparisonHandler.returnPrioritisedVersion(list = versions)
+        val components = components(value, schema)
+        val classifier = classifier(value, schema)
+
+        return DefaultVersion(value, components, classifier)
     }
 
     /**
@@ -95,9 +88,10 @@ data class ModrinthUpstream(
      * @throws VersionTypeMismatch when [version] is not [DefaultVersion]
      */
     override fun update(version: Version): DefaultUpdate { if (version !is DefaultVersion) throw VersionTypeMismatch("Version type ${version.javaClass} cannot be ${DefaultVersion::class.java}")
-        val releaseUrl = "https://modrinth.com/${ModrinthProjectType.Companion.findValue(modrinthProjectType)}/$projectId/version/$version"
+        val version = VersionComparisonHandler.returnPrioritisedVersion(list = versions)
+        val releaseUrl = "https://hangar.papermc.io/${projectId}/versions/$version"
 
-        return DefaultUpdate(version.value, releaseUrl)
+        return DefaultUpdate(version, releaseUrl)
     }
 
     /**
@@ -122,10 +116,4 @@ data class ModrinthUpstream(
 
         return null
     }
-
-    @Serializable
-    data class Release(
-        @SerialName("version_number")
-        val versionNumber: String
-    )
 }

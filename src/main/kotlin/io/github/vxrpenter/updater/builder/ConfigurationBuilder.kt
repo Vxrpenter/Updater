@@ -18,8 +18,8 @@
 
 package io.github.vxrpenter.updater.builder
 
-import io.github.vxrpenter.updater.data.UpdaterConfiguration
-import io.github.vxrpenter.updater.data.UpdaterConfigurationTimeOut
+import io.github.vxrpenter.updater.configuration.UpdaterConfiguration
+import io.github.vxrpenter.updater.configuration.UpdaterConfigurationTimeOut
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration
 

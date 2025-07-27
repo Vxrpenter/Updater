@@ -14,12 +14,10 @@
  * Note: This is no legal advice, please read the license conditions
  */
 
-@file:Suppress("unused", "FunctionName")
+package io.github.vxrpenter.updater.version
 
-package io.github.vxrpenter.updater.handler
-
-import io.github.vxrpenter.updater.enum.ClassifierPriority
-import io.github.vxrpenter.updater.interfaces.SchemaClassifier
+import io.github.vxrpenter.updater.schema.ClassifierPriority
+import io.github.vxrpenter.updater.schema.SchemaClassifier
 
 open class VersionComparisonHandler {
     companion object {
@@ -31,8 +29,8 @@ open class VersionComparisonHandler {
                 if (prioritizedVersion.isBlank()) prioritizedVersion = pair.first
                 if (prioritisedClassifier == null) prioritisedClassifier = pair.second
 
-                val currentPrioritiedPriority = ClassifierPriority.findValue(prioritisedClassifier.priority)!!
-                val priority = ClassifierPriority.findValue(pair.second.priority)!!
+                val currentPrioritiedPriority = ClassifierPriority.Companion.findValue(prioritisedClassifier.priority)!!
+                val priority = ClassifierPriority.Companion.findValue(pair.second.priority)!!
 
                 if (currentPrioritiedPriority < priority) {
                     prioritizedVersion = pair.first

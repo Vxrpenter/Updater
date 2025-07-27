@@ -14,20 +14,14 @@
  * Note: This is no legal advice, please read the license conditions
  */
 
-package io.github.vxrpenter.updater.interfaces
+package io.github.vxrpenter.updater.update
+
+import io.github.vxrpenter.updater.update.Update
 
 /**
- * An interface that implements a comparable version.
+ * The default update
  */
-interface Version {
-    /**
-     * Complete version string
-     */
-    val value: String
-    /**
-     * Compares this object with the specified object for order. Returns zero if this object is equal
-     * to the specified [other] object, a negative number if it's less than [other], or a positive number
-     * if it's greater than [other].
-     */
-    operator fun compareTo(other: Version): Int
-}
+data class DefaultUpdate(
+    override val value: String,
+    override val url: String,
+): Update

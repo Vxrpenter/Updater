@@ -14,10 +14,14 @@
  * Note: This is no legal advice, please read the license conditions
  */
 
-package io.github.vxrpenter.updater.interfaces
+package io.github.vxrpenter.updater.upstream
 
 import io.github.vxrpenter.updater.enum.UpstreamPriority
-import io.ktor.client.*
+import io.github.vxrpenter.updater.update.Update
+import io.github.vxrpenter.updater.schema.UpdateSchema
+import io.github.vxrpenter.updater.version.Classifier
+import io.github.vxrpenter.updater.version.Version
+import io.ktor.client.HttpClient
 
 /**
  * The Upstream interface defines a remote that stores version information (and possible version files)
@@ -33,10 +37,10 @@ interface Upstream {
     /**
      * Fetches a version object from the upstream.
      *
-     * @param client defines the [HttpClient] used for the fetching
+     * @param client defines the [io.ktor.client.HttpClient] used for the fetching
      * @param schema defines the version deserialization
      *
-     * @return the fetched [Version]
+     * @return the fetched [io.github.vxrpenter.updater.version.Version]
      */
     suspend fun fetch(client: HttpClient, schema: UpdateSchema): Version?
 
@@ -52,7 +56,7 @@ interface Upstream {
 
     /**
      * Returns an [Update] from a [Version].
-     * 
+     *
      * @param version the version
      * @return the [Update]
      */
@@ -60,7 +64,7 @@ interface Upstream {
 
     /**
      * Returns a collection of version components from the given version.
-     * 
+     *
      * @param value complete version
      * @param schema defines the version deserialization
      * @return the component collection
@@ -80,11 +84,11 @@ interface Upstream {
     }
 
     /**
-     * Returns a [Classifier] from the given version.
+     * Returns a [io.github.vxrpenter.updater.version.Classifier] from the given version.
      *
      * @param value complete version
      * @param schema defines the version deserialization
-     * @return the [Classifier]
+     * @return the [io.github.vxrpenter.updater.version.Classifier]
      */
     fun classifier(value: String, schema: UpdateSchema): Classifier?
 }

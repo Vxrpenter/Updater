@@ -18,9 +18,9 @@
 
 package io.github.vxrpenter.updater.builder
 
-import io.github.vxrpenter.updater.data.DefaultSchemaClassifier
-import io.github.vxrpenter.updater.data.DefaultUpdateSchema
-import io.github.vxrpenter.updater.enum.ClassifierPriority
+import io.github.vxrpenter.updater.schema.DefaultSchemaClassifier
+import io.github.vxrpenter.updater.schema.DefaultUpdateSchema
+import io.github.vxrpenter.updater.schema.ClassifierPriority
 
 /**
  * The [Schema] function is an easy way to creating a [DefaultUpdateSchema], by providing simple solutions and

@@ -14,10 +14,9 @@
  * Note: This is no legal advice, please read the license conditions
  */
 
-package io.github.vxrpenter.updater.data.version
+package io.github.vxrpenter.updater.version
 
-import io.github.vxrpenter.updater.enum.ClassifierPriority
-import io.github.vxrpenter.updater.interfaces.Classifier
+import io.github.vxrpenter.updater.schema.ClassifierPriority
 
 /**
  * The default classifier

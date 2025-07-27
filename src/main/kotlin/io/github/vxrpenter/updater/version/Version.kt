@@ -14,14 +14,14 @@
  * Note: This is no legal advice, please read the license conditions
  */
 
-package io.github.vxrpenter.updater.interfaces
+package io.github.vxrpenter.updater.version
 
 /**
- * An interface that implements a comparable classifier.
+ * An interface that implements a comparable version.
  */
-interface Classifier {
+interface Version {
     /**
-     * Complete classifier string
+     * Complete version string
      */
     val value: String
     /**
@@ -29,5 +29,5 @@ interface Classifier {
      * to the specified [other] object, a negative number if it's less than [other], or a positive number
      * if it's greater than [other].
      */
-    operator fun compareTo(other: Classifier): Int
+    operator fun compareTo(other: Version): Int
 }
