@@ -25,10 +25,27 @@ import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
 
+/**
+ * A generic update verification interface with the purpose of comparing versions fetched from
+ * specific upstreams ([UpstreamInterface]) with other versions.
+ */
 interface UpdaterInterface {
+    /**
+     * Configuration of the updater
+     */
     var configuration: UpdaterConfiguration
+
+    /**
+     * An [HttpClient], that is configured using the [configuration].
+     * This client will be passed onto all upstream fetching logic to execute calls.
+     */
     var client: HttpClient
 
+    /**
+     * Return the [HttpClient] using the [configuration].
+     *
+     * @return the [HttpClient]
+     */
     fun createClient(): HttpClient {
         return HttpClient(OkHttp) {
             install(ContentNegotiation) {
@@ -42,9 +59,21 @@ interface UpdaterInterface {
         }
     }
 
+    /**
+     * The default update comparison.
+     * It compares the current version to the one fetched from a configured upstream.
+     *
+     * @param currentVersion complete version of the application
+     * @param schema defines the version deserialization
+     * @param builder the builder
+     */
     suspend fun default(currentVersion: String, schema: UpdateSchema, upstream: UpstreamInterface, builder: (ConfigurationBuilder.() -> Unit)? = null)
-    //suspend fun multiUpstream(currentVersion: String, schema: UpdateSchema, upstreams: Collection<UpstreamInterface>, builder: (ConfigurationBuilder.() -> Unit)? = null)
 
+    /**
+     * Applies configuration builder
+     *
+     * @param builder the builder
+     */
     fun runBuilder(builder: ConfigurationBuilder.() -> Unit) {
         val internalBuilder = ConfigurationBuilder()
         internalBuilder.builder()

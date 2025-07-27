@@ -16,6 +16,18 @@
 
 package io.github.vxrpenter.updater.interfaces
 
-interface ClassifierInterface {
-    operator fun compareTo(other: ClassifierInterface): Int
+/**
+ * A generic interface that implements a comparable version.
+ */
+interface Version {
+    /**
+     * Complete version string
+     */
+    val value: String
+    /**
+     * Compares this object with the specified object for order. Returns zero if this object is equal
+     * to the specified [other] object, a negative number if it's less than [other], or a positive number
+     * if it's greater than [other].
+     */
+    operator fun compareTo(other: Version): Int
 }
