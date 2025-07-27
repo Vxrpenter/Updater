@@ -16,4 +16,7 @@
 
 package io.github.vxrpenter.updater.exceptions
 
+/**
+ * The default exception for updater. Every other custom exception inherits this class.
+ */
 open class UpdaterException(message: String, cause: Throwable? = null) : Exception(message, cause)
