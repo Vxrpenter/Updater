@@ -14,6 +14,8 @@
  * Note: This is no legal advice, please read the license conditions
  */
 
+@file:Suppress("unused")
+
 package io.github.vxrpenter.updater.schema
 
 enum class ClassifierPriority(val value: Int) {
@@ -23,24 +25,4 @@ enum class ClassifierPriority(val value: Int) {
     MIDDLE(3),
     HIGH(4),
     HIGHEST(5);
-
-    companion object {
-        /**
-         * Finds the specified enum name from its GroupPriority.
-         *
-         * @param value The ClassifierPriority e.g. (4, 5, etc.)
-         * @see io.github.vxrpenter.updater.enum.ClassifierPriority
-         * @return the ClassifierPriority (nullable)
-         */
-        fun findEnum(value: Int): ClassifierPriority? = entries.find { it.value == value }
-
-        /**
-         * Finds the specified ClassifierPriority from its enum
-         *
-         * @param enum The enum e.g. (HIGH, HIGHEST etc.)
-         * @see io.github.vxrpenter.updater.enum.ClassifierPriority
-         * @return the ClassifierPriority (nullable)
-         */
-        fun findValue(enum: ClassifierPriority): Int? = entries.find { it.name == enum.name }?.value
-    }
 }
