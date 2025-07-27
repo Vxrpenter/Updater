@@ -16,7 +16,6 @@
 
 package io.github.vxrpenter.updater.version
 
-import io.github.vxrpenter.updater.schema.ClassifierPriority
 import io.github.vxrpenter.updater.schema.SchemaClassifier
 
 open class VersionComparisonHandler {
@@ -29,8 +28,8 @@ open class VersionComparisonHandler {
                 if (prioritizedVersion.isBlank()) prioritizedVersion = pair.first
                 if (prioritisedClassifier == null) prioritisedClassifier = pair.second
 
-                val currentPrioritiedPriority = ClassifierPriority.Companion.findValue(prioritisedClassifier.priority)!!
-                val priority = ClassifierPriority.Companion.findValue(pair.second.priority)!!
+                val currentPrioritiedPriority = prioritisedClassifier.priority.value
+                val priority = pair.second.priority.value
 
                 if (currentPrioritiedPriority < priority) {
                     prioritizedVersion = pair.first
