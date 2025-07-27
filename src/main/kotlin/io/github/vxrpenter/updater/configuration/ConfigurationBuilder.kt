@@ -16,10 +16,8 @@
 
 @file:Suppress("unused", "FunctionName")
 
-package io.github.vxrpenter.updater.builder
+package io.github.vxrpenter.updater.configuration
 
-import io.github.vxrpenter.updater.configuration.UpdaterConfiguration
-import io.github.vxrpenter.updater.configuration.UpdaterConfigurationTimeOut
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration
 

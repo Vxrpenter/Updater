@@ -74,7 +74,7 @@ interface Upstream {
         var preSplit = version
 
         for (classifier in schema.classifiers) {
-            val classifierElement = "${classifier.divider}${classifier.name}"
+            val classifierElement = "${classifier.divider}${classifier.value}"
             if (!version.contains(classifierElement)) continue
 
             preSplit = version.split(classifierElement).first()

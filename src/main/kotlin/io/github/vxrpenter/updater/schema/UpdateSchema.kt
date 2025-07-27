@@ -16,9 +16,21 @@
 
 package io.github.vxrpenter.updater.schema
 
+/**
+ * The UpdateSchema interface is a set of instructions
+ * on how to deserialize a [io.github.vxrpenter.updater.version.Version] into it's individual components and classifiers.
+ */
 interface UpdateSchema {
-    val name: String
+    /**
+     * Defines the beginning of a version, e.g. `v` or `v.`
+     */
     val prefix: String
+    /**
+     * The symbol that is used to divide the version components, e.g. `.` or `-`
+     */
     val divider: String
-    val classifiers: Collection<DefaultSchemaClassifier>
+    /**
+     * A collection of possible [SchemaClassifier]
+     */
+    val classifiers: Collection<SchemaClassifier>
 }

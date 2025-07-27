@@ -16,10 +16,30 @@
 
 package io.github.vxrpenter.updater.schema
 
+/**
+ * The SchemaClassifier interface is a set of instructions
+ * on how to deserialize a [io.github.vxrpenter.updater.version.Classifier] into it's individual components.
+ */
 interface SchemaClassifier {
-    val name: String
+    /**
+     * Complete classifier string
+     */
+    val value: String
+    /**
+     * Priority of the classifier
+     */
     val priority: ClassifierPriority
+    /**
+     * The symbol that is used to divide the classifier and the [io.github.vxrpenter.updater.version.Version],
+     * e.g. `.` or `-`
+     */
     val divider: String
+    /**
+     * The symbol that is used to divide the version components, e.g. `.` or `-`
+     */
     val componentDivider: String
+    /**
+     * A custom channel, only applicable for [io.github.vxrpenter.updater.upstream.HangarUpstream]
+     */
     val channel: String?
 }
