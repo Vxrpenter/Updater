@@ -25,7 +25,7 @@ import io.github.vxrpenter.updater.data.UpdaterConfiguration
 import io.github.vxrpenter.updater.exceptions.UnsuccessfulVersionFetch
 import io.github.vxrpenter.updater.interfaces.UpdaterInterface
 import io.github.vxrpenter.updater.interfaces.UpstreamInterface
-import io.github.vxrpenter.updater.interfaces.VersionInterface
+import io.github.vxrpenter.updater.interfaces.Version
 import io.ktor.client.*
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
@@ -53,7 +53,7 @@ sealed class Updater(override var configuration: UpdaterConfiguration) : Updater
         }
     }
 
-    private suspend fun innerUpdater(currentVersion: VersionInterface, schema: UpdateSchema, upstream: UpstreamInterface) {
+    private suspend fun innerUpdater(currentVersion: Version, schema: UpdateSchema, upstream: UpstreamInterface) {
         val version = upstream.fetch(client = client, schema = schema)
 
         version ?: throw UnsuccessfulVersionFetch("Could not fetch version from upstream", Throwable("Either upstream not available or serializer out of date"))

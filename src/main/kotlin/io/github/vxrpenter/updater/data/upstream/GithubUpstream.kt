@@ -24,9 +24,9 @@ import io.github.vxrpenter.updater.data.update.DefaultUpdate
 import io.github.vxrpenter.updater.data.version.DefaultClassifier
 import io.github.vxrpenter.updater.data.version.DefaultVersion
 import io.github.vxrpenter.updater.enum.UpstreamPriority
-import io.github.vxrpenter.updater.interfaces.UpdateInterface
+import io.github.vxrpenter.updater.interfaces.Update
 import io.github.vxrpenter.updater.interfaces.UpstreamInterface
-import io.github.vxrpenter.updater.interfaces.VersionInterface
+import io.github.vxrpenter.updater.interfaces.Version
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
@@ -56,16 +56,11 @@ data class GithubUpstream (
         }
     }
 
-    override suspend fun compareVersions(version: VersionInterface, other: VersionInterface, client: HttpClient, schema: UpdateSchema): Pair<Int, DefaultVersion>? {
-        val compare = version.compareTo(other)
-        return Pair(compare, version as DefaultVersion)
-    }
-
     override fun toVersion(version: String, schema: UpdateSchema): DefaultVersion {
         return DefaultVersion(version, components(schema, version), classifier(schema, version))
     }
 
-    override fun update(version: VersionInterface): UpdateInterface { version as DefaultVersion
+    override fun update(version: Version): Update { version as DefaultVersion
         val project = "$user/$repo"
         val releaseUrl = "https://github.com/$project/releases/tag/${version.value}"
 

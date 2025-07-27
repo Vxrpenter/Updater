@@ -26,7 +26,7 @@ import io.github.vxrpenter.updater.data.version.DefaultVersion
 import io.github.vxrpenter.updater.enum.UpstreamPriority
 import io.github.vxrpenter.updater.handler.VersionComparisonHandler
 import io.github.vxrpenter.updater.interfaces.UpstreamInterface
-import io.github.vxrpenter.updater.interfaces.VersionInterface
+import io.github.vxrpenter.updater.interfaces.Version
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -53,16 +53,11 @@ data class HangarUpstream(
         return DefaultVersion(value, components, classifier)
     }
 
-    override suspend fun compareVersions(version: VersionInterface, other: VersionInterface, client: HttpClient, schema: UpdateSchema): Pair<Int, DefaultVersion>? {
-        val compare = version.compareTo(other)
-        return Pair(compare, version as DefaultVersion)
-    }
-
     override fun toVersion(version: String, schema: UpdateSchema): DefaultVersion {
         return DefaultVersion(version, components(schema, version), classifier(schema, version))
     }
 
-    override fun update(version: VersionInterface): DefaultUpdate {
+    override fun update(version: Version): DefaultUpdate {
         val version = VersionComparisonHandler.returnPrioritisedVersion(list = versions)
         val releaseUrl = "https://hangar.papermc.io/${projectId}/versions/$version"
 

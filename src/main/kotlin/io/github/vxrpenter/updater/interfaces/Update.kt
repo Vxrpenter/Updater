@@ -16,7 +16,16 @@
 
 package io.github.vxrpenter.updater.interfaces
 
-interface UpdateInterface {
+/**
+ * A generic interface containing the information about an update.
+ */
+interface Update {
+    /**
+     * Complete version string
+     */
     val value: String
+    /**
+     * Url that directly leads to a download location/is the downloadlink
+     */
     val url: String
 }

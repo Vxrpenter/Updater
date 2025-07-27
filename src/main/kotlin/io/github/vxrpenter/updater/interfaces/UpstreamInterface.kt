@@ -20,16 +20,41 @@ import io.github.vxrpenter.updater.data.UpdateSchema
 import io.github.vxrpenter.updater.enum.UpstreamPriority
 import io.ktor.client.*
 
+/**
+ * The Upstream interface defines a remote that stores version information (and possible version files),
+ * that allows
+ * the fetching of this information through an api.
+ */
 interface UpstreamInterface {
+    /**
+     * Priority that used when comparing versions from multiple upstreams.
+     */
     val upstreamPriority: UpstreamPriority
 
-    suspend fun fetch(client: HttpClient, schema: UpdateSchema): VersionInterface?
+    /**
+     * Fetches a version object from the upstream.
+     *
+     * @param client defines the [HttpClient] used for the fetching
+     * @param schema defines the version deserialization
+     *
+     * @return the fetched [Version]
+     */
+    suspend fun fetch(client: HttpClient, schema: UpdateSchema): Version?
 
-    suspend fun compareVersions(version: VersionInterface, other: VersionInterface, client: HttpClient, schema: UpdateSchema): Pair<Int, VersionInterface>?
+    /**
+     * Converts a version string into a [Version]
+     *
+     * @param version complete version
+     * @param schema defines the version deserialization
+     *
+     * @return the [Version]
+     */
+    fun toVersion(version: String, schema: UpdateSchema): Version
 
-    fun toVersion(version: String, schema: UpdateSchema): VersionInterface
-
-    fun update(version: VersionInterface): UpdateInterface
+    /**
+     *
+     */
+    fun update(version: Version): Update
 
     fun components(schema: UpdateSchema, value: String): Collection<String> {
         val version = value.replace(schema.prefix, "")
@@ -45,5 +70,5 @@ interface UpstreamInterface {
         return preSplit.split(schema.divider)
     }
 
-    fun classifier(schema: UpdateSchema, value: String): ClassifierInterface?
+    fun classifier(schema: UpdateSchema, value: String): Classifier?
 }

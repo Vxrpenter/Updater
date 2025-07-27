@@ -24,7 +24,7 @@ import io.github.vxrpenter.updater.data.version.DefaultClassifier
 import io.github.vxrpenter.updater.data.version.DefaultVersion
 import io.github.vxrpenter.updater.enum.UpstreamPriority
 import io.github.vxrpenter.updater.interfaces.UpstreamInterface
-import io.github.vxrpenter.updater.interfaces.VersionInterface
+import io.github.vxrpenter.updater.interfaces.Version
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -45,15 +45,10 @@ data class SpigotUpstream(
         return DefaultVersion(value, components, classifier)
     }
 
-    override fun update(version: VersionInterface): DefaultUpdate { version as DefaultVersion
+    override fun update(version: Version): DefaultUpdate { version as DefaultVersion
         val releaseUrl = "https://www.spigotmc.org/resources/$projectId/history"
 
         return DefaultUpdate(version.value, releaseUrl)
-    }
-
-    override suspend fun compareVersions(version: VersionInterface, other: VersionInterface, client: HttpClient, schema: UpdateSchema): Pair<Int, DefaultVersion>? {
-        val compare = version.compareTo(other)
-        return Pair(compare, version as DefaultVersion)
     }
 
     override fun toVersion(version: String, schema: UpdateSchema): DefaultVersion {
