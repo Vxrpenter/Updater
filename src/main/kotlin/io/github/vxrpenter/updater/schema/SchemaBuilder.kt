@@ -29,6 +29,7 @@ import io.github.vxrpenter.updater.upstream.HangarUpstream
  * ```kotlin
  * val schema = Schema {
  *     prefix = "v"
+ *     divider = "."
  *     classifier {
  *         value = "alpha"
  *         divider = "-"
@@ -47,15 +48,15 @@ import io.github.vxrpenter.updater.upstream.HangarUpstream
  * }
  * ```
  *
- * @param [SchemaBuilder.prefix] The removable prefix
- * @param [SchemaBuilder.classifiers] A list of [DefaultSchemaClassifier]
- * @param builder The [SchemaBuilder] (ignore)
+ * @param [SchemaBuilder.prefix] Defines the beginning of a version, e.g. `v` or `v.`
+ * @param [SchemaBuilder.divider] The symbol that is used to divide the version components, e.g. `.` or `-`
+ * @param [SchemaBuilder.classifier] Version classifier
  *
- * @author Vxrpenter
- * @since 0.1.0
+ * @return the [DefaultUpdateSchema]
+ * @see UpdateSchema
  */
 inline fun Schema(
-    builder: SchemaBuilder.() -> Unit = {},
+    builder: SchemaBuilder.() -> Unit = {}
 ) : DefaultUpdateSchema {
     val internalBuilder = SchemaBuilder()
     internalBuilder.builder()
@@ -72,12 +73,15 @@ class SchemaBuilder {
      * The symbol that is used to divide the version components, e.g. `.` or `-`
      */
     var divider: String = "."
-    /**
-     * A collection of possible [SchemaClassifier]
-     */
-    var classifiers: MutableCollection<DefaultSchemaClassifier> = mutableListOf()
+    private var classifiers: MutableCollection<DefaultSchemaClassifier> = mutableListOf()
 
-    inline fun classifier(
+
+    /**
+     * A [DefaultSchemaClassifier]
+     *
+     * @see SchemaClassifier
+     */
+    internal fun classifier(
         builder: InlineSchemaClassifier.() -> Unit
     ) {
         val classifier = InlineSchemaClassifier().apply(builder)

@@ -18,10 +18,11 @@ package io.github.vxrpenter.updater.schema
 
 import io.github.vxrpenter.updater.version.Version
 import io.github.vxrpenter.updater.upstream.HangarUpstream
+import io.github.vxrpenter.updater.version.Classifier
 
 /**
  * The SchemaClassifier interface is a set of instructions
- * on how to deserialize a [io.github.vxrpenter.updater.version.Classifier] into it's individual components.
+ * on how to deserialize a [Classifier] into it's individual components.
  */
 interface SchemaClassifier {
     /**
