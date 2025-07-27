@@ -69,8 +69,35 @@ sealed class Updater(var configuration: UpdaterConfiguration)  {
         }
     }
 
-    // Default configuration object
+    /**
+     * The default updater object using the default configuration. Configuration can be changed using the builders in  the functions.
+     */
     companion object Default : Updater(configuration = UpdaterConfiguration())
+
+    /**
+     * Object to pipe a custom configuration into the Updater without using the e.g. builder in the [default] function.
+     *
+     * Example Usage:
+     * ```kotlin
+     * val configuration = Configuration {
+     *     periodic = 1.hours
+     *     readTimeout {
+     *         timeout = 120
+     *         unit = TimeUnit.SECONDS
+     *     }
+     *     writeTimeout {
+     *         timeout = 120
+     *         unit = TimeUnit.SECONDS
+     *     }
+     *     newUpdateNotification = "New version {} is now available and can be downloaded from {}"
+     * }
+     *
+     * Updater.CustomConfiguration(configuration).default(currentVersion = "v1.1.0", schema = schema, upstream = GithubUpstream("Vxrpenter", "SCPToolsBot"))
+     * ```
+     *
+     * @param value custom configuration
+     */
+    class CustomConfiguration(value: UpdaterConfiguration) : Updater(configuration = value)
 
     /**
      * The default update comparison.
