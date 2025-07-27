@@ -16,8 +16,6 @@
 
 package io.github.vxrpenter.updater.update
 
-import io.github.vxrpenter.updater.update.Update
-
 /**
  * The default update
  */

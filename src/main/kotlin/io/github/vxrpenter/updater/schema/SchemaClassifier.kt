@@ -16,8 +16,6 @@
 
 package io.github.vxrpenter.updater.schema
 
-import io.github.vxrpenter.updater.schema.ClassifierPriority
-
 interface SchemaClassifier {
     val name: String
     val priority: ClassifierPriority
