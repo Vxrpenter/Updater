@@ -70,12 +70,13 @@ sealed class Updater(var configuration: UpdaterConfiguration)  {
     }
 
     /**
-     * The default updater object using the default configuration. Configuration can be changed using the builders in  the functions.
+     * The default updater object using the default configuration.
+     * Configuration can be changed using the builders in the functions.
      */
     companion object Default : Updater(configuration = UpdaterConfiguration())
 
     /**
-     * Object to pipe a custom configuration into the Updater without using the e.g. builder in the [default] function.
+     * Class to pipe a custom configuration into the Updater without using the builders in the functions.
      *
      * Example Usage:
      * ```kotlin
