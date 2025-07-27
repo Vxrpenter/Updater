@@ -19,7 +19,6 @@
 package io.github.vxrpenter.updater.data.upstream
 
 import io.github.vxrpenter.updater.data.UpdateSchema
-import io.github.vxrpenter.updater.data.serializers.ModrinthVersionSerializer
 import io.github.vxrpenter.updater.data.update.DefaultUpdate
 import io.github.vxrpenter.updater.data.version.DefaultClassifier
 import io.github.vxrpenter.updater.data.version.DefaultVersion
@@ -33,6 +32,8 @@ import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.serialization.*
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 /**
  * The Modrinth upstream.
@@ -62,7 +63,7 @@ data class ModrinthUpstream(
         if (call.status.value == 400) return null
 
         try {
-            val body = call.body<List<ModrinthVersionSerializer>>()
+            val body = call.body<List<Release>>()
 
             val value = body.first().versionNumber
             val components = components(value, schema)
@@ -121,4 +122,10 @@ data class ModrinthUpstream(
 
         return null
     }
+
+    @Serializable
+    data class Release(
+        @SerialName("version_number")
+        val versionNumber: String
+    )
 }

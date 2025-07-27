@@ -19,7 +19,6 @@
 package io.github.vxrpenter.updater.data.upstream
 
 import io.github.vxrpenter.updater.data.UpdateSchema
-import io.github.vxrpenter.updater.data.serializers.GitHubReleaseSerializer
 import io.github.vxrpenter.updater.data.update.DefaultUpdate
 import io.github.vxrpenter.updater.data.version.DefaultClassifier
 import io.github.vxrpenter.updater.data.version.DefaultVersion
@@ -31,6 +30,8 @@ import io.github.vxrpenter.updater.interfaces.Version
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 
 /**
@@ -62,7 +63,7 @@ data class GithubUpstream (
         if (call.status.value == 400) return null
 
         try {
-            val body = call.body<List<GitHubReleaseSerializer>>()
+            val body = call.body<List<Release>>()
 
             val value = body.first().tagName
             val components = components(value, schema)
@@ -122,4 +123,10 @@ data class GithubUpstream (
 
         return null
     }
+
+    @Serializable
+    data class Release(
+        @SerialName("tag_name")
+        val tagName: String
+    )
 }
