@@ -18,12 +18,12 @@
 
 package io.github.vxrpenter.updater.builder
 
-import io.github.vxrpenter.updater.data.SchemaClassifier
-import io.github.vxrpenter.updater.data.UpdateSchema
+import io.github.vxrpenter.updater.data.DefaultSchemaClassifier
+import io.github.vxrpenter.updater.data.DefaultUpdateSchema
 import io.github.vxrpenter.updater.enum.ClassifierPriority
 
 /**
- * The [Schema] function is an easy way to creating a [UpdateSchema], by providing simple solutions and
+ * The [Schema] function is an easy way to creating a [DefaultUpdateSchema], by providing simple solutions and
  * an easy-to-understand format. If you want to use a more complex function, you can use the [SchemaBuilder].
  *
  * Example Usage:
@@ -44,9 +44,9 @@ import io.github.vxrpenter.updater.enum.ClassifierPriority
  * }
  * ```
  *
- * @param [SchemaBuilder.name] The name of the [UpdateSchema]
+ * @param [SchemaBuilder.name] The name of the [DefaultUpdateSchema]
  * @param [SchemaBuilder.prefix] The removable prefix
- * @param [SchemaBuilder.classifiers] A list of [SchemaClassifier]
+ * @param [SchemaBuilder.classifiers] A list of [DefaultSchemaClassifier]
  * @param builder The [SchemaBuilder] (ignore)
  *
  * @author Vxrpenter
@@ -54,7 +54,7 @@ import io.github.vxrpenter.updater.enum.ClassifierPriority
  */
 inline fun Schema(
     builder: SchemaBuilder.() -> Unit = {},
-) : UpdateSchema {
+) : DefaultUpdateSchema {
     val internalBuilder = SchemaBuilder()
     internalBuilder.builder()
     val schema = internalBuilder.build()
@@ -65,7 +65,7 @@ class SchemaBuilder {
     var name: String? = null
     var prefix: String? = null
     var divider: String = "."
-    var classifiers: MutableCollection<SchemaClassifier> = mutableListOf()
+    var classifiers: MutableCollection<DefaultSchemaClassifier> = mutableListOf()
 
     inline fun classifier(
         name: String? = null,
@@ -80,7 +80,7 @@ class SchemaBuilder {
         requireNotNull(classifier.priority)
 
         classifiers.add(
-            SchemaClassifier(
+            DefaultSchemaClassifier(
                 name = classifier.name!!,
                 priority = classifier.priority!!,
                 divider = classifier.divider!!,
@@ -98,12 +98,12 @@ class SchemaBuilder {
         var channel: String? = null
     )
 
-    fun build(): UpdateSchema {
+    fun build(): DefaultUpdateSchema {
         requireNotNull(this.name)
         requireNotNull(this.prefix)
         require(this.prefix!!.isNotEmpty()) { "'prefix' cannot be empty" }
         require(!this.classifiers.isEmpty()) { "'classifiers' cannot be empty" }
 
-        return UpdateSchema(name = name!!, prefix = prefix!!, divider = divider, classifiers = classifiers.toList())
+        return DefaultUpdateSchema(name = name!!, prefix = prefix!!, divider = divider, classifiers = classifiers.toList())
     }
 }

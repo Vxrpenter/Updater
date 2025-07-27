@@ -18,15 +18,15 @@
 
 package io.github.vxrpenter.updater.data.upstream
 
-import io.github.vxrpenter.updater.data.SchemaClassifier
-import io.github.vxrpenter.updater.data.UpdateSchema
 import io.github.vxrpenter.updater.data.update.DefaultUpdate
 import io.github.vxrpenter.updater.data.version.DefaultClassifier
 import io.github.vxrpenter.updater.data.version.DefaultVersion
 import io.github.vxrpenter.updater.enum.UpstreamPriority
 import io.github.vxrpenter.updater.exceptions.VersionTypeMismatch
 import io.github.vxrpenter.updater.handler.VersionComparisonHandler
+import io.github.vxrpenter.updater.interfaces.SchemaClassifier
 import io.github.vxrpenter.updater.interfaces.Update
+import io.github.vxrpenter.updater.interfaces.UpdateSchema
 import io.github.vxrpenter.updater.interfaces.Upstream
 import io.github.vxrpenter.updater.interfaces.Version
 import io.ktor.client.*

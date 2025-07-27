@@ -14,11 +14,13 @@
  * Note: This is no legal advice, please read the license conditions
  */
 
-package io.github.vxrpenter.updater.data
+package io.github.vxrpenter.updater.interfaces
 
-data class UpdateSchema(
-    val name: String,
-    val prefix: String,
-    val divider: String = ".",
-    val classifiers: Collection<SchemaClassifier>
-)
+import io.github.vxrpenter.updater.data.DefaultSchemaClassifier
+
+interface UpdateSchema {
+    val name: String
+    val prefix: String
+    val divider: String
+    val classifiers: Collection<DefaultSchemaClassifier>
+}
