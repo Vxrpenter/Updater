@@ -16,7 +16,6 @@
 
 package io.github.vxrpenter.updater.upstream
 
-import io.github.vxrpenter.updater.enum.UpstreamPriority
 import io.github.vxrpenter.updater.update.Update
 import io.github.vxrpenter.updater.schema.UpdateSchema
 import io.github.vxrpenter.updater.version.Classifier

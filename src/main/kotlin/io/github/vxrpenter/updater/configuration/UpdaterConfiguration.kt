@@ -18,15 +18,41 @@ package io.github.vxrpenter.updater.configuration
 
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.okhttp.OkHttpEngine
 
+/**
+ * The updater configuration
+ */
 data class UpdaterConfiguration(
+    /**
+     * Defines the time between periodic version checks
+     */
     val periodic: Duration? = null,
+    /**
+     * The [HttpClient] (with [OkHttpEngine]) read timout
+     */
     val readTimeOut: UpdaterConfigurationTimeOut = UpdaterConfigurationTimeOut(timeout = 30, unit = TimeUnit.SECONDS),
+    /**
+     * The [HttpClient] (with [OkHttpEngine]) write timout
+     */
     val writeTimeOut: UpdaterConfigurationTimeOut = UpdaterConfigurationTimeOut(timeout = 30, unit = TimeUnit.SECONDS),
+    /**
+     * Message that will be prompted when a new version has been found
+     */
     val newUpdateNotification: String = "New update has been found. Version {} can be downloaded from {}"
 )
 
+/**
+ * The updater configurations timeout configuration
+ */
 data class UpdaterConfigurationTimeOut(
+    /**
+     * Time it takes until the client times out
+     */
     val timeout: Long,
+    /**
+     * Unit that is used for the [timeout]
+     */
     val unit: TimeUnit
 )

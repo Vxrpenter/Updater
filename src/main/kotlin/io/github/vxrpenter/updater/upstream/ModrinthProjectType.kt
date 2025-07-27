@@ -16,7 +16,7 @@
 
 @file:Suppress("unused", "FunctionName")
 
-package io.github.vxrpenter.updater.enum
+package io.github.vxrpenter.updater.upstream
 
 enum class ModrinthProjectType(val type: String) {
     MOD("mod"),

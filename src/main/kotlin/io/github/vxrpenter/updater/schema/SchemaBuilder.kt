@@ -18,6 +18,9 @@
 
 package io.github.vxrpenter.updater.schema
 
+import io.github.vxrpenter.updater.version.Version
+import io.github.vxrpenter.updater.upstream.HangarUpstream
+
 /**
  * The [Schema] function is an easy way to creating a [DefaultUpdateSchema], by providing simple solutions and
  * an easy-to-understand format. If you want to use a more complex function, you can use the [SchemaBuilder].
@@ -61,19 +64,23 @@ inline fun Schema(
 }
 
 class SchemaBuilder {
+    /**
+     * Defines the beginning of a version, e.g. `v` or `v.`
+     */
     var prefix: String? = null
+    /**
+     * The symbol that is used to divide the version components, e.g. `.` or `-`
+     */
     var divider: String = "."
+    /**
+     * A collection of possible [SchemaClassifier]
+     */
     var classifiers: MutableCollection<DefaultSchemaClassifier> = mutableListOf()
 
     inline fun classifier(
-        value: String? = null,
-        divider: String? = null,
-        priority: ClassifierPriority? = null,
-        componentDivider: String = ".",
-        channel: String? = null,
-        build: InlineSchemaClassifier.() -> Unit
+        builder: InlineSchemaClassifier.() -> Unit
     ) {
-        val classifier = InlineSchemaClassifier(priority = priority, divider = divider, channel = channel).apply(build)
+        val classifier = InlineSchemaClassifier().apply(builder)
         requireNotNull(classifier.value)
         requireNotNull(classifier.priority)
 
@@ -89,11 +96,27 @@ class SchemaBuilder {
     }
 
     data class InlineSchemaClassifier(
+        /**
+         * Complete classifier string
+         */
         var value: String? = null,
+        /**
+         * Priority of the classifier
+         */
         var divider: String? = null,
+        /**
+         * The symbol that is used to divide the classifier and the [Version],
+         * e.g. `.` or `-`
+         */
         var priority: ClassifierPriority? = null,
+        /**
+         * The symbol that is used to divide the version components, e.g. `.` or `-`
+         */
         var componentDivider: String = ".",
-        var channel: String? = null
+        /**
+         * A custom channel, only applicable for [HangarUpstream]
+         */
+        var channel: String? = null,
     )
 
     fun build(): DefaultUpdateSchema {

@@ -16,7 +16,7 @@
 
 @file:Suppress("unused", "FunctionName")
 
-package io.github.vxrpenter.updater.enum
+package io.github.vxrpenter.updater.upstream
 
 enum class UpstreamPriority(val priority: Int) {
     NONE(0),
