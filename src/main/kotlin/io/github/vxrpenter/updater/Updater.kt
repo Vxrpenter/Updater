@@ -23,24 +23,65 @@ import io.github.vxrpenter.updater.builder.ConfigurationBuilder
 import io.github.vxrpenter.updater.data.UpdateSchema
 import io.github.vxrpenter.updater.data.UpdaterConfiguration
 import io.github.vxrpenter.updater.exceptions.UnsuccessfulVersionFetch
-import io.github.vxrpenter.updater.interfaces.UpdaterInterface
-import io.github.vxrpenter.updater.interfaces.UpstreamInterface
+import io.github.vxrpenter.updater.interfaces.Upstream
 import io.github.vxrpenter.updater.interfaces.Version
 import io.ktor.client.*
+import io.ktor.client.engine.okhttp.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.serialization.json.Json
 import org.slf4j.LoggerFactory
 
-sealed class Updater(override var configuration: UpdaterConfiguration) : UpdaterInterface {
+/**
+ * Compares versions fetched from
+ * specific upstreaming ([Upstream]) with other versions.
+ *
+ * @param configuration of the updater
+ */
+
+sealed class Updater(var configuration: UpdaterConfiguration)  {
     private val logger = LoggerFactory.getLogger(Updater::class.java)
     private val updatesScope = CoroutineScope(CoroutineExceptionHandler { _, exception -> logger.error("An error occurred in the update coroutine", exception) })
-    override var client: HttpClient = createClient()
+
+    /**
+     * An [HttpClient], that is configured using the [configuration].
+     * This client will be passed onto all upstream fetching logic to execute calls.
+     */
+    var client: HttpClient = createClient()
+
+    /**
+     * Return the [HttpClient] using the [configuration].
+     *
+     * @return the [HttpClient]
+     */
+    fun createClient(): HttpClient {
+        return HttpClient(OkHttp) {
+            install(ContentNegotiation) {
+                json(Json { ignoreUnknownKeys = true })
+            }
+
+            engine { config {
+                readTimeout(configuration.readTimeOut.timeout, configuration.readTimeOut.unit)
+                writeTimeout(configuration.readTimeOut.timeout, configuration.readTimeOut.unit)
+            }}
+        }
+    }
 
     // Default configuration object
     companion object Default : Updater(configuration = UpdaterConfiguration())
 
+    /**
+     * The default update comparison.
+     * It compares the current version to the one fetched from a configured upstream.
+     *
+     * @param currentVersion complete version of the application
+     * @param schema defines the version deserialization
+     * @param builder the builder
+     */
     @OptIn(ExperimentalScheduler::class)
-    override suspend fun default(currentVersion: String, schema: UpdateSchema, upstream: UpstreamInterface, builder: (ConfigurationBuilder.() -> Unit)?) {
+    suspend fun default(currentVersion: String, schema: UpdateSchema, upstream: Upstream, builder: (ConfigurationBuilder.() -> Unit)?) {
         if (builder != null) runBuilder(builder)
 
         // Logic
@@ -53,7 +94,19 @@ sealed class Updater(override var configuration: UpdaterConfiguration) : Updater
         }
     }
 
-    private suspend fun innerUpdater(currentVersion: Version, schema: UpdateSchema, upstream: UpstreamInterface) {
+    /**
+     * Applies configuration builder
+     *
+     * @param builder the builder
+     */
+    private fun runBuilder(builder: ConfigurationBuilder.() -> Unit) {
+        val internalBuilder = ConfigurationBuilder()
+        internalBuilder.builder()
+        configuration = internalBuilder.build()
+        client = createClient()
+    }
+
+    private suspend fun innerUpdater(currentVersion: Version, schema: UpdateSchema, upstream: Upstream) {
         val version = upstream.fetch(client = client, schema = schema)
 
         version ?: throw UnsuccessfulVersionFetch("Could not fetch version from upstream", Throwable("Either upstream not available or serializer out of date"))
