@@ -16,11 +16,7 @@
 
 @file:Suppress("unused", "FunctionName")
 
-package io.github.vxrpenter.updater.builder
-
-import io.github.vxrpenter.updater.schema.DefaultSchemaClassifier
-import io.github.vxrpenter.updater.schema.DefaultUpdateSchema
-import io.github.vxrpenter.updater.schema.ClassifierPriority
+package io.github.vxrpenter.updater.schema
 
 /**
  * The [Schema] function is an easy way to creating a [DefaultUpdateSchema], by providing simple solutions and
@@ -29,22 +25,25 @@ import io.github.vxrpenter.updater.schema.ClassifierPriority
  * Example Usage:
  * ```kotlin
  * val schema = Schema {
- *     name = "MyCustomSchema"
  *     prefix = "v"
  *     classifier {
- *         name = "alpha"
+ *         value = "alpha"
  *         divider = "-"
- *         priority = GroupPriority.LOW
+ *         priority = ClassifierPriority.LOW
  *     }
  *     classifier {
- *         name = "beta"
+ *         value = "beta"
  *         divider = "-"
- *         priority = GroupPriority.HIGH
+ *         priority = ClassifierPriority.HIGH
+ *     }
+ *     classifier {
+ *         value = "rc"
+ *         divider = "-"
+ *         priority = ClassifierPriority.HIGHEST
  *     }
  * }
  * ```
  *
- * @param [SchemaBuilder.name] The name of the [DefaultUpdateSchema]
  * @param [SchemaBuilder.prefix] The removable prefix
  * @param [SchemaBuilder.classifiers] A list of [DefaultSchemaClassifier]
  * @param builder The [SchemaBuilder] (ignore)
@@ -62,26 +61,25 @@ inline fun Schema(
 }
 
 class SchemaBuilder {
-    var name: String? = null
     var prefix: String? = null
     var divider: String = "."
     var classifiers: MutableCollection<DefaultSchemaClassifier> = mutableListOf()
 
     inline fun classifier(
-        name: String? = null,
+        value: String? = null,
         divider: String? = null,
         priority: ClassifierPriority? = null,
         componentDivider: String = ".",
         channel: String? = null,
         build: InlineSchemaClassifier.() -> Unit
     ) {
-        val classifier = InlineSchemaClassifier(name = name, priority = priority, divider = divider, channel = channel).apply(build)
-        requireNotNull(classifier.name)
+        val classifier = InlineSchemaClassifier(priority = priority, divider = divider, channel = channel).apply(build)
+        requireNotNull(classifier.value)
         requireNotNull(classifier.priority)
 
         classifiers.add(
             DefaultSchemaClassifier(
-                name = classifier.name!!,
+                value = classifier.value!!,
                 priority = classifier.priority!!,
                 divider = classifier.divider!!,
                 componentDivider = classifier.componentDivider,
@@ -91,7 +89,7 @@ class SchemaBuilder {
     }
 
     data class InlineSchemaClassifier(
-        var name: String? = null,
+        var value: String? = null,
         var divider: String? = null,
         var priority: ClassifierPriority? = null,
         var componentDivider: String = ".",
@@ -99,11 +97,10 @@ class SchemaBuilder {
     )
 
     fun build(): DefaultUpdateSchema {
-        requireNotNull(this.name)
         requireNotNull(this.prefix)
         require(this.prefix!!.isNotEmpty()) { "'prefix' cannot be empty" }
         require(!this.classifiers.isEmpty()) { "'classifiers' cannot be empty" }
 
-        return DefaultUpdateSchema(name = name!!, prefix = prefix!!, divider = divider, classifiers = classifiers.toList())
+        return DefaultUpdateSchema(prefix = prefix!!, divider = divider, classifiers = classifiers.toList())
     }
 }

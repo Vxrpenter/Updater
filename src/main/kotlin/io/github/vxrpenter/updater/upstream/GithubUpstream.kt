@@ -111,7 +111,7 @@ data class GithubUpstream (
         val version = value.replace(schema.prefix, "")
 
         for (classifier in schema.classifiers) {
-            val classifierElement = "${classifier.divider}${classifier.name}"
+            val classifierElement = "${classifier.divider}${classifier.value}"
             if (!version.contains(classifierElement)) continue
 
             val value = "$classifierElement${version.split(classifierElement).last()}"

@@ -16,8 +16,10 @@
 
 package io.github.vxrpenter.updater.schema
 
+/**
+ * The default update schema
+ */
 data class DefaultUpdateSchema(
-    override val name: String,
     override val prefix: String,
     override val divider: String = ".",
     override val classifiers: Collection<DefaultSchemaClassifier>

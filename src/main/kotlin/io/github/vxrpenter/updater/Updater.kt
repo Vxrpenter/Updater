@@ -20,7 +20,7 @@ package io.github.vxrpenter.updater
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.github.vxrpenter.updater.annotations.ExperimentalScheduler
-import io.github.vxrpenter.updater.builder.ConfigurationBuilder
+import io.github.vxrpenter.updater.configuration.ConfigurationBuilder
 import io.github.vxrpenter.updater.configuration.UpdaterConfiguration
 import io.github.vxrpenter.updater.exceptions.UnsuccessfulVersionFetch
 import io.github.vxrpenter.updater.schema.UpdateSchema
