@@ -14,7 +14,7 @@
  * Note: This is no legal advice, please read the license conditions
  */
 
-package io.github.vxrpenter.updater.data
+package io.github.vxrpenter.updater.configuration
 
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration

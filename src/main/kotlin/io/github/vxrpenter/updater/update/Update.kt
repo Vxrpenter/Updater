@@ -14,14 +14,18 @@
  * Note: This is no legal advice, please read the license conditions
  */
 
-package io.github.vxrpenter.updater.data.update
-
-import io.github.vxrpenter.updater.interfaces.Update
+package io.github.vxrpenter.updater.update
 
 /**
- * The default update
+ * A generic interface containing the information about an update.
  */
-data class DefaultUpdate(
-    override val value: String,
-    override val url: String,
-): Update
+interface Update {
+    /**
+     * Complete version string
+     */
+    val value: String
+    /**
+     * Url that directly leads to a download location/is the downloadlink
+     */
+    val url: String
+}

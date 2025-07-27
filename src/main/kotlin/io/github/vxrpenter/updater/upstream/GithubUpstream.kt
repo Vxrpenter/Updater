@@ -16,31 +16,37 @@
 
 @file:Suppress("unused", "FunctionName")
 
-package io.github.vxrpenter.updater.data.upstream
+package io.github.vxrpenter.updater.upstream
 
-import io.github.vxrpenter.updater.data.update.DefaultUpdate
-import io.github.vxrpenter.updater.data.version.DefaultClassifier
-import io.github.vxrpenter.updater.data.version.DefaultVersion
+import io.github.vxrpenter.updater.update.DefaultUpdate
+import io.github.vxrpenter.updater.version.DefaultClassifier
+import io.github.vxrpenter.updater.version.DefaultVersion
 import io.github.vxrpenter.updater.enum.UpstreamPriority
 import io.github.vxrpenter.updater.exceptions.VersionTypeMismatch
-import io.github.vxrpenter.updater.interfaces.Update
-import io.github.vxrpenter.updater.interfaces.UpdateSchema
-import io.github.vxrpenter.updater.interfaces.Upstream
-import io.github.vxrpenter.updater.interfaces.Version
+import io.github.vxrpenter.updater.update.Update
+import io.github.vxrpenter.updater.schema.UpdateSchema
+import io.github.vxrpenter.updater.version.Version
 import io.ktor.client.*
+import io.ktor.client.call.*
 import io.ktor.client.request.*
-import io.ktor.client.statement.*
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerializationException
 
 /**
- * The Spigot upstream.
+ * The GitHub upstream.
  */
-data class SpigotUpstream(
+data class GithubUpstream (
     /**
-     * Id of the project
+     * User that the repository resides under
      */
-    val projectId: String,
+    val user: String,
+    /**
+     * Name of the repository
+     */
+    val repo: String,
     override val upstreamPriority: UpstreamPriority = UpstreamPriority.NONE
-): Upstream {
+) : Upstream {
     /**
      * Fetches a version object from the upstream.
      *
@@ -50,15 +56,22 @@ data class SpigotUpstream(
      * @return the fetched [DefaultVersion]
      */
     override suspend fun fetch(client: HttpClient, schema: UpdateSchema): DefaultVersion? {
-        val url = "https://api.spigotmc.org/legacy/update.php?resource=$projectId"
+        val project = "$user/$repo"
+        val url = "https://api.github.com/repos/${project}/releases"
         val call = client.get(url)
         if (call.status.value == 400) return null
 
-        val value = call.bodyAsText()
-        val components = components(value, schema)
-        val classifier = classifier(value, schema)
+        try {
+            val body = call.body<List<Release>>()
 
-        return DefaultVersion(value, components, classifier)
+            val value = body.first().tagName
+            val components = components(value, schema)
+            val classifier = classifier(value, schema)
+
+            return DefaultVersion(value, components, classifier)
+        } catch (_: SerializationException) {
+            return null
+        }
     }
 
     /**
@@ -80,10 +93,11 @@ data class SpigotUpstream(
      * @return the [Update]
      * @throws VersionTypeMismatch when [version] is not [DefaultVersion]
      */
-    override fun update(version: Version): DefaultUpdate { if (version !is DefaultVersion) throw VersionTypeMismatch("Version type ${version.javaClass} cannot be ${DefaultVersion::class.java}")
-        val releaseUrl = "https://www.spigotmc.org/resources/$projectId/history"
+    override fun update(version: Version): Update { if (version !is DefaultVersion) throw VersionTypeMismatch("Version type ${version.javaClass} cannot be ${DefaultVersion::class.java}")
+        val project = "$user/$repo"
+        val releaseUrl = "https://github.com/$project/releases/tag/${version.value}"
 
-        return DefaultUpdate(version.value, releaseUrl)
+        return DefaultUpdate(value = version.value, url = releaseUrl)
     }
 
     /**
@@ -108,4 +122,10 @@ data class SpigotUpstream(
 
         return null
     }
+
+    @Serializable
+    data class Release(
+        @SerialName("tag_name")
+        val tagName: String
+    )
 }

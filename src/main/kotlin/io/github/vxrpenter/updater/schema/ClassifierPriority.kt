@@ -14,9 +14,7 @@
  * Note: This is no legal advice, please read the license conditions
  */
 
-@file:Suppress("unused", "FunctionName")
-
-package io.github.vxrpenter.updater.enum
+package io.github.vxrpenter.updater.schema
 
 enum class ClassifierPriority(val value: Int) {
     NONE(0),

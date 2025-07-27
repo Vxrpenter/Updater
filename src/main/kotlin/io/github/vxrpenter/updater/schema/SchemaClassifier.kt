@@ -14,18 +14,14 @@
  * Note: This is no legal advice, please read the license conditions
  */
 
-package io.github.vxrpenter.updater.interfaces
+package io.github.vxrpenter.updater.schema
 
-/**
- * A generic interface containing the information about an update.
- */
-interface Update {
-    /**
-     * Complete version string
-     */
-    val value: String
-    /**
-     * Url that directly leads to a download location/is the downloadlink
-     */
-    val url: String
+import io.github.vxrpenter.updater.schema.ClassifierPriority
+
+interface SchemaClassifier {
+    val name: String
+    val priority: ClassifierPriority
+    val divider: String
+    val componentDivider: String
+    val channel: String?
 }

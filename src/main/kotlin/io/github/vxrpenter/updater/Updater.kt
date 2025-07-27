@@ -20,11 +20,11 @@ package io.github.vxrpenter.updater
 
 import io.github.vxrpenter.updater.annotations.ExperimentalScheduler
 import io.github.vxrpenter.updater.builder.ConfigurationBuilder
-import io.github.vxrpenter.updater.data.UpdaterConfiguration
+import io.github.vxrpenter.updater.configuration.UpdaterConfiguration
 import io.github.vxrpenter.updater.exceptions.UnsuccessfulVersionFetch
-import io.github.vxrpenter.updater.interfaces.UpdateSchema
-import io.github.vxrpenter.updater.interfaces.Upstream
-import io.github.vxrpenter.updater.interfaces.Version
+import io.github.vxrpenter.updater.schema.UpdateSchema
+import io.github.vxrpenter.updater.upstream.Upstream
+import io.github.vxrpenter.updater.version.Version
 import io.ktor.client.*
 import io.ktor.client.engine.okhttp.*
 import io.ktor.client.plugins.contentnegotiation.*

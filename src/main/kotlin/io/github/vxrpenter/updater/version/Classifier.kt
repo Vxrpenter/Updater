@@ -14,15 +14,20 @@
  * Note: This is no legal advice, please read the license conditions
  */
 
-package io.github.vxrpenter.updater.data
+package io.github.vxrpenter.updater.version
 
-import io.github.vxrpenter.updater.enum.ClassifierPriority
-import io.github.vxrpenter.updater.interfaces.SchemaClassifier
-
-data class DefaultSchemaClassifier(
-    override val name: String,
-    override val priority: ClassifierPriority,
-    override val divider: String,
-    override val componentDivider: String = ".",
-    override val channel: String? = null
-) : SchemaClassifier
+/**
+ * An interface that implements a comparable classifier.
+ */
+interface Classifier {
+    /**
+     * Complete classifier string
+     */
+    val value: String
+    /**
+     * Compares this object with the specified object for order. Returns zero if this object is equal
+     * to the specified [other] object, a negative number if it's less than [other], or a positive number
+     * if it's greater than [other].
+     */
+    operator fun compareTo(other: Classifier): Int
+}
