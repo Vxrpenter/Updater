@@ -33,9 +33,15 @@ data class DefaultVersion(
      */
     val classifier: DefaultClassifier?
 ) : Version {
+    /**
+     * Compares this object with the specified object for order. Returns zero if this object is equal
+     * to the specified [other] object, a negative number if it's less than [other], or a positive number
+     * if it's greater than [other].
+     *
+     * @throws VersionSizeMismatch when version/classifier components sizes don't match
+     */
     override fun compareTo(other: Version): Int { other as DefaultVersion
-        if (components.size != other.components.size || classifier?.components?.size != other.classifier?.components?.size) throw VersionSizeMismatch("Cannot compare versions",
-            Throwable("Size of version and/or classifier components are not equal"))
+        if (components.size != other.components.size || classifier?.components?.size != other.classifier?.components?.size) throw VersionSizeMismatch("Size of version and/or classifier components are not equal")
         components.zip(other.components).forEach { (subVersion, otherSubVersion) ->
             if (subVersion != otherSubVersion) return subVersion.compareTo(otherSubVersion)
         }
