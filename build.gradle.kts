@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencies {
-    api(libs.slf4j.api)
+    api(libs.kotlin.logging)
     api(libs.kotlinx.serialization)
     api(libs.kotlinx.coroutines)
 

@@ -18,6 +18,7 @@
 
 package io.github.vxrpenter.updater
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.github.vxrpenter.updater.annotations.ExperimentalScheduler
 import io.github.vxrpenter.updater.builder.ConfigurationBuilder
 import io.github.vxrpenter.updater.configuration.UpdaterConfiguration
@@ -32,7 +33,6 @@ import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.serialization.json.Json
-import org.slf4j.LoggerFactory
 
 /**
  * Compares versions fetched from
@@ -42,8 +42,8 @@ import org.slf4j.LoggerFactory
  */
 
 sealed class Updater(var configuration: UpdaterConfiguration)  {
-    private val logger = LoggerFactory.getLogger(Updater::class.java)
-    private val updatesScope = CoroutineScope(CoroutineExceptionHandler { _, exception -> logger.error("An error occurred in the update coroutine", exception) })
+    private val logger = KotlinLogging.logger {}
+    private val updatesScope = CoroutineScope(CoroutineExceptionHandler { _, exception -> logger.error(exception) { "An error occurred in the update coroutine" } })
 
     /**
      * An [HttpClient], that is configured using the [configuration].
@@ -114,6 +114,6 @@ sealed class Updater(var configuration: UpdaterConfiguration)  {
 
         val update = upstream.update(version)
 
-        logger.warn(configuration.newUpdateNotification, update.value, update.url)
+        logger.warn { "${configuration.newUpdateNotification} ${update.value} ${update.url}"}
     }
 }
