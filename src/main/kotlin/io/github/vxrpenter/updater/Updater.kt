@@ -142,6 +142,9 @@ sealed class Updater(var configuration: UpdaterConfiguration)  {
 
         val update = upstream.update(version)
 
-        logger.warn { "${configuration.newUpdateNotification} ${update.value} ${update.url}"}
+        logger.warn { configuration.newUpdateNotification
+            .replace("{version}", update.value)
+            .replace("{url}", update.url)
+        }
     }
 }
