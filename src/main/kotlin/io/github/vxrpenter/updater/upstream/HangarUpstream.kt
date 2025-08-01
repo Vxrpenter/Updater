@@ -52,6 +52,7 @@ data class HangarUpstream(
      * @param schema defines the version deserialization
      *
      * @return the fetched [DefaultVersion]
+     * @throws ClassifierTypeMismatch when [SchemaClassifier] in [schema] is not [HangarSchemaClassifier]
      */
     override suspend fun fetch(client: HttpClient, schema: UpdateSchema): DefaultVersion? {
         for (classifier in schema.classifiers) { if (classifier !is HangarSchemaClassifier) throw ClassifierTypeMismatch("Classifier type ${classifier.javaClass} cannot be ${HangarSchemaClassifier::class.java}")
