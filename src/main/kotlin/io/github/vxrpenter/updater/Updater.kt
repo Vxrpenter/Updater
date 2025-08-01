@@ -132,8 +132,7 @@ open class Updater(private var configuration: UpdaterConfiguration) {
 
         val update = upstream.update(version)
 
-        logger.warn {
-            configuration.newUpdateNotification
+        if (configuration.notification.notify) logger.warn {configuration.notification.notification
                 .replace("{version}", update.value)
                 .replace("{url}", update.url)
         }

@@ -43,9 +43,9 @@ data class UpdaterConfiguration(
      */
     val writeTimeOut: UpdaterConfigurationTimeOut = UpdaterConfigurationTimeOut(timeout = 30, unit = TimeUnit.SECONDS),
     /**
-     * Message that will be prompted when a new version has been found
+     * The notification settings
      */
-    val newUpdateNotification: String = "New update has been found. Version {version} can be downloaded from {url}"
+    val notification: UpdaterConfigurationNotification = UpdaterConfigurationNotification(true)
 )
 
 /**
@@ -60,4 +60,18 @@ data class UpdaterConfigurationTimeOut(
      * Unit that is used for the [timeout]
      */
     val unit: TimeUnit
+)
+
+/**
+ * The updater configurations notification configuration
+ */
+data class UpdaterConfigurationNotification(
+    /**
+     * Should a new update prompt a notification?
+     */
+    val notify: Boolean,
+    /**
+     * Message that will be prompted when a new version has been found
+     */
+    val notification: String = "New update has been found. Version {version} can be downloaded from {url}"
 )
