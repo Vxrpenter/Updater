@@ -18,6 +18,7 @@
 
 package io.github.vxrpenter.updater.upstream
 
+import io.github.vxrpenter.updater.exceptions.UnsuccessfulVersionRequest
 import io.github.vxrpenter.updater.update.DefaultUpdate
 import io.github.vxrpenter.updater.version.DefaultClassifier
 import io.github.vxrpenter.updater.version.DefaultVersion
@@ -53,11 +54,12 @@ data class ModrinthUpstream(
      * @param schema defines the version deserialization
      *
      * @return the fetched [DefaultVersion]
+     * @throws UnsuccessfulVersionRequest when version request fails
      */
     override suspend fun fetch(client: HttpClient, schema: UpdateSchema): DefaultVersion? {
         val url = "https://api.modrinth.com/v2/project/${projectId}/version"
         val call = client.get(url)
-        if (call.status.value == 400) return null
+        if (!call.status.value.toString().startsWith("2")) throw UnsuccessfulVersionRequest("Could not correctly commence version request, returned ${call.status.value}")
 
         try {
             val body = call.body<List<Release>>()
