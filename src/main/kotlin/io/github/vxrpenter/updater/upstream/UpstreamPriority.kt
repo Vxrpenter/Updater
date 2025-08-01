@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Vxrpenter and the Updater contributors
+ * Copyright (c) 2025 Vxrpenter and the Updater contributors
  *
  * Licenced under the MIT License, any non-license compliant usage of this file(s) content
  * is prohibited. If you did not receive a copy of the license with this file, you
