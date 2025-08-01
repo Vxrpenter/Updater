@@ -17,7 +17,6 @@
 package io.github.vxrpenter.updater.schema
 
 import io.github.vxrpenter.updater.version.Version
-import io.github.vxrpenter.updater.upstream.HangarUpstream
 import io.github.vxrpenter.updater.version.Classifier
 
 /**
