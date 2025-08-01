@@ -41,7 +41,7 @@ import kotlinx.serialization.json.Json
  * @param configuration of the updater
  */
 
-open class Updater(var configuration: UpdaterConfiguration)  {
+open class Updater(private var configuration: UpdaterConfiguration)  {
     private val logger = KotlinLogging.logger {}
     private val updatesScope = CoroutineScope(CoroutineExceptionHandler { _, exception -> logger.error(exception) { "An error occurred in the update coroutine" } })
 
@@ -49,14 +49,14 @@ open class Updater(var configuration: UpdaterConfiguration)  {
      * An [HttpClient], that is configured using the [configuration].
      * This client will be passed onto all upstream fetching logic to execute calls.
      */
-    var client: HttpClient = createClient()
+    private var client: HttpClient = createClient()
 
     /**
      * Return the [HttpClient] using the [configuration].
      *
      * @return the [HttpClient]
      */
-    fun createClient(): HttpClient {
+    private fun createClient(): HttpClient {
         return HttpClient(OkHttp) {
             install(ContentNegotiation) {
                 json(Json { ignoreUnknownKeys = true })
