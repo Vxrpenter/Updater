@@ -16,12 +16,13 @@
 
 package io.github.vxrpenter.updater.schema
 
-/**
- * The default schema classifier
- */
-data class DefaultSchemaClassifier(
+data class HangarSchemaClassifier(
     override val value: String,
     override val priority: ClassifierPriority,
     override val divider: String,
-    override val componentDivider: String = "."
+    override val componentDivider: String,
+    /**
+     * The custom channel that the version is located in
+     */
+    val channel: String?
 ) : SchemaClassifier
