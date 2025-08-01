@@ -14,14 +14,6 @@
  * Note: This is no legal advice, please read the license conditions
  */
 
-package io.github.vxrpenter.updater.schema
+package io.github.vxrpenter.updater.exceptions
 
-/**
- * The default schema classifier
- */
-data class DefaultSchemaClassifier(
-    override val value: String,
-    override val priority: ClassifierPriority,
-    override val divider: String,
-    override val componentDivider: String = "."
-) : SchemaClassifier
+class ClassifierTypeMismatch(message: String, cause: Throwable? = null) : UpdaterException(message, cause)

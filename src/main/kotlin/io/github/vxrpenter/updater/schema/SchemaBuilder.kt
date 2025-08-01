@@ -93,8 +93,7 @@ class SchemaBuilder {
                 value = classifier.value!!,
                 priority = classifier.priority!!,
                 divider = classifier.divider!!,
-                componentDivider = classifier.componentDivider,
-                channel = classifier.channel
+                componentDivider = classifier.componentDivider
             )
         )
     }
@@ -116,11 +115,7 @@ class SchemaBuilder {
         /**
          * The symbol that is used to divide the version components, e.g. `.` or `-`
          */
-        var componentDivider: String = ".",
-        /**
-         * A custom channel, only applicable for [HangarUpstream]
-         */
-        var channel: String? = null,
+        var componentDivider: String = "."
     )
 
     fun build(): DefaultUpdateSchema {

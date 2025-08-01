@@ -42,8 +42,4 @@ interface SchemaClassifier {
      * The symbol that is used to divide the version components, e.g. `.` or `-`
      */
     val componentDivider: String
-    /**
-     * A custom channel, only applicable for [HangarUpstream]
-     */
-    val channel: String?
 }
