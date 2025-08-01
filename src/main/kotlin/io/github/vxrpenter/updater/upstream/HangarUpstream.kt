@@ -19,6 +19,7 @@
 package io.github.vxrpenter.updater.upstream
 
 import io.github.vxrpenter.updater.exceptions.ClassifierTypeMismatch
+import io.github.vxrpenter.updater.exceptions.UnsuccessfulVersionRequest
 import io.github.vxrpenter.updater.update.DefaultUpdate
 import io.github.vxrpenter.updater.version.DefaultClassifier
 import io.github.vxrpenter.updater.version.DefaultVersion
@@ -53,12 +54,13 @@ data class HangarUpstream(
      *
      * @return the fetched [DefaultVersion]
      * @throws ClassifierTypeMismatch when [SchemaClassifier] in [schema] is not [HangarSchemaClassifier]
+     * @throws UnsuccessfulVersionRequest when version request fails
      */
     override suspend fun fetch(client: HttpClient, schema: UpdateSchema): DefaultVersion? {
         for (classifier in schema.classifiers) { if (classifier !is HangarSchemaClassifier) throw ClassifierTypeMismatch("Classifier type ${classifier.javaClass} cannot be ${HangarSchemaClassifier::class.java}")
             val url = "https://hangar.papermc.io/api/v1/projects/${projectId}/latest?channel=${classifier.channel}"
             val call = client.get(url)
-            if (call.status.value == 400) return null
+            if (!call.status.value.toString().startsWith("2")) throw UnsuccessfulVersionRequest("Could not correctly commence version request, returned ${call.status.value}")
 
             versions.add(Pair(call.bodyAsText(), classifier))
         }
