@@ -28,7 +28,7 @@ dependencies {
 ```xml
 <dependency>
     <groupId>io.github.vxrpenter</groupId>
-    <artifactId>secretlab-kotlin</artifactId>
+    <artifactId>updater</artifactId>
     <version>VERSION</version>
 </dependency>
 ```
