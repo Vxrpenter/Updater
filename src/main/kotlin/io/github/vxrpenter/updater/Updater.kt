@@ -112,21 +112,20 @@ sealed class Updater(var configuration: UpdaterConfiguration)  {
     suspend fun default(currentVersion: String, schema: UpdateSchema, upstream: Upstream, builder: (ConfigurationBuilder.() -> Unit)? = null) {
         if (builder != null) runBuilder(builder)
 
-        // Logic
+        start { innerUpdater(currentVersion = upstream.toVersion(currentVersion, schema), schema = schema, upstream = upstream) }
+    }
+
+    @OptIn(ExperimentalScheduler::class)
+    private suspend fun start(task: suspend () -> Unit) {
         if (configuration.periodic != null) {
             Timer.schedule(period = configuration.periodic!!, coroutineScope = updatesScope) {
-                innerUpdater(currentVersion = upstream.toVersion(currentVersion, schema), schema = schema, upstream = upstream)
+                task()
             }
         } else {
-            innerUpdater(currentVersion = upstream.toVersion(currentVersion, schema), schema = schema, upstream = upstream)
+            task()
         }
     }
 
-    /**
-     * Applies configuration builder
-     *
-     * @param builder the builder
-     */
     private fun runBuilder(builder: ConfigurationBuilder.() -> Unit) {
         val internalBuilder = ConfigurationBuilder()
         internalBuilder.builder()
