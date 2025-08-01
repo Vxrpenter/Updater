@@ -28,6 +28,7 @@ import io.github.vxrpenter.updater.upstream.Upstream
 import io.github.vxrpenter.updater.version.Version
 import io.ktor.client.*
 import io.ktor.client.engine.okhttp.*
+import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -35,14 +36,14 @@ import kotlinx.coroutines.CoroutineScope
 
 /**
  * Compares versions fetched from
- * specific upstreaming ([Upstream]) with other versions.
+ * specific upstream ([Upstream]) with other versions.
  *
  * @param configuration of the updater
  */
-
-open class Updater(private var configuration: UpdaterConfiguration)  {
+open class Updater(private var configuration: UpdaterConfiguration) {
     private val logger = KotlinLogging.logger {}
-    private val updatesScope = CoroutineScope(CoroutineExceptionHandler { _, exception -> logger.error(exception) { "An error occurred in the update coroutine" } })
+    private val updatesScope =
+        CoroutineScope(CoroutineExceptionHandler { _, exception -> logger.error(exception) { "An error occurred in the update coroutine" } })
 
     /**
      * An [HttpClient], that is configured using the [configuration].
@@ -61,10 +62,12 @@ open class Updater(private var configuration: UpdaterConfiguration)  {
                 json(json = configuration.json)
             }
 
-            engine { config {
-                readTimeout(timeout = configuration.readTimeOut.timeout, unit = configuration.readTimeOut.unit)
-                writeTimeout(timeout = configuration.readTimeOut.timeout, unit = configuration.readTimeOut.unit)
-            }}
+            engine {
+                config {
+                    readTimeout(timeout = configuration.readTimeOut.timeout, unit = configuration.readTimeOut.unit)
+                    writeTimeout(timeout = configuration.readTimeOut.timeout, unit = configuration.readTimeOut.unit)
+                }
+            }
         }
     }
 
@@ -83,10 +86,21 @@ open class Updater(private var configuration: UpdaterConfiguration)  {
      * @param builder the builder
      */
     @OptIn(ExperimentalScheduler::class)
-    suspend fun default(currentVersion: String, schema: UpdateSchema, upstream: Upstream, builder: (ConfigurationBuilder.() -> Unit)? = null) {
+    suspend fun default(
+        currentVersion: String,
+        schema: UpdateSchema,
+        upstream: Upstream,
+        builder: (ConfigurationBuilder.() -> Unit)? = null
+    ) {
         if (builder != null) runBuilder(builder)
 
-        start { innerUpdater(currentVersion = upstream.toVersion(currentVersion, schema), schema = schema, upstream = upstream) }
+        start {
+            innerUpdater(
+                currentVersion = upstream.toVersion(currentVersion, schema),
+                schema = schema,
+                upstream = upstream
+            )
+        }
     }
 
     @OptIn(ExperimentalScheduler::class)
@@ -110,14 +124,18 @@ open class Updater(private var configuration: UpdaterConfiguration)  {
     private suspend fun innerUpdater(currentVersion: Version, schema: UpdateSchema, upstream: Upstream) {
         val version = upstream.fetch(client = client, schema = schema)
 
-        version ?: throw UnsuccessfulVersionFetch("Could not fetch version from upstream", Throwable("Either upstream not available or serializer out of date"))
+        version ?: throw UnsuccessfulVersionFetch(
+            "Could not fetch version from upstream",
+            Throwable("Either upstream not available or serializer out of date")
+        )
         if (currentVersion >= version) return
 
         val update = upstream.update(version)
 
-        logger.warn { configuration.newUpdateNotification
-            .replace("{version}", update.value)
-            .replace("{url}", update.url)
+        logger.warn {
+            configuration.newUpdateNotification
+                .replace("{version}", update.value)
+                .replace("{url}", update.url)
         }
     }
 }
