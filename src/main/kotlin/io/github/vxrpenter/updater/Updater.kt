@@ -41,7 +41,7 @@ import kotlinx.serialization.json.Json
  * @param configuration of the updater
  */
 
-sealed class Updater(var configuration: UpdaterConfiguration)  {
+open class Updater(var configuration: UpdaterConfiguration)  {
     private val logger = KotlinLogging.logger {}
     private val updatesScope = CoroutineScope(CoroutineExceptionHandler { _, exception -> logger.error(exception) { "An error occurred in the update coroutine" } })
 
@@ -74,31 +74,6 @@ sealed class Updater(var configuration: UpdaterConfiguration)  {
      * Configuration can be changed using the builders in the functions.
      */
     companion object Default : Updater(configuration = UpdaterConfiguration())
-
-    /**
-     * Class to pipe a custom configuration into the Updater without using the builders in the functions.
-     *
-     * Example Usage:
-     * ```kotlin
-     * val configuration = Configuration {
-     *     periodic = 1.hours
-     *     readTimeout {
-     *         timeout = 120
-     *         unit = TimeUnit.SECONDS
-     *     }
-     *     writeTimeout {
-     *         timeout = 120
-     *         unit = TimeUnit.SECONDS
-     *     }
-     *     newUpdateNotification = "New version {} is now available and can be downloaded from {}"
-     * }
-     *
-     * Updater.CustomConfiguration(configuration).default(currentVersion = "v1.1.0", schema = schema, upstream = GithubUpstream("Vxrpenter", "SCPToolsBot"))
-     * ```
-     *
-     * @param value custom configuration
-     */
-    class CustomConfiguration(value: UpdaterConfiguration) : Updater(configuration = value)
 
     /**
      * The default update comparison.
