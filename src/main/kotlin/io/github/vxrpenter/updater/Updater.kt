@@ -86,21 +86,10 @@ open class Updater(private var configuration: UpdaterConfiguration) {
      * @param builder the builder
      */
     @OptIn(ExperimentalScheduler::class)
-    suspend fun default(
-        currentVersion: String,
-        schema: UpdateSchema,
-        upstream: Upstream,
-        builder: (ConfigurationBuilder.() -> Unit)? = null
-    ) {
+    suspend fun checkUpdates(currentVersion: String, schema: UpdateSchema, upstream: Upstream, builder: (ConfigurationBuilder.() -> Unit)? = null) {
         if (builder != null) runBuilder(builder)
 
-        start {
-            innerUpdater(
-                currentVersion = DefaultVersion.toVersion(currentVersion, schema),
-                schema = schema,
-                upstream = upstream
-            )
-        }
+        start { innerUpdater(currentVersion = DefaultVersion.toVersion(currentVersion, schema), schema = schema, upstream = upstream) }
     }
 
     @OptIn(ExperimentalScheduler::class)

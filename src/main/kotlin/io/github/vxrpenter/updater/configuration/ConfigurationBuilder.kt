@@ -88,7 +88,7 @@ class ConfigurationBuilder {
     /**
      * The notification settings
      */
-    var notification: UpdaterConfigurationNotification = defaultConfig.notification
+    private var notification: UpdaterConfigurationNotification = defaultConfig.notification
 
 
     /**
@@ -151,8 +151,8 @@ class ConfigurationBuilder {
         requireNotNull(inlineNotification.notification)
 
         notification = UpdaterConfigurationNotification(
-            notify = inlineNotification.notify,
-            notification = inlineNotification.notification
+            notify = inlineNotification.notify!!,
+            notification = inlineNotification.notification!!
         )
     }
 
@@ -160,11 +160,11 @@ class ConfigurationBuilder {
         /**
          * Should a new update prompt a notification?
          */
-        val notify: Boolean? = null,
+        var notify: Boolean? = null,
         /**
          * Message that will be prompted when a new version has been found
          */
-        val notification: String? = null
+        var notification: String? = null
     )
 
     fun build(): UpdaterConfiguration {
