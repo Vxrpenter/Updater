@@ -55,22 +55,10 @@ data class SpigotUpstream(
         if (!call.status.value.toString().startsWith("2")) throw UnsuccessfulVersionRequest("Could not correctly commence version request, returned ${call.status.value}")
 
         val value = call.bodyAsText()
-        val components = components(value, schema)
-        val classifier = classifier(value, schema)
+        val components = DefaultVersion.components(value, schema)
+        val classifier = DefaultClassifier.classifier(value, schema)
 
         return DefaultVersion(value, components, classifier)
-    }
-
-    /**
-     * Converts a version string into a [DefaultVersion].
-     *
-     * @param version complete version
-     * @param schema defines the version deserialization
-     *
-     * @return the [DefaultVersion]
-     */
-    override fun toVersion(version: String, schema: UpdateSchema): DefaultVersion {
-        return DefaultVersion(version, components(version, schema), classifier(version, schema))
     }
 
     /**
@@ -84,28 +72,5 @@ data class SpigotUpstream(
         val releaseUrl = "https://www.spigotmc.org/resources/$projectId/history"
 
         return DefaultUpdate(version.value, releaseUrl)
-    }
-
-    /**
-     * Returns a [DefaultClassifier] from the given version.
-     *
-     * @param value complete version
-     * @param schema defines the version deserialization
-     * @return the [DefaultClassifier]
-     */
-    override fun classifier(value: String, schema: UpdateSchema): DefaultClassifier? {
-        val version = value.replace(schema.prefix, "")
-
-        for (classifier in schema.classifiers) {
-            val classifierElement = "${classifier.divider}${classifier.value}"
-            if (!version.contains(classifierElement)) continue
-
-            val value = "$classifierElement${version.split(classifierElement).last()}"
-            val components = version.split(classifierElement).last().split(classifier.componentDivider)
-
-            return DefaultClassifier(value, classifier.priority, components)
-        }
-
-        return null
     }
 }

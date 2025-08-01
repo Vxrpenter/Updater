@@ -19,12 +19,12 @@
 package io.github.vxrpenter.updater.upstream
 
 import io.github.vxrpenter.updater.exceptions.UnsuccessfulVersionRequest
+import io.github.vxrpenter.updater.exceptions.VersionTypeMismatch
 import io.github.vxrpenter.updater.update.DefaultUpdate
 import io.github.vxrpenter.updater.version.DefaultClassifier
 import io.github.vxrpenter.updater.version.DefaultVersion
-import io.github.vxrpenter.updater.exceptions.VersionTypeMismatch
-import io.github.vxrpenter.updater.update.Update
 import io.github.vxrpenter.updater.schema.UpdateSchema
+import io.github.vxrpenter.updater.update.Update
 import io.github.vxrpenter.updater.version.Version
 import io.ktor.client.*
 import io.ktor.client.call.*
@@ -66,25 +66,13 @@ data class GithubUpstream (
             val body = call.body<List<Release>>()
 
             val value = body.first().tagName
-            val components = components(value, schema)
-            val classifier = classifier(value, schema)
+            val components = DefaultVersion.components(value, schema)
+            val classifier = DefaultClassifier.classifier(value, schema)
 
             return DefaultVersion(value, components, classifier)
         } catch (_: SerializationException) {
             return null
         }
-    }
-
-    /**
-     * Converts a version string into a [DefaultVersion].
-     *
-     * @param version complete version
-     * @param schema defines the version deserialization
-     *
-     * @return the [DefaultVersion]
-     */
-    override fun toVersion(version: String, schema: UpdateSchema): DefaultVersion {
-        return DefaultVersion(version, components(version, schema), classifier(version, schema))
     }
 
     /**
@@ -99,29 +87,6 @@ data class GithubUpstream (
         val releaseUrl = "https://github.com/$project/releases/tag/${version.value}"
 
         return DefaultUpdate(value = version.value, url = releaseUrl)
-    }
-
-    /**
-     * Returns a [DefaultClassifier] from the given version.
-     *
-     * @param value complete version
-     * @param schema defines the version deserialization
-     * @return the [DefaultClassifier]
-     */
-    override fun classifier(value: String, schema: UpdateSchema): DefaultClassifier? {
-        val version = value.replace(schema.prefix, "")
-
-        for (classifier in schema.classifiers) {
-            val classifierElement = "${classifier.divider}${classifier.value}"
-            if (!version.contains(classifierElement)) continue
-
-            val value = "$classifierElement${version.split(classifierElement).last()}"
-            val components = version.split(classifierElement).last().split(classifier.componentDivider)
-
-            return DefaultClassifier(value, classifier.priority, components)
-        }
-
-        return null
     }
 
     @Serializable

@@ -18,7 +18,6 @@ package io.github.vxrpenter.updater.upstream
 
 import io.github.vxrpenter.updater.update.Update
 import io.github.vxrpenter.updater.schema.UpdateSchema
-import io.github.vxrpenter.updater.version.Classifier
 import io.github.vxrpenter.updater.version.Version
 import io.ktor.client.HttpClient
 
@@ -44,50 +43,10 @@ interface Upstream {
     suspend fun fetch(client: HttpClient, schema: UpdateSchema): Version?
 
     /**
-     * Converts a version string into a [Version].
-     *
-     * @param version complete version
-     * @param schema defines the version deserialization
-     *
-     * @return the [Version]
-     */
-    fun toVersion(version: String, schema: UpdateSchema): Version
-
-    /**
      * Returns an [Update] from a [Version].
      *
      * @param version the version
      * @return the [Update]
      */
     fun update(version: Version): Update
-
-    /**
-     * Returns a collection of version components from the given version.
-     *
-     * @param value complete version
-     * @param schema defines the version deserialization
-     * @return the component collection
-     */
-    fun components(value: String, schema: UpdateSchema): Collection<String> {
-        val version = value.replace(schema.prefix, "")
-        var preSplit = version
-
-        for (classifier in schema.classifiers) {
-            val classifierElement = "${classifier.divider}${classifier.value}"
-            if (!version.contains(classifierElement)) continue
-
-            preSplit = version.split(classifierElement).first()
-        }
-
-        return preSplit.split(schema.divider)
-    }
-
-    /**
-     * Returns a [io.github.vxrpenter.updater.version.Classifier] from the given version.
-     *
-     * @param value complete version
-     * @param schema defines the version deserialization
-     * @return the [io.github.vxrpenter.updater.version.Classifier]
-     */
-    fun classifier(value: String, schema: UpdateSchema): Classifier?
 }
