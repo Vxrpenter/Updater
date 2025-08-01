@@ -20,6 +20,7 @@ package io.github.vxrpenter.updater.configuration
 
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttpEngine
+import kotlinx.serialization.json.Json
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration
 
@@ -62,6 +63,10 @@ inline fun Configuration(
 }
 
 class ConfigurationBuilder {
+    /**
+     * The JSON deserializer used by the [HttpClient]
+     */
+    var json: Json = UpdaterConfiguration().json
     /**
      * Defines the time between periodic version checks
      */
@@ -130,7 +135,7 @@ class ConfigurationBuilder {
     fun build(): UpdaterConfiguration {
         require(!newUpdateNotification.isBlank()) { "'newUpdateNotification' cannot be empty" }
 
-        return UpdaterConfiguration(periodic)
+        return UpdaterConfiguration(json, periodic)
     }
 
     private fun timeoutProcessing(timeout: Long? = null, unit: TimeUnit? = null, build: InlineUpdaterConfigurationTimeOut.() -> Unit): UpdaterConfigurationTimeOut {
