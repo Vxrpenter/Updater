@@ -1,4 +1,18 @@
+import com.vanniktech.maven.publish.SonatypeHost
+import org.jetbrains.dokka.base.DokkaBase
+import org.jetbrains.dokka.base.DokkaBaseConfiguration
+import org.jetbrains.dokka.gradle.DokkaTask
+import java.net.URI
+
+buildscript {
+    dependencies {
+        classpath(libs.dokka.base)
+    }
+}
+
 plugins {
+    alias(libs.plugins.dokka)
+    alias(libs.plugins.mavenpublish)
     kotlin("jvm") version "2.2.0"
     kotlin("plugin.serialization") version "2.2.0"
 }
@@ -24,6 +38,50 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:1.5.18")
 }
 
-tasks.test {
-    useJUnitPlatform()
+tasks.getByName("dokkaHtml", DokkaTask::class) {
+    dokkaSourceSets.configureEach {
+        includes.from("packages.md")
+        jdkVersion.set(8)
+        sourceLink {
+            localDirectory.set(file("src/main/kotlin"))
+            remoteUrl.set(URI("https://github.com/Vxrpenter/Updater/tree/main/src/main/kotlin").toURL())
+            remoteLineSuffix.set("#V")
+        }
+    }
+
+    pluginConfiguration<DokkaBase, DokkaBaseConfiguration> {
+        footerMessage = "Copyright © 2025 Vxrpenter"
+    }
+}
+
+mavenPublishing {
+    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+
+    signAllPublications()
+
+    coordinates(group.toString(), "updater")
+
+    pom {
+        name = "Updater"
+        description = "A library for secure and modular update management "
+        inceptionYear = "2025"
+        url = "https://github.com/Vxrpenter/Updater"
+        licenses {
+            license {
+                name = "MIT License"
+                url = "https://opensource.org/license/mit"
+            }
+        }
+        developers {
+            developer {
+                name = "Vxrpenter"
+                url = "https://github.com/Vxrpenter"
+            }
+        }
+        scm {
+            url = "https://github.com/Vxrpenter/Updater"
+            connection = "scm:git:git://github.com/Vxrpenter/Updater.git"
+            developerConnection = "scm:git:ssh://git@github.com/Vxrpenter/Updater.git"
+        }
+    }
 }

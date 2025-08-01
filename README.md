@@ -11,7 +11,7 @@
 </div>
 
 ## What is Updater?
-Updater is a kotlin (java) library for update management. It has integration with platforms like *GitHub*, *Modrinth*, *Spigot* and more to allow easy setup without much work. It allows users to specify a custom version schema, that allows you to customize your versions as you like.
+Updater is a kotlin (java) library for update management. It has integration with platforms like *GitHub*, *Modrinth*, *Spigot* and more to allow easy setup without much work. It allows users to specify a custom version schema that allows you to customize your versions as you like.
 
 ## Installation
 
@@ -40,15 +40,15 @@ This is a small usage example that tries to outline the core functionality of th
 
 ### Creating a Schema
 
-To begin, we first have to create a UpdateSchema that allows the library to deserialize your versions into readable components and classifiers. 
-The example below shows how such a schema could look. It uses the `Schema` function which uses the `SchemaBuilder` to create a `DefaultSchema`. 
+To begin,
+we first have to create an UpdateSchema 
+that allows the library to deserialize your versions into readable components and classifiers. 
+The example below shows how such a schema could look.
+It uses the `Schema` function which uses the `SchemaBuilder` to create a `DefaultSchema`. 
 Most upstreams will accept a `DefaultSchema` but some will beed specific schema types, so keep an eye out for that. 
 
 The classifiers that can be added using the `SchemaBuilder` are `DefaultClassifiers` but some upstreams wil require custom classifiers so also keep an eye out for that.
 ```kotlin
-import io.github.vxrpenter.updater.schema.ClassifierPriority
-import io.github.vxrpenter.updater.schema.Schema
-
 val schema = Schema {
     // The prefix stands before the actual version, e.g. 'v1.0.0'
     prefix = "v"
@@ -83,8 +83,6 @@ val schema = Schema {
 The next step will be configuring the upstream (the location that we upload our versions). In this example we will use GitHub as our upstream. 
 You will need to enter certain information needed to fetch your project from the upstream's api.
 ```kotlin
-import io.github.vxrpenter.updater.upstream.GithubUpstream
-
 val upstream = GithubUpstream(user = "Vxrpenter", repo = "Updater")
 ```
 
@@ -94,11 +92,8 @@ The last thing will be to check for new versions. This can be easily achived by 
 It will require you to enter the current version of your project (if you want to know how to get the current version, look [here](https://github.com/Vxrpenter/Updater/edit/master/README.md#current-version-fetching--gradle-only) followed by
 the `´UpdateSchema` and the `Upstream`.
 
-You are also able to configure certain behaviors of the `Updater` like adding a periodic check, customizing the notification message, configuring the read/write timeout etc.
+You are also able to configure certain behaviors of the `Updater` like adding a periodic check, customizing the notification message, configuring the read/write timeout, etc.
 ```kotlin
-import io.github.vxrpenter.updater.Updater
-import kotlin.time.Duration.Companion.minutes
-
 Updater.checkUpdates(currentVersion = "v1.0.0", schema = schema, upstream = upstream) {
     periodic = 10.minutes
     notification {
@@ -110,8 +105,8 @@ Updater.checkUpdates(currentVersion = "v1.0.0", schema = schema, upstream = upst
 
 ## Current Version Fetching | *Gradle Only*
 
-The easist way to get the current version of your project from the `build.gradle.kts` is by adding a task to create a properties file. This file will be created when the project is compiled
-and can be read at runtime. First we will need to setup the task to create the properties file:
+The easiest way to get the current version of your project from the `build.gradle.kts` is by adding a task to create a properties file.
+This file will be created when the project is compiled and can be read at runtime. First, we will need to set up the task to create the properties file:
 ```kotlin
 val createVersionProperties by tasks.registering(WriteProperties::class) {
     val filePath = sourceSets.main.map {
@@ -129,10 +124,6 @@ tasks.classes {
 
 To get the version from the properties file at runtime, you will need to first load the properties file and then retrieve the property `version` from it:
 ```kotlin
-import java.io.InputStreamReader
-import java.nio.charset.StandardCharsets
-import java.util.Properties
-
 class TestClass {
     fun main() {
         val properties = Properties()
