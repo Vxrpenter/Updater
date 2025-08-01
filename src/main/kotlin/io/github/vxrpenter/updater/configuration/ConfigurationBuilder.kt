@@ -45,10 +45,11 @@ import kotlin.time.Duration
  * }
  * ```
  *
+ * @param [ConfigurationBuilder.json] The JSON deserializer used by the [HttpClient]
  * @param [ConfigurationBuilder.periodic] Defines the time between periodic version checks
  * @param [ConfigurationBuilder.readTimeout] The [HttpClient] (with [OkHttpEngine]) read timout
  * @param [ConfigurationBuilder.writeTimeout] The [HttpClient] (with [OkHttpEngine]) write timout
- * @param [ConfigurationBuilder.newUpdateNotification] Message that will be prompted when a new version has been found
+ * @param [ConfigurationBuilder.notification] The notification settings
  *
  * @return the [UpdaterConfiguration]
  * @see ConfigurationBuilder
@@ -63,26 +64,31 @@ inline fun Configuration(
 }
 
 class ConfigurationBuilder {
+    private val defaultConfig = UpdaterConfiguration()
     /**
      * The JSON deserializer used by the [HttpClient]
      */
-    var json: Json = UpdaterConfiguration().json
+    var json: Json = defaultConfig.json
+
     /**
      * Defines the time between periodic version checks
      */
     var periodic: Duration? = null
+
     /**
      * The [HttpClient] (with [OkHttpEngine]) read timout
      */
-    private var readTimeOut: UpdaterConfigurationTimeOut = UpdaterConfiguration().readTimeOut
+    private var readTimeOut: UpdaterConfigurationTimeOut = defaultConfig.readTimeOut
+
     /**
      * The [HttpClient] (with [OkHttpEngine]) write timout
      */
-    private var writeTimeOut: UpdaterConfigurationTimeOut? = UpdaterConfiguration().writeTimeOut
+    private var writeTimeOut: UpdaterConfigurationTimeOut = defaultConfig.writeTimeOut
+
     /**
-     * Message that will be prompted when a new version has been found
+     * The notification settings
      */
-    var newUpdateNotification: String = UpdaterConfiguration().newUpdateNotification
+    var notification: UpdaterConfigurationNotification = defaultConfig.notification
 
 
     /**
@@ -132,10 +138,37 @@ class ConfigurationBuilder {
         var unit: TimeUnit? = null
     )
 
-    fun build(): UpdaterConfiguration {
-        require(!newUpdateNotification.isBlank()) { "'newUpdateNotification' cannot be empty" }
+    /**
+     * The [HttpClient] (with [OkHttpEngine]) read timout
+     *
+     * @see UpdaterConfigurationTimeOut
+     */
+    internal fun notification(
+        builder: InlineUpdaterConfigurationNotification.() -> Unit
+    ) {
+        val inlineNotification = InlineUpdaterConfigurationNotification().apply(builder)
+        requireNotNull(inlineNotification.notify)
+        requireNotNull(inlineNotification.notification)
 
-        return UpdaterConfiguration(json, periodic)
+        notification = UpdaterConfigurationNotification(
+            notify = inlineNotification.notify,
+            notification = inlineNotification.notification
+        )
+    }
+
+    data class InlineUpdaterConfigurationNotification(
+        /**
+         * Should a new update prompt a notification?
+         */
+        val notify: Boolean? = null,
+        /**
+         * Message that will be prompted when a new version has been found
+         */
+        val notification: String? = null
+    )
+
+    fun build(): UpdaterConfiguration {
+        return UpdaterConfiguration(json, periodic, readTimeOut, writeTimeOut, notification)
     }
 
     private fun timeoutProcessing(timeout: Long? = null, unit: TimeUnit? = null, build: InlineUpdaterConfigurationTimeOut.() -> Unit): UpdaterConfigurationTimeOut {
