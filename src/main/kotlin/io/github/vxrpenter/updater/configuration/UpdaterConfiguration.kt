@@ -40,7 +40,7 @@ data class UpdaterConfiguration(
     /**
      * Message that will be prompted when a new version has been found
      */
-    val newUpdateNotification: String = "New update has been found. Version {} can be downloaded from {}"
+    val newUpdateNotification: String = "New update has been found. Version {version} can be downloaded from {url}"
 )
 
 /**
