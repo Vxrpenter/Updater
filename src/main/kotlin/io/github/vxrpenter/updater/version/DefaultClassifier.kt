@@ -16,6 +16,7 @@
 
 package io.github.vxrpenter.updater.version
 
+import io.github.vxrpenter.updater.exceptions.VersionSizeMismatch
 import io.github.vxrpenter.updater.schema.ClassifierPriority
 
 /**
@@ -32,7 +33,15 @@ data class DefaultClassifier(
      */
     val components: Collection<String>
 ) : Classifier {
+    /**
+     * Compares this object with the specified object for order. Returns zero if this object is equal
+     * to the specified [other] object, a negative number if it's less than [other], or a positive number
+     * if it's greater than [other].
+     *
+     * @throws VersionSizeMismatch when the component sizes don't match
+     */
     override fun compareTo(other: Classifier): Int { other as DefaultClassifier
+        if (components.size != other.components.size) throw VersionSizeMismatch("Size of classifier components are not equal")
         if (components.isEmpty()) return priority.value.compareTo(other.priority.value)
 
         components.zip(other.components).forEach { (subVersion, otherSubVersion) ->
