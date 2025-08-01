@@ -19,7 +19,6 @@
 package io.github.vxrpenter.updater.schema
 
 import io.github.vxrpenter.updater.version.Version
-import io.github.vxrpenter.updater.upstream.HangarUpstream
 
 /**
  * The [Schema] function is an easy way to creating a [DefaultUpdateSchema], by providing simple solutions and
