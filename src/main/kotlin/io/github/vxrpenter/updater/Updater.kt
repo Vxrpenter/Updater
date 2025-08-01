@@ -113,10 +113,7 @@ open class Updater(private var configuration: UpdaterConfiguration) {
     private suspend fun innerUpdater(currentVersion: Version, schema: UpdateSchema, upstream: Upstream) {
         val version = upstream.fetch(client = client, schema = schema)
 
-        version ?: throw UnsuccessfulVersionFetch(
-            "Could not fetch version from upstream",
-            Throwable("Either upstream not available or serializer out of date")
-        )
+        version ?: throw UnsuccessfulVersionFetch("Could not fetch version from upstream")
         if (currentVersion >= version) return
 
         val update = upstream.update(version)
