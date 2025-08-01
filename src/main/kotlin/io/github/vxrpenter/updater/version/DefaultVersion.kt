@@ -14,9 +14,12 @@
  * Note: This is no legal advice, please read the license conditions
  */
 
+@file:Suppress("unused", "FunctionName")
+
 package io.github.vxrpenter.updater.version
 
 import io.github.vxrpenter.updater.exceptions.VersionSizeMismatch
+import io.github.vxrpenter.updater.schema.UpdateSchema
 
 /**
  * The default version
@@ -32,6 +35,41 @@ data class DefaultVersion(
      */
     val classifier: DefaultClassifier?
 ) : Version {
+    companion object {
+        /**
+         * Converts a version string into a [DefaultVersion].
+         *
+         * @param version complete version
+         * @param schema defines the version deserialization
+         *
+         * @return the [DefaultVersion]
+         */
+        fun toVersion(version: String, schema: UpdateSchema): DefaultVersion {
+            return DefaultVersion(version, components(version, schema), DefaultClassifier.classifier(version, schema))
+        }
+
+        /**
+         * Returns a collection of version components from the given version.
+         *
+         * @param value complete version
+         * @param schema defines the version deserialization
+         * @return the component collection
+         */
+        fun components(value: String, schema: UpdateSchema): Collection<String> {
+            val version = value.replace(schema.prefix, "")
+            var preSplit = version
+
+            for (classifier in schema.classifiers) {
+                val classifierElement = "${classifier.divider}${classifier.value}"
+                if (!version.contains(classifierElement)) continue
+
+                preSplit = version.split(classifierElement).first()
+            }
+
+            return preSplit.split(schema.divider)
+        }
+    }
+
     /**
      * Compares this object with the specified object for order. Returns zero if this object is equal
      * to the specified [other] object, a negative number if it's less than [other], or a positive number

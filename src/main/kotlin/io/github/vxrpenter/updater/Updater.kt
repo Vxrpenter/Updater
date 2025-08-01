@@ -25,6 +25,7 @@ import io.github.vxrpenter.updater.configuration.UpdaterConfiguration
 import io.github.vxrpenter.updater.exceptions.UnsuccessfulVersionFetch
 import io.github.vxrpenter.updater.schema.UpdateSchema
 import io.github.vxrpenter.updater.upstream.Upstream
+import io.github.vxrpenter.updater.version.DefaultVersion
 import io.github.vxrpenter.updater.version.Version
 import io.ktor.client.*
 import io.ktor.client.engine.okhttp.*
@@ -95,7 +96,7 @@ open class Updater(private var configuration: UpdaterConfiguration) {
 
         start {
             innerUpdater(
-                currentVersion = upstream.toVersion(currentVersion, schema),
+                currentVersion = DefaultVersion.toVersion(currentVersion, schema),
                 schema = schema,
                 upstream = upstream
             )

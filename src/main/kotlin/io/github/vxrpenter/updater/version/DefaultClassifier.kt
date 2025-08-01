@@ -14,10 +14,13 @@
  * Note: This is no legal advice, please read the license conditions
  */
 
+@file:Suppress("unused", "FunctionName")
+
 package io.github.vxrpenter.updater.version
 
 import io.github.vxrpenter.updater.exceptions.VersionSizeMismatch
 import io.github.vxrpenter.updater.schema.ClassifierPriority
+import io.github.vxrpenter.updater.schema.UpdateSchema
 
 /**
  * The default classifier
@@ -33,6 +36,31 @@ data class DefaultClassifier(
      */
     val components: Collection<String>
 ) : Classifier {
+    companion object {
+        /**
+         * Returns a [DefaultClassifier] from the given version.
+         *
+         * @param value complete version
+         * @param schema defines the version deserialization
+         * @return the [DefaultClassifier]
+         */
+        fun classifier(value: String, schema: UpdateSchema): DefaultClassifier? {
+            val version = value.replace(schema.prefix, "")
+
+            for (classifier in schema.classifiers) {
+                val classifierElement = "${classifier.divider}${classifier.value}"
+                if (!version.contains(classifierElement)) continue
+
+                val value = "$classifierElement${version.split(classifierElement).last()}"
+                val components = version.split(classifierElement).last().split(classifier.componentDivider)
+
+                return DefaultClassifier(value, classifier.priority, components)
+            }
+
+            return null
+        }
+    }
+
     /**
      * Compares this object with the specified object for order. Returns zero if this object is equal
      * to the specified [other] object, a negative number if it's less than [other], or a positive number
