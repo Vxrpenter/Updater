@@ -98,7 +98,7 @@ Updater.checkUpdates(currentVersion = "v1.0.0", schema = schema, upstream = upst
     periodic = 10.minutes
     notification {
         notify = true
-        notification = "A new version has arrived. Version {version} can be downloaded the funny link {url}"
+        notification = "A new version has arrived. Version {version} can be downloaded the link {url}"
     }
 }
 ```
