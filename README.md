@@ -89,7 +89,7 @@ val upstream = GithubUpstream(user = "Vxrpenter", repo = "Updater")
 ### Checking for Updates
 
 The last thing will be to check for new versions. This can be easily achived by invoking the `Updater` class and then calling the `checkUpdates` function.
-It will require you to enter the current version of your project (if you want to know how to get the current version, look [here](https://github.com/Vxrpenter/Updater/edit/master/README.md#current-version-fetching--gradle-only) followed by
+It will require you to enter the current version of your project (if you want to know how to get the current version, look [here](https://github.com/Vxrpenter/Updater?tab=readme-ov-file#current-version-fetching--gradle-only) followed by
 the `´UpdateSchema` and the `Upstream`.
 
 You are also able to configure certain behaviors of the `Updater` like adding a periodic check, customizing the notification message, configuring the read/write timeout, etc.
