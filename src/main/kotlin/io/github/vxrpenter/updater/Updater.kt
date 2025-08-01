@@ -32,7 +32,6 @@ import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.serialization.json.Json
 
 /**
  * Compares versions fetched from
@@ -57,14 +56,14 @@ open class Updater(private var configuration: UpdaterConfiguration)  {
      * @return the [HttpClient]
      */
     private fun createClient(): HttpClient {
-        return HttpClient(OkHttp) {
-            install(ContentNegotiation) {
-                json(Json { ignoreUnknownKeys = true })
+        return HttpClient(engineFactory = OkHttp) {
+            install(plugin = ContentNegotiation) {
+                json(json = configuration.json)
             }
 
             engine { config {
-                readTimeout(configuration.readTimeOut.timeout, configuration.readTimeOut.unit)
-                writeTimeout(configuration.readTimeOut.timeout, configuration.readTimeOut.unit)
+                readTimeout(timeout = configuration.readTimeOut.timeout, unit = configuration.readTimeOut.unit)
+                writeTimeout(timeout = configuration.readTimeOut.timeout, unit = configuration.readTimeOut.unit)
             }}
         }
     }

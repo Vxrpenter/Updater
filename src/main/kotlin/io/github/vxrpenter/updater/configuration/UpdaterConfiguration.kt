@@ -20,11 +20,16 @@ import java.util.concurrent.TimeUnit
 import kotlin.time.Duration
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttpEngine
+import kotlinx.serialization.json.Json
 
 /**
  * The updater configuration
  */
 data class UpdaterConfiguration(
+    /**
+     * The JSON deserializer used by the [HttpClient]
+     */
+    val json: Json = Json { ignoreUnknownKeys = true },
     /**
      * Defines the time between periodic version checks
      */
