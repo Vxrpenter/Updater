@@ -34,3 +34,115 @@ dependencies {
 ```
 *Replace `VERSION` with the latest version*
 
+## Getting Started
+
+This is a small usage example that tries to outline the core functionality of the library.
+
+### Creating a Schema
+
+To begin, we first have to create a UpdateSchema that allows the library to deserialize your versions into readable components and classifiers. 
+The example below shows how such a schema could look. It uses the `Schema` function which uses the `SchemaBuilder` to create a `DefaultSchema`. 
+Most upstreams will accept a `DefaultSchema` but some will beed specific schema types, so keep an eye out for that. 
+
+The classifiers that can be added using the `SchemaBuilder` are `DefaultClassifiers` but some upstreams wil require custom classifiers so also keep an eye out for that.
+```kotlin
+import io.github.vxrpenter.updater.schema.ClassifierPriority
+import io.github.vxrpenter.updater.schema.Schema
+
+val schema = Schema {
+    // The prefix stands before the actual version, e.g. 'v1.0.0'
+    prefix = "v"
+    // The symbol that divides the version numbers
+    divider = "."
+    // A classifier is an argument that can be added to a version that defines if it's a 'special' version
+    // like an alpha or beta release
+    classifier {
+        // The classifier identifier value
+        value = "a"
+        // The divider between identifier value and version number
+        divider = "-"
+        // The priority that the classifier has in comparison to other classifiers
+        priority = ClassifierPriority.LOW
+    }
+    // Some extra classifiers for showcase
+    classifier {
+        value = "b"
+        divider = "-"
+        priority = ClassifierPriority.HIGH
+    }
+    classifier {
+        value = "rc"
+        divider = "-"
+        priority = ClassifierPriority.HIGHEST
+    }
+}
+```
+
+### Configuring the Upstream
+
+The next step will be configuring the upstream (the location that we upload our versions). In this example we will use GitHub as our upstream. 
+You will need to enter certain information needed to fetch your project from the upstream's api.
+```kotlin
+import io.github.vxrpenter.updater.upstream.GithubUpstream
+
+val upstream = GithubUpstream(user = "Vxrpenter", repo = "Updater")
+```
+
+### Checking for Updates
+
+The last thing will be to check for new versions. This can be easily achived by invoking the `Updater` class and then calling the `checkUpdates` function.
+It will require you to enter the current version of your project (if you want to know how to get the current version, look [here](https://github.com/Vxrpenter/Updater/edit/master/README.md#current-version-fetching--gradle-only) followed by
+the `´UpdateSchema` and the `Upstream`.
+
+You are also able to configure certain behaviors of the `Updater` like adding a periodic check, customizing the notification message, configuring the read/write timeout etc.
+```kotlin
+import io.github.vxrpenter.updater.Updater
+import kotlin.time.Duration.Companion.minutes
+
+Updater.checkUpdates(currentVersion = "v1.0.0", schema = schema, upstream = upstream) {
+    periodic = 10.minutes
+    notification {
+        notify = true
+        notification = "A new version has arrived. Version {version} can be downloaded the funny link {url}"
+    }
+}
+```
+
+## Current Version Fetching | *Gradle Only*
+
+The easist way to get the current version of your project from the `build.gradle.kts` is by adding a task to create a properties file. This file will be created when the project is compiled
+and can be read at runtime. First we will need to setup the task to create the properties file:
+```kotlin
+val createVersionProperties by tasks.registering(WriteProperties::class) {
+    val filePath = sourceSets.main.map {
+        it.output.resourcesDir!!.resolve("${layout.buildDirectory}/resources/version.properties")
+    }
+    destinationFile = filePath
+
+    property("version", project.version.toString())
+}
+
+tasks.classes {
+    dependsOn(createVersionProperties)
+}
+```
+
+To get the version from the properties file at runtime, you will need to first load the properties file and then retrieve the property `version` from it:
+```kotlin
+import java.io.InputStreamReader
+import java.nio.charset.StandardCharsets
+import java.util.Properties
+
+class TestClass {
+    fun main() {
+        val properties = Properties()
+
+        TestClass::class.java.getResourceAsStream("DIRECTORY/resources/version.properties").use {
+                versionPropertiesStream -> checkNotNull(versionPropertiesStream) { "Version properties file does not exist" }
+            properties.load(InputStreamReader(versionPropertiesStream, StandardCharsets.UTF_8))
+        }
+
+        val version = properties.getProperty("version")
+    }
+}
+```
