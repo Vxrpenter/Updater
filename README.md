@@ -61,6 +61,8 @@ val schema = Schema {
         value = "a"
         // The divider between identifier value and version number
         divider = "-"
+        // Divider between the components
+        componentDivider = "."
         // The priority that the classifier has in comparison to other classifiers
         priority = ClassifierPriority.LOW
     }
@@ -68,11 +70,13 @@ val schema = Schema {
     classifier {
         value = "b"
         divider = "-"
+        componentDivider = "."
         priority = ClassifierPriority.HIGH
     }
     classifier {
         value = "rc"
         divider = "-"
+        componentDivider = "."
         priority = ClassifierPriority.HIGHEST
     }
 }
