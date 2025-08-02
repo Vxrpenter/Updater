@@ -5,9 +5,9 @@
 # Updater
 <div align="left">
   <a href="https://github.com/Vxrpenter/Updater/releases"><img src="https://img.shields.io/github/v/release/Vxrpenter/Updater?include_prereleases&logo=github&logoSize=amg&logoColor=077533&labelColor=333834&sort=date&display_name=tag&style=flat-square&label=Latest%20Release&color=077533" /></a>&nbsp;
-  <a href="https://github.com/Vxrpenter/Updater/issues"><img src="https://img.shields.io/github/issues/Vxrpenter/Updater?style=flat-square&logo=git&logoSize=amg&label=Issues&labelColor=333834&logoColor=077533&color=077533" /></a>&nbsp;
-  <a href="https://github.com/Vxrpenter/Updater/pulls"><img src="https://img.shields.io/github/issues-pr-raw/Vxrpenter/Updater?style=flat-square&logo=git&logoSize=amg&label=Pull%20Requests&labelColor=333834&logoColor=077533&color=077533" /></a>&nbsp; 
   <a href="https://github.com/Vxrpenter/Updater/blob/master/LICENSE"><img src="https://img.shields.io/github/license/Vxrpenter/Updater?style=flat-square&logo=amazoniam&logoSize=amg&logoColor=077533&label=Licenced%20Under&labelColor=333834&color=077533"/></a>&nbsp;
+  <a href="https://vxrpenter.github.io/updater-wiki"><img src="https://img.shields.io/badge/Wiki-Online-forestgreen?style=flat-square&logo=materialformkdocs"/></a>&nbsp;
+  <a href="https://vxrpenter.github.io/updater/"><img src="https://img.shields.io/badge/KDoc-Online-forestgreen?style=flat-square&logo=kotlin"/></a>&nbsp;
 </div>
 
 ## What is Updater?
