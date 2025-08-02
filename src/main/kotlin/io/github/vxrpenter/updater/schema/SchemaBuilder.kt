@@ -72,7 +72,7 @@ class SchemaBuilder {
      * The symbol that is used to divide the version components, e.g. `.` or `-`
      */
     var divider: String = "."
-    private var classifiers: MutableCollection<DefaultSchemaClassifier> = mutableListOf()
+    private var classifiers: MutableCollection<SchemaClassifier> = mutableListOf()
 
 
     /**
@@ -90,11 +90,15 @@ class SchemaBuilder {
         classifiers.add(
             DefaultSchemaClassifier(
                 value = classifier.value!!,
-                priority = classifier.priority!!,
                 divider = classifier.divider!!,
-                componentDivider = classifier.componentDivider
+                componentDivider = classifier.componentDivider,
+                priority = classifier.priority!!
             )
         )
+    }
+
+    internal fun customClassifier(classifier: SchemaClassifier) {
+        classifiers.add(classifier)
     }
 
     data class InlineSchemaClassifier(

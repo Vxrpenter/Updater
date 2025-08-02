@@ -18,9 +18,9 @@ package io.github.vxrpenter.updater.schema
 
 data class HangarSchemaClassifier(
     override val value: String,
-    override val priority: ClassifierPriority,
     override val divider: String,
     override val componentDivider: String,
+    override val priority: ClassifierPriority,
     /**
      * The custom channel that the version is located in
      */

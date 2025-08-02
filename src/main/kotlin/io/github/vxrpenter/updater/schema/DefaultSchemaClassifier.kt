@@ -21,7 +21,7 @@ package io.github.vxrpenter.updater.schema
  */
 data class DefaultSchemaClassifier(
     override val value: String,
-    override val priority: ClassifierPriority,
     override val divider: String,
-    override val componentDivider: String = "."
+    override val componentDivider: String = ".",
+    override val priority: ClassifierPriority
 ) : SchemaClassifier

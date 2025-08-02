@@ -22,5 +22,5 @@ package io.github.vxrpenter.updater.schema
 data class DefaultUpdateSchema(
     override val prefix: String,
     override val divider: String = ".",
-    override val classifiers: Collection<DefaultSchemaClassifier>
+    override val classifiers: Collection<SchemaClassifier>
 ) : UpdateSchema

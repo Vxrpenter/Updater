@@ -56,7 +56,7 @@ data class SpigotUpstream(
         if (!call.status.value.toString().startsWith("2")) throw UnsuccessfulVersionRequest("Could not correctly commence version request, returned ${call.status.value}")
 
         val value = call.bodyAsText()
-        val components = DefaultVersion.components(value, schema)
+        val components = components(value, schema)
         val classifier = DefaultClassifier.classifier(value, schema)
 
         return DefaultVersion(value, components, classifier)

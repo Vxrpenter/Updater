@@ -67,7 +67,7 @@ data class GithubUpstream (
             val body = call.body<List<Release>>()
 
             val value = body.first().tagName
-            val components = DefaultVersion.components(value, schema)
+            val components = components(value, schema)
             val classifier = DefaultClassifier.classifier(value, schema)
 
             return DefaultVersion(value, components, classifier)
