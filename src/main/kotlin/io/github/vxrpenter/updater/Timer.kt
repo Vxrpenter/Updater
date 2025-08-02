@@ -21,13 +21,11 @@ import kotlinx.coroutines.*
 import kotlin.time.Duration
 
 @ExperimentalScheduler
-internal open class Timer{
-    companion object {
-        suspend fun schedule(period: Duration, coroutineScope: CoroutineScope, task: suspend () -> Unit) = coroutineScope.run {
-            while (isActive) {
-                task.invoke()
-                delay(period)
-            }
+fun CoroutineScope.scheduleWithDelay(period: Duration, task: suspend () -> Unit): Job {
+    return launch {
+        while (isActive) {
+            delay(period)
+            task()
         }
     }
 }

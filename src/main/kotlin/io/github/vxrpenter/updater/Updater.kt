@@ -95,7 +95,8 @@ open class Updater(private var configuration: UpdaterConfiguration) {
     @OptIn(ExperimentalScheduler::class)
     private suspend fun start(task: suspend () -> Unit) {
         if (configuration.periodic != null) {
-            Timer.schedule(period = configuration.periodic!!, coroutineScope = updatesScope) {
+            task()
+            updatesScope.scheduleWithDelay(period = configuration.periodic!!) {
                 task()
             }
         } else {
