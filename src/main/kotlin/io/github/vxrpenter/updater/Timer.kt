@@ -24,7 +24,7 @@ import kotlin.time.Duration
 internal open class Timer{
     companion object {
         suspend fun schedule(period: Duration, coroutineScope: CoroutineScope, task: suspend () -> Unit) = coroutineScope.run {
-            while (true) {
+            while (isActive) {
                 task.invoke()
                 delay(period)
             }
