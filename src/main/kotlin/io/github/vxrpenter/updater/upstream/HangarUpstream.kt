@@ -67,7 +67,7 @@ data class HangarUpstream(
         }
 
         val value = VersionComparisonHandler.returnPrioritisedVersion(list = versions)
-        val components = DefaultVersion.components(value, schema)
+        val components = components(value, schema)
         val classifier = DefaultClassifier.classifier(value, schema)
 
         return DefaultVersion(value, components, classifier)

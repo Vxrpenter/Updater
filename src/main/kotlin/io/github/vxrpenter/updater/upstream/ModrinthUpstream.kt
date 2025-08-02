@@ -66,7 +66,7 @@ data class ModrinthUpstream(
             val body = call.body<List<Release>>()
 
             val value = body.first().versionNumber
-            val components = DefaultVersion.components(value, schema)
+            val components = components(value, schema)
             val classifier = DefaultClassifier.classifier(value, schema)
 
             return DefaultVersion(value, components, classifier)
