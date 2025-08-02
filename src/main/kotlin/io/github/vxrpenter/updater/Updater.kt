@@ -25,7 +25,6 @@ import io.github.vxrpenter.updater.configuration.UpdaterConfiguration
 import io.github.vxrpenter.updater.exceptions.UnsuccessfulVersionFetch
 import io.github.vxrpenter.updater.schema.UpdateSchema
 import io.github.vxrpenter.updater.upstream.Upstream
-import io.github.vxrpenter.updater.version.DefaultVersion
 import io.github.vxrpenter.updater.version.Version
 import io.ktor.client.*
 import io.ktor.client.engine.okhttp.*
@@ -33,6 +32,8 @@ import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.asCoroutineDispatcher
+import java.util.concurrent.Executors
 
 /**
  * Compares versions fetched from
@@ -42,8 +43,8 @@ import kotlinx.coroutines.CoroutineScope
  */
 open class Updater(private var configuration: UpdaterConfiguration) {
     private val logger = KotlinLogging.logger {}
-    private val updatesScope =
-        CoroutineScope(CoroutineExceptionHandler { _, exception -> logger.error(exception) { "An error occurred in the update coroutine" } })
+    private val updatesScope = CoroutineScope(CoroutineExceptionHandler { _, exception -> logger.error(exception) { "An error occurred in the update coroutine" } }
+            + Executors.newCachedThreadPool().asCoroutineDispatcher())
 
     /**
      * An [HttpClient], that is configured using the [configuration].
@@ -89,26 +90,13 @@ open class Updater(private var configuration: UpdaterConfiguration) {
     suspend fun checkUpdates(currentVersion: String, schema: UpdateSchema, upstream: Upstream, builder: (ConfigurationBuilder.() -> Unit)? = null) {
         if (builder != null) runBuilder(builder)
 
-        start { innerUpdater(currentVersion = DefaultVersion.toVersion(currentVersion, schema), schema = schema, upstream = upstream) }
+        start { innerUpdater(currentVersion = upstream.toVersion(currentVersion, schema), schema = schema, upstream = upstream) }
     }
 
-    @OptIn(ExperimentalScheduler::class)
-    private suspend fun start(task: suspend () -> Unit) {
-        if (configuration.periodic != null) {
-            task()
-            updatesScope.scheduleWithDelay(period = configuration.periodic!!) {
-                task()
-            }
-        } else {
-            task()
-        }
-    }
+    suspend fun autoUpdate(currentVersion: String, schema: UpdateSchema, upstream: Upstream, builder: (ConfigurationBuilder.() -> Unit)? = null) {
+        if (builder != null) runBuilder(builder)
 
-    private fun runBuilder(builder: ConfigurationBuilder.() -> Unit) {
-        val internalBuilder = ConfigurationBuilder()
-        internalBuilder.builder()
-        configuration = internalBuilder.build()
-        client = createClient()
+        start { innerAutoUpdater(currentVersion = upstream.toVersion(currentVersion, schema), schema = schema, upstream = upstream) }
     }
 
     private suspend fun innerUpdater(currentVersion: Version, schema: UpdateSchema, upstream: Upstream) {
@@ -123,5 +111,29 @@ open class Updater(private var configuration: UpdaterConfiguration) {
                 .replace("{version}", update.value)
                 .replace("{url}", update.url)
         }
+    }
+
+    private suspend fun innerAutoUpdater(currentVersion: Version, schema: UpdateSchema, upstream: Upstream) {
+        val version = upstream.fetch(client = client, schema = schema)
+
+        version ?: throw UnsuccessfulVersionFetch("Could not fetch version from upstream")
+        if (currentVersion >= version) return
+    }
+
+    @OptIn(ExperimentalScheduler::class)
+    private suspend fun start(task: suspend () -> Unit) {
+        if (configuration.periodic != null) {
+            updatesScope.scheduleWithDelay(period = configuration.periodic!!) { task() }
+            return
+        }
+
+        task()
+    }
+
+    private fun runBuilder(builder: ConfigurationBuilder.() -> Unit) {
+        val internalBuilder = ConfigurationBuilder()
+        internalBuilder.builder()
+        configuration = internalBuilder.build()
+        client = createClient()
     }
 }

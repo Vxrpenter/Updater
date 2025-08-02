@@ -18,6 +18,9 @@ package io.github.vxrpenter.updater.upstream
 
 import io.github.vxrpenter.updater.update.Update
 import io.github.vxrpenter.updater.schema.UpdateSchema
+import io.github.vxrpenter.updater.version.DefaultClassifier
+import io.github.vxrpenter.updater.version.DefaultVersion
+import io.github.vxrpenter.updater.version.DefaultVersion.Companion.components
 import io.github.vxrpenter.updater.version.Version
 import io.ktor.client.HttpClient
 
@@ -41,6 +44,16 @@ interface Upstream {
      * @return the fetched [io.github.vxrpenter.updater.version.Version]
      */
     suspend fun fetch(client: HttpClient, schema: UpdateSchema): Version?
+
+    /**
+     * Converts a version string into a [Version].
+     *
+     * @param version complete version
+     * @param schema defines the version deserialization
+     *
+     * @return the [Version]
+     */
+    fun toVersion(version: String, schema: UpdateSchema): Version
 
     /**
      * Returns an [Update] from a [Version].
