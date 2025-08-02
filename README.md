@@ -20,7 +20,7 @@ Updater is a kotlin (java) library for update management. It has integration wit
 ### Gradle
 ```gradle
 dependencies {
-  implementation("io.github.vxrpenter:updater:0.1.0")
+  implementation("io.github.vxrpenter:updater:VERSION")
 }
 ```
 
