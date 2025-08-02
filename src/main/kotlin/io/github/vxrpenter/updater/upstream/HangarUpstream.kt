@@ -29,6 +29,7 @@ import io.github.vxrpenter.updater.version.VersionComparisonHandler
 import io.github.vxrpenter.updater.schema.SchemaClassifier
 import io.github.vxrpenter.updater.update.Update
 import io.github.vxrpenter.updater.schema.UpdateSchema
+import io.github.vxrpenter.updater.version.DefaultVersion.Companion.components
 import io.github.vxrpenter.updater.version.Version
 import io.ktor.client.*
 import io.ktor.client.request.*
@@ -70,6 +71,18 @@ data class HangarUpstream(
         val classifier = DefaultClassifier.classifier(value, schema)
 
         return DefaultVersion(value, components, classifier)
+    }
+
+    /**
+     * Converts a version string into a [DefaultVersion].
+     *
+     * @param version complete version
+     * @param schema defines the version deserialization
+     *
+     * @return the [DefaultVersion]
+     */
+    override fun toVersion(version: String, schema: UpdateSchema): DefaultVersion {
+        return DefaultVersion(version, components(version, schema), DefaultClassifier.classifier(version, schema))
     }
 
     /**

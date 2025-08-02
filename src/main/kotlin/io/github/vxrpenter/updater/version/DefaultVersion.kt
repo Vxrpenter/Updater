@@ -37,18 +37,6 @@ data class DefaultVersion(
 ) : Version {
     companion object {
         /**
-         * Converts a version string into a [DefaultVersion].
-         *
-         * @param version complete version
-         * @param schema defines the version deserialization
-         *
-         * @return the [DefaultVersion]
-         */
-        fun toVersion(version: String, schema: UpdateSchema): DefaultVersion {
-            return DefaultVersion(version, components(version, schema), DefaultClassifier.classifier(version, schema))
-        }
-
-        /**
          * Returns a collection of version components from the given version.
          *
          * @param value complete version
