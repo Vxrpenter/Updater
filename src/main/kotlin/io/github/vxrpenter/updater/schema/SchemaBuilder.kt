@@ -80,7 +80,7 @@ class SchemaBuilder {
      *
      * @see SchemaClassifier
      */
-    internal fun classifier(
+    fun classifier(
         builder: InlineSchemaClassifier.() -> Unit
     ) {
         val classifier = InlineSchemaClassifier().apply(builder)
@@ -97,7 +97,7 @@ class SchemaBuilder {
         )
     }
 
-    internal fun customClassifier(classifier: SchemaClassifier) {
+    fun customClassifier(classifier: SchemaClassifier) {
         classifiers.add(classifier)
     }
 
