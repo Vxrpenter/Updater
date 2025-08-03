@@ -18,7 +18,7 @@ plugins {
 }
 
 group = "io.github.vxrpenter"
-version = "0.1.0"
+version = "0.1.0-rc1"
 
 repositories {
     mavenCentral()
