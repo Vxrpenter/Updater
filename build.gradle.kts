@@ -34,8 +34,6 @@ dependencies {
     api(libs.ktor.client.content.negotiation)
     api(libs.ktor.serialization.kotlinx.json)
 
-    api(libs.okhttp3.okhttp)
-
     // Implementation for testing
     implementation("ch.qos.logback:logback-classic:1.5.18")
 }

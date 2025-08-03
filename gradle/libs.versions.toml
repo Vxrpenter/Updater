@@ -4,7 +4,6 @@ ktor = "3.2.0"
 kotlin-logging = "7.0.3"
 dokka = "2.0.0"
 mavenpublish = "0.32.0"
-okhttp = "5.1.0"
 
 [plugins]
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka"}
@@ -20,7 +19,5 @@ ktor-client-content-negotiation = { group = "io.ktor", name = "ktor-client-conte
 ktor-serialization-kotlinx-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
 
 kotlin-logging = { group = "io.github.oshai", name = "kotlin-logging-jvm", version.ref = "kotlin-logging"}
-
-okhttp3-okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp"}
 
 dokka-base = { group = "org.jetbrains.dokka", name = "dokka-base", version.ref = "dokka"}
