@@ -21,7 +21,6 @@ package io.github.vxrpenter.updater.configuration
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttpEngine
 import kotlinx.serialization.json.Json
-import java.util.concurrent.TimeUnit
 import kotlin.time.Duration
 
 /**
@@ -78,70 +77,20 @@ class ConfigurationBuilder {
     /**
      * The [HttpClient] (with [OkHttpEngine]) read timout
      */
-    private var readTimeOut: UpdaterConfigurationTimeOut = defaultConfig.readTimeOut
+    var readTimeout: Duration = defaultConfig.readTimeout
 
     /**
      * The [HttpClient] (with [OkHttpEngine]) write timout
      */
-    private var writeTimeOut: UpdaterConfigurationTimeOut = defaultConfig.writeTimeOut
+    var writeTimeout: Duration = defaultConfig.writeTimeout
 
     /**
      * The notification settings
      */
     private var notification: UpdaterConfigurationNotification = defaultConfig.notification
 
-
     /**
      * The [HttpClient] (with [OkHttpEngine]) read timout
-     *
-     * @see UpdaterConfigurationTimeOut
-     */
-    internal fun readTimeout(
-        builder: InlineUpdaterConfigurationTimeOut.() -> Unit
-    ) {
-        val timeout = InlineUpdaterConfigurationTimeOut().apply(builder)
-        requireNotNull(timeout.timeout)
-        requireNotNull(timeout.unit)
-
-        readTimeOut = UpdaterConfigurationTimeOut(
-            timeout = timeout.timeout!!,
-            unit = timeout.unit!!
-        )
-    }
-
-    /**
-     * The [HttpClient] (with [OkHttpEngine]) write timout
-     *
-     * @see UpdaterConfigurationTimeOut
-     */
-    internal fun writeTimeout(
-        builder: InlineUpdaterConfigurationTimeOut.() -> Unit
-    ) {
-        val timeout = InlineUpdaterConfigurationTimeOut().apply(builder)
-        requireNotNull(timeout.timeout)
-        requireNotNull(timeout.unit)
-
-        writeTimeOut = UpdaterConfigurationTimeOut(
-            timeout = timeout.timeout!!,
-            unit = timeout.unit!!
-        )
-    }
-
-    data class InlineUpdaterConfigurationTimeOut(
-        /**
-         * Time it takes until the client times out
-         */
-        var timeout: Long? = null,
-        /**
-         * Unit that is used for the [timeout]
-         */
-        var unit: TimeUnit? = null
-    )
-
-    /**
-     * The [HttpClient] (with [OkHttpEngine]) read timout
-     *
-     * @see UpdaterConfigurationTimeOut
      */
     internal fun notification(
         builder: InlineUpdaterConfigurationNotification.() -> Unit
@@ -168,13 +117,6 @@ class ConfigurationBuilder {
     )
 
     fun build(): UpdaterConfiguration {
-        return UpdaterConfiguration(json, periodic, readTimeOut, writeTimeOut, notification)
-    }
-
-    private fun timeoutProcessing(timeout: Long? = null, unit: TimeUnit? = null, build: InlineUpdaterConfigurationTimeOut.() -> Unit): UpdaterConfigurationTimeOut {
-        val timeout = InlineUpdaterConfigurationTimeOut(timeout, unit).apply(build)
-        requireNotNull(timeout.timeout != null)
-        requireNotNull(timeout.unit != null)
-        return UpdaterConfigurationTimeOut(timeout.timeout!!, timeout.unit!!)
+        return UpdaterConfiguration(json, periodic, readTimeout, writeTimeout, notification)
     }
 }

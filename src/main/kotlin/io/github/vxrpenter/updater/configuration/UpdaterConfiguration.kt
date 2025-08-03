@@ -16,11 +16,11 @@
 
 package io.github.vxrpenter.updater.configuration
 
-import java.util.concurrent.TimeUnit
 import kotlin.time.Duration
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttpEngine
 import kotlinx.serialization.json.Json
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * The updater configuration
@@ -37,29 +37,15 @@ data class UpdaterConfiguration(
     /**
      * The [HttpClient] (with [OkHttpEngine]) read timout
      */
-    val readTimeOut: UpdaterConfigurationTimeOut = UpdaterConfigurationTimeOut(timeout = 30, unit = TimeUnit.SECONDS),
+    val readTimeout: Duration = 30.seconds,
     /**
      * The [HttpClient] (with [OkHttpEngine]) write timout
      */
-    val writeTimeOut: UpdaterConfigurationTimeOut = UpdaterConfigurationTimeOut(timeout = 30, unit = TimeUnit.SECONDS),
+    val writeTimeout: Duration = 30.seconds,
     /**
      * The notification settings
      */
     val notification: UpdaterConfigurationNotification = UpdaterConfigurationNotification(true)
-)
-
-/**
- * The updater configurations timeout configuration
- */
-data class UpdaterConfigurationTimeOut(
-    /**
-     * Time it takes until the client times out
-     */
-    val timeout: Long,
-    /**
-     * Unit that is used for the [timeout]
-     */
-    val unit: TimeUnit
 )
 
 /**
