@@ -33,6 +33,7 @@ import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.launch
 import java.util.concurrent.Executors
 
 /**
@@ -127,7 +128,7 @@ open class Updater(private var configuration: UpdaterConfiguration) {
             return
         }
 
-        task()
+        updatesScope.launch { task() }
     }
 
     private fun runBuilder(builder: ConfigurationBuilder.() -> Unit) {
