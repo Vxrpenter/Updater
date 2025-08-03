@@ -18,6 +18,7 @@
 
 package io.github.vxrpenter.updater.version
 
+import io.github.vxrpenter.updater.exceptions.ClassifierTypeMismatch
 import io.github.vxrpenter.updater.exceptions.VersionSizeMismatch
 import io.github.vxrpenter.updater.schema.ClassifierPriority
 import io.github.vxrpenter.updater.schema.UpdateSchema
@@ -66,9 +67,10 @@ data class DefaultClassifier(
      * to the specified [other] object, a negative number if it's less than [other], or a positive number
      * if it's greater than [other].
      *
+     * @throws ClassifierTypeMismatch when [other] is not [DefaultClassifier]
      * @throws VersionSizeMismatch when the component sizes don't match
      */
-    override fun compareTo(other: Classifier): Int { other as DefaultClassifier
+    override fun compareTo(other: Classifier): Int { if (other !is DefaultClassifier) throw ClassifierTypeMismatch("Version type ${other.javaClass} cannot be ${DefaultClassifier::class.java}")
         if (components.size != other.components.size) throw VersionSizeMismatch("Size of classifier components are not equal")
         if (components.isEmpty()) return priority.value.compareTo(other.priority.value)
 

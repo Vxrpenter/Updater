@@ -19,6 +19,7 @@
 package io.github.vxrpenter.updater.version
 
 import io.github.vxrpenter.updater.exceptions.VersionSizeMismatch
+import io.github.vxrpenter.updater.exceptions.VersionTypeMismatch
 import io.github.vxrpenter.updater.schema.UpdateSchema
 
 /**
@@ -63,9 +64,10 @@ data class DefaultVersion(
      * to the specified [other] object, a negative number if it's less than [other], or a positive number
      * if it's greater than [other].
      *
+     * @throws VersionTypeMismatch when [other] is not [DefaultVersion]
      * @throws VersionSizeMismatch when the component sizes don't match
      */
-    override fun compareTo(other: Version): Int { other as DefaultVersion
+    override fun compareTo(other: Version): Int { if (other !is DefaultVersion) throw VersionTypeMismatch("Version type ${other.javaClass} cannot be ${DefaultVersion::class.java}")
         if (components.size != other.components.size) throw VersionSizeMismatch("Size of version components are not equal")
         components.zip(other.components).forEach { (subVersion, otherSubVersion) ->
             if (subVersion != otherSubVersion) return subVersion.compareTo(otherSubVersion)
