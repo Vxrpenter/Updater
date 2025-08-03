@@ -37,7 +37,7 @@ import kotlinx.serialization.SerializationException
 /**
  * The GitHub upstream.
  */
-data class GithubUpstream (
+data class GitHubUpstream (
     /**
      * User that the repository resides under
      */
