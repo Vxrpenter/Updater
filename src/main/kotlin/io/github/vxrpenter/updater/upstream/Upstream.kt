@@ -16,13 +16,10 @@
 
 package io.github.vxrpenter.updater.upstream
 
-import io.github.vxrpenter.updater.update.Update
 import io.github.vxrpenter.updater.schema.UpdateSchema
-import io.github.vxrpenter.updater.version.DefaultClassifier
-import io.github.vxrpenter.updater.version.DefaultVersion
-import io.github.vxrpenter.updater.version.DefaultVersion.Companion.components
+import io.github.vxrpenter.updater.update.Update
 import io.github.vxrpenter.updater.version.Version
-import io.ktor.client.HttpClient
+import io.ktor.client.*
 
 /**
  * The Upstream interface defines a remote that stores version information (and possible version files)

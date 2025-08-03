@@ -16,8 +16,8 @@
 
 package io.github.vxrpenter.updater.schema
 
-import io.github.vxrpenter.updater.version.Version
 import io.github.vxrpenter.updater.version.Classifier
+import io.github.vxrpenter.updater.version.Version
 
 /**
  * The SchemaClassifier interface is a set of instructions
