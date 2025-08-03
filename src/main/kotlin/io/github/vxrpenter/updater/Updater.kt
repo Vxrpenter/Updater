@@ -35,6 +35,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
 import java.util.concurrent.Executors
+import kotlin.time.toJavaDuration
 
 /**
  * Compares versions fetched from
@@ -66,8 +67,8 @@ open class Updater(private var configuration: UpdaterConfiguration) {
 
             engine {
                 config {
-                    readTimeout(timeout = configuration.readTimeOut.timeout, unit = configuration.readTimeOut.unit)
-                    writeTimeout(timeout = configuration.readTimeOut.timeout, unit = configuration.readTimeOut.unit)
+                    readTimeout(duration = configuration.readTimeout.toJavaDuration())
+                    writeTimeout(duration = configuration.writeTimeout.toJavaDuration())
                 }
             }
         }
@@ -88,13 +89,13 @@ open class Updater(private var configuration: UpdaterConfiguration) {
      * @param builder the builder
      */
     @OptIn(ExperimentalScheduler::class)
-    suspend fun checkUpdates(currentVersion: String, schema: UpdateSchema, upstream: Upstream, builder: (ConfigurationBuilder.() -> Unit)? = null) {
+    fun checkUpdates(currentVersion: String, schema: UpdateSchema, upstream: Upstream, builder: (ConfigurationBuilder.() -> Unit)? = null) {
         if (builder != null) runBuilder(builder)
 
         start { innerUpdater(currentVersion = upstream.toVersion(currentVersion, schema), schema = schema, upstream = upstream) }
     }
 
-    suspend fun autoUpdate(currentVersion: String, schema: UpdateSchema, upstream: Upstream, builder: (ConfigurationBuilder.() -> Unit)? = null) {
+    fun autoUpdate(currentVersion: String, schema: UpdateSchema, upstream: Upstream, builder: (ConfigurationBuilder.() -> Unit)? = null) {
         if (builder != null) runBuilder(builder)
 
         start { innerAutoUpdater(currentVersion = upstream.toVersion(currentVersion, schema), schema = schema, upstream = upstream) }
@@ -122,7 +123,7 @@ open class Updater(private var configuration: UpdaterConfiguration) {
     }
 
     @OptIn(ExperimentalScheduler::class)
-    private suspend fun start(task: suspend () -> Unit) {
+    private fun start(task: suspend () -> Unit) {
         if (configuration.periodic != null) {
             updatesScope.scheduleWithDelay(period = configuration.periodic!!) { task() }
             return
