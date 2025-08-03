@@ -16,10 +16,10 @@
 
 package io.github.vxrpenter.updater.configuration
 
-import kotlin.time.Duration
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.okhttp.OkHttpEngine
+import io.ktor.client.*
+import io.ktor.client.engine.okhttp.*
 import kotlinx.serialization.json.Json
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 /**

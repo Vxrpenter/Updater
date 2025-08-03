@@ -20,11 +20,11 @@ package io.github.vxrpenter.updater.upstream
 
 import io.github.vxrpenter.updater.exceptions.UnsuccessfulVersionRequest
 import io.github.vxrpenter.updater.exceptions.VersionTypeMismatch
+import io.github.vxrpenter.updater.schema.UpdateSchema
 import io.github.vxrpenter.updater.update.DefaultUpdate
+import io.github.vxrpenter.updater.update.Update
 import io.github.vxrpenter.updater.version.DefaultClassifier
 import io.github.vxrpenter.updater.version.DefaultVersion
-import io.github.vxrpenter.updater.schema.UpdateSchema
-import io.github.vxrpenter.updater.update.Update
 import io.github.vxrpenter.updater.version.DefaultVersion.Companion.components
 import io.github.vxrpenter.updater.version.Version
 import io.ktor.client.*
