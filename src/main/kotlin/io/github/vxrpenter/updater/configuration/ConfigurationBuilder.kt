@@ -92,7 +92,7 @@ class ConfigurationBuilder {
     /**
      * The [HttpClient] (with [OkHttpEngine]) read timout
      */
-    internal fun notification(
+    fun notification(
         builder: InlineUpdaterConfigurationNotification.() -> Unit
     ) {
         val inlineNotification = InlineUpdaterConfigurationNotification().apply(builder)
