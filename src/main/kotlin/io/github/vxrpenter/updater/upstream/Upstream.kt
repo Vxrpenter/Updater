@@ -16,6 +16,7 @@
 
 package io.github.vxrpenter.updater.upstream
 
+import io.github.vxrpenter.updater.priority.Priority
 import io.github.vxrpenter.updater.schema.UpdateSchema
 import io.github.vxrpenter.updater.update.Update
 import io.github.vxrpenter.updater.version.Version
@@ -30,7 +31,7 @@ interface Upstream {
     /**
      * Priority is that used when comparing versions from multiple upstreams.
      */
-    val upstreamPriority: UpstreamPriority
+    val upstreamPriority: Priority
 
     /**
      * Fetches a version object from the upstream.

@@ -20,6 +20,8 @@ package io.github.vxrpenter.updater.upstream
 
 import io.github.vxrpenter.updater.exceptions.UnsuccessfulVersionRequest
 import io.github.vxrpenter.updater.exceptions.VersionTypeMismatch
+import io.github.vxrpenter.updater.priority.Priority
+import io.github.vxrpenter.updater.priority.Priority.Companion.priority
 import io.github.vxrpenter.updater.schema.UpdateSchema
 import io.github.vxrpenter.updater.update.DefaultUpdate
 import io.github.vxrpenter.updater.update.Update
@@ -46,7 +48,7 @@ data class GitHubUpstream (
      * Name of the repository
      */
     val repo: String,
-    override val upstreamPriority: UpstreamPriority = UpstreamPriority.NONE
+    override val upstreamPriority: Priority = 0.priority
 ) : Upstream {
     /**
      * Fetches a version object from the upstream.
