@@ -97,7 +97,7 @@ data class ModrinthUpstream(
      * @throws VersionTypeMismatch when [version] is not [DefaultVersion]
      */
     override fun update(version: Version): DefaultUpdate { if (version !is DefaultVersion) throw VersionTypeMismatch("Version type ${version.javaClass} cannot be ${DefaultVersion::class.java}")
-        val releaseUrl = "https://modrinth.com/${modrinthProjectType.value}/$projectId/version/$version"
+        val releaseUrl = "https://modrinth.com/${modrinthProjectType.value}/$projectId/version/${version.value}"
 
         return DefaultUpdate(version.value, releaseUrl)
     }
