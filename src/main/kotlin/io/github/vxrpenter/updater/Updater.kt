@@ -22,10 +22,10 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import io.github.vxrpenter.updater.annotations.ExperimentalScheduler
 import io.github.vxrpenter.updater.configuration.ConfigurationBuilder
 import io.github.vxrpenter.updater.configuration.UpdaterConfiguration
-import io.github.vxrpenter.updater.exceptions.UnsuccessfulVersionFetch
+import io.github.vxrpenter.updater.internal.AutoUpdater
+import io.github.vxrpenter.updater.internal.UpdateChecker
 import io.github.vxrpenter.updater.schema.UpdateSchema
 import io.github.vxrpenter.updater.upstream.Upstream
-import io.github.vxrpenter.updater.version.Version
 import io.ktor.client.*
 import io.ktor.client.engine.okhttp.*
 import io.ktor.client.plugins.contentnegotiation.*
@@ -92,34 +92,13 @@ open class Updater(private var configuration: UpdaterConfiguration) {
     fun checkUpdates(currentVersion: String, schema: UpdateSchema, upstream: Upstream, builder: (ConfigurationBuilder.() -> Unit)? = null) {
         if (builder != null) runBuilder(builder)
 
-        start { innerUpdater(currentVersion = upstream.toVersion(currentVersion, schema), schema = schema, upstream = upstream) }
+        start { UpdateChecker(configuration, client).checkForUpdate(currentVersion = upstream.toVersion(currentVersion, schema), schema = schema, upstream = upstream) }
     }
 
     fun autoUpdate(currentVersion: String, schema: UpdateSchema, upstream: Upstream, builder: (ConfigurationBuilder.() -> Unit)? = null) {
         if (builder != null) runBuilder(builder)
 
-        start { innerAutoUpdater(currentVersion = upstream.toVersion(currentVersion, schema), schema = schema, upstream = upstream) }
-    }
-
-    private suspend fun innerUpdater(currentVersion: Version, schema: UpdateSchema, upstream: Upstream) {
-        val version = upstream.fetch(client = client, schema = schema)
-
-        version ?: throw UnsuccessfulVersionFetch("Could not fetch version from upstream")
-        if (currentVersion >= version) return
-
-        val update = upstream.update(version)
-
-        if (configuration.notification.notify) logger.warn {configuration.notification.notification
-                .replace("{version}", update.value)
-                .replace("{url}", update.url)
-        }
-    }
-
-    private suspend fun innerAutoUpdater(currentVersion: Version, schema: UpdateSchema, upstream: Upstream) {
-        val version = upstream.fetch(client = client, schema = schema)
-
-        version ?: throw UnsuccessfulVersionFetch("Could not fetch version from upstream")
-        if (currentVersion >= version) return
+        start { AutoUpdater(configuration, client).checkForUpdate(currentVersion = upstream.toVersion(currentVersion, schema), schema = schema, upstream = upstream) }
     }
 
     @OptIn(ExperimentalScheduler::class)
