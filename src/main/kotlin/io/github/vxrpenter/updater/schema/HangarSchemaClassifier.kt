@@ -16,11 +16,13 @@
 
 package io.github.vxrpenter.updater.schema
 
+import io.github.vxrpenter.updater.priority.Priority
+
 data class HangarSchemaClassifier(
     override val value: String,
     override val divider: String,
     override val componentDivider: String,
-    override val priority: ClassifierPriority,
+    override val priority: Priority,
     /**
      * The custom channel that the version is located in
      */
