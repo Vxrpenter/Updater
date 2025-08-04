@@ -16,6 +16,7 @@
 
 package io.github.vxrpenter.updater.schema
 
+import io.github.vxrpenter.updater.priority.Priority
 import io.github.vxrpenter.updater.version.Classifier
 import io.github.vxrpenter.updater.version.Version
 
@@ -31,7 +32,7 @@ interface SchemaClassifier {
     /**
      * Priority of the classifier
      */
-    val priority: ClassifierPriority
+    val priority: Priority
     /**
      * The symbol that is used to divide the classifier and the [Version],
      * e.g. `.` or `-`

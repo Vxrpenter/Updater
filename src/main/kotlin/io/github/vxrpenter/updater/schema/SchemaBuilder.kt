@@ -18,6 +18,7 @@
 
 package io.github.vxrpenter.updater.schema
 
+import io.github.vxrpenter.updater.priority.Priority
 import io.github.vxrpenter.updater.version.Version
 
 /**
@@ -114,7 +115,7 @@ class SchemaBuilder {
          * The symbol that is used to divide the classifier and the [Version],
          * e.g. `.` or `-`
          */
-        var priority: ClassifierPriority? = null,
+        var priority: Priority? = null,
         /**
          * The symbol that is used to divide the version components, e.g. `.` or `-`
          */

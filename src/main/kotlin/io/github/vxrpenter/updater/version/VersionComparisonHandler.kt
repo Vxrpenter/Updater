@@ -28,8 +28,8 @@ open class VersionComparisonHandler {
                 if (prioritizedVersion.isBlank()) prioritizedVersion = pair.first
                 if (prioritisedClassifier == null) prioritisedClassifier = pair.second
 
-                val currentPrioritiedPriority = prioritisedClassifier.priority.value
-                val priority = pair.second.priority.value
+                val currentPrioritiedPriority = prioritisedClassifier.priority
+                val priority = pair.second.priority
 
                 if (currentPrioritiedPriority < priority) {
                     prioritizedVersion = pair.first
