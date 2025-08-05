@@ -35,9 +35,41 @@ class UpdateChecker(val configuration: UpdaterConfiguration, val client: HttpCli
 
         val update = upstream.update(version)
 
-        if (configuration.notification.notify) logger.warn {configuration.notification.notification
+        if (configuration.notification.notify) logger.warn {configuration.notification.message
             .replace("{version}", update.value)
             .replace("{url}", update.url)
+        }
+    }
+
+    internal suspend fun checkMultipleUpdates(currentVersion: String, schema: UpdateSchema, upstreams: Collection<Upstream>) {
+        val upstreamVersionPairList = mutableListOf<Pair<Upstream, Version>>()
+
+        for (upstream in upstreams) {
+            val version = upstream.fetch(client = client, schema = schema)
+
+            version ?: throw UnsuccessfulVersionFetch("Could not fetch version from upstream")
+            upstreamVersionPairList.add(Pair(upstream, version))
+        }
+
+        val prioritisedVersionPair = upstreamVersionPairList.maxWith(Comparator { versionPair, otherVersionPair -> versionPairComparor(versionPair, otherVersionPair) })
+        if (prioritisedVersionPair.first.toVersion(currentVersion, schema) >= prioritisedVersionPair.second) return
+
+        val update = prioritisedVersionPair.first.update(prioritisedVersionPair.second)
+
+        if (configuration.notification.notify) logger.warn {configuration.notification.message
+            .replace("{version}", update.value)
+            .replace("{url}", update.url)
+        }
+    }
+
+    private fun versionPairComparor(versionPair: Pair<Upstream, Version>, otherVersionPair: Pair<Upstream, Version>): Int {
+        val (version, upstream) = versionPair
+        val (otherVersion, otherUpstream) = otherVersionPair
+
+        return when {
+            version > otherVersion || upstream > otherUpstream-> 1
+            upstream > otherUpstream -> 1
+            else -> -1
         }
     }
 }
