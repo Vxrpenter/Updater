@@ -24,7 +24,7 @@ interface UpdateSchema {
     /**
      * Defines the beginning of a version, e.g. `v` or `v.`
      */
-    val prefix: String
+    val prefixes: Collection<String>
     /**
      * The symbol that is used to divide the version components, e.g. `.` or `-`
      */
@@ -33,4 +33,27 @@ interface UpdateSchema {
      * A collection of possible [SchemaClassifier]
      */
     val classifiers: Collection<SchemaClassifier>
+
+    /**
+     * Removes the prefix from a selected version value.
+     *
+     * The prefix that is the longest and is contained in the version value will
+     * always be chosen first.
+     *
+     * When no prefix is found, the raw version value will be returned instead
+     *
+     * @param value the version value to remove the prefix from
+     * @return the version value, with removed prefixes
+     */
+    fun removePrefix(value: String): String {
+        val maxLength = prefixes.maxBy { it.toCharArray().size }.toCharArray().size
+
+        for (prefix in prefixes) {
+            if (!value.contains(prefix) || prefix.toCharArray().size > maxLength) continue
+
+            return value.replace(prefix, "")
+        }
+
+        return value
+    }
 }
