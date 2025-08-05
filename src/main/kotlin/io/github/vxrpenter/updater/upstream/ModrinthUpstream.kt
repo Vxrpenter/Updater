@@ -71,9 +71,11 @@ data class ModrinthUpstream(
             val components = components(value, schema)
             val classifier = DefaultClassifier.classifier(value, schema)
 
+            if (classifier != null) if (classifier.ignored) return null
+
             return DefaultVersion(value, components, classifier)
-        } catch (_: JsonConvertException) {
-            return null
+        } catch (e: JsonConvertException) {
+            throw UnsuccessfulVersionRequest("Could not correctly commence version request, ${e.message}")
         }
     }
 

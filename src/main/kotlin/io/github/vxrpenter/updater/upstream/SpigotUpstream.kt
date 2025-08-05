@@ -61,6 +61,8 @@ data class SpigotUpstream(
         val components = components(value, schema)
         val classifier = DefaultClassifier.classifier(value, schema)
 
+        if (classifier != null) if (classifier.ignored) return null
+
         return DefaultVersion(value, components, classifier)
     }
 
