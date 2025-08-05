@@ -23,7 +23,7 @@ import io.github.vxrpenter.updater.upstream.Upstream
 import io.github.vxrpenter.updater.version.Version
 import io.ktor.client.HttpClient
 
-class UpdateChecker(val configuration: UpdaterConfiguration, val client: HttpClient) {
+internal class UpdateChecker(val configuration: UpdaterConfiguration, val client: HttpClient) {
     private val logger = KotlinLogging.logger {}
 
     internal suspend fun checkForUpdate(currentVersion: Version, schema: UpdateSchema, upstream: Upstream) {
