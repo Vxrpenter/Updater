@@ -26,6 +26,7 @@ import io.github.vxrpenter.updater.internal.AutoUpdater
 import io.github.vxrpenter.updater.internal.UpdateChecker
 import io.github.vxrpenter.updater.schema.UpdateSchema
 import io.github.vxrpenter.updater.upstream.Upstream
+import io.github.vxrpenter.updater.priority.Priority
 import io.ktor.client.*
 import io.ktor.client.engine.okhttp.*
 import io.ktor.client.plugins.contentnegotiation.*
@@ -55,38 +56,20 @@ open class Updater(private var configuration: UpdaterConfiguration) {
     private var client: HttpClient = createClient()
 
     /**
-     * Return the [HttpClient] using the [configuration].
-     *
-     * @return the [HttpClient]
-     */
-    private fun createClient(): HttpClient {
-        return HttpClient(engineFactory = OkHttp) {
-            install(plugin = ContentNegotiation) {
-                json(json = configuration.json)
-            }
-
-            engine {
-                config {
-                    readTimeout(duration = configuration.readTimeout.toJavaDuration())
-                    writeTimeout(duration = configuration.writeTimeout.toJavaDuration())
-                }
-            }
-        }
-    }
-
-    /**
      * The default updater object using the default configuration.
      * Configuration can be changed using the builders in the functions.
      */
     companion object Default : Updater(configuration = UpdaterConfiguration())
 
     /**
-     * The default update comparison.
-     * It compares the current version to the one fetched from a configured upstream.
+     * Checks for new updates by fetching the version from the specified upstream,
+     * then it compares the current version to the fetched one and (when enabled)
+     * returns a notification.
      *
      * @param currentVersion complete version of the application
      * @param schema defines the version deserialization
-     * @param builder the builder
+     * @param upstream the upstream to fetch the version from
+     * @param builder the [ConfigurationBuilder]
      */
     @OptIn(ExperimentalScheduler::class)
     fun checkUpdates(currentVersion: String, schema: UpdateSchema, upstream: Upstream, builder: (ConfigurationBuilder.() -> Unit)? = null) {
@@ -95,10 +78,41 @@ open class Updater(private var configuration: UpdaterConfiguration) {
         start { UpdateChecker(configuration, client).checkForUpdate(currentVersion = upstream.toVersion(currentVersion, schema), schema = schema, upstream = upstream) }
     }
 
+    /**
+     * Checks for new updates by fetching versions from multiple upstreams.
+     * It then compares the versions by first checking for the biggest returned version.
+     *
+     * If the returned versions from at least 2 upstreams are equal, the prioritized
+     * upstream will be selected by comparing them using their [Priority].
+     *
+     * @param currentVersion complete version of the application
+     * @param schema defines the version deserialization
+     * @param upstreams a collection of upstreams that versions will be fetched from
+     * @param builder the [ConfigurationBuilder]
+     */
+    @OptIn(ExperimentalScheduler::class)
+    fun checkMultipleUpdates(currentVersion: String, schema: UpdateSchema, upstreams: Collection<Upstream>, builder: (ConfigurationBuilder.() -> Unit)? = null) {
+        if (builder != null) runBuilder(builder)
+
+        start { UpdateChecker(configuration, client).checkMultipleUpdates(currentVersion = currentVersion, schema = schema, upstreams = upstreams) }
+    }
+
+    @Deprecated("Do not use, currently not fully implemented")
     fun autoUpdate(currentVersion: String, schema: UpdateSchema, upstream: Upstream, builder: (ConfigurationBuilder.() -> Unit)? = null) {
         if (builder != null) runBuilder(builder)
 
         start { AutoUpdater(configuration, client).checkForUpdate(currentVersion = upstream.toVersion(currentVersion, schema), schema = schema, upstream = upstream) }
+    }
+
+    private fun createClient(): HttpClient = HttpClient(engineFactory = OkHttp) {
+        install(plugin = ContentNegotiation) {
+            json(json = configuration.json)
+        }
+
+        engine { config {
+            readTimeout(duration = configuration.readTimeout.toJavaDuration())
+            writeTimeout(duration = configuration.writeTimeout.toJavaDuration())
+        }}
     }
 
     @OptIn(ExperimentalScheduler::class)
