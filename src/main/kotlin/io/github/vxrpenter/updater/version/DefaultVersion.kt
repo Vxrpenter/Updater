@@ -45,7 +45,7 @@ data class DefaultVersion(
          * @return the component collection
          */
         fun components(value: String, schema: UpdateSchema): Collection<String> {
-            val version = value.replace(schema.prefix, "")
+            val version = schema.removePrefix(value)
             var preSplit = version
 
             for (classifier in schema.classifiers) {

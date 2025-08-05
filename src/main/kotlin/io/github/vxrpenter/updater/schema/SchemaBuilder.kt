@@ -48,7 +48,7 @@ import io.github.vxrpenter.updater.version.Version
  * }
  * ```
  *
- * @param [SchemaBuilder.prefix] Defines the beginning of a version, e.g. `v` or `v.`
+ * @param [SchemaBuilder.prefixes] Defines the beginning of a version, e.g. `v` or `v.`
  * @param [SchemaBuilder.divider] The symbol that is used to divide the version components, e.g. `.` or `-`
  * @param [SchemaBuilder.classifier] Version classifier
  *
@@ -68,7 +68,7 @@ class SchemaBuilder {
     /**
      * Defines the beginning of a version, e.g. `v` or `v.`
      */
-    var prefix: String? = null
+    var prefixes: Collection<String>? = null
     /**
      * The symbol that is used to divide the version components, e.g. `.` or `-`
      */
@@ -123,10 +123,10 @@ class SchemaBuilder {
     )
 
     fun build(): DefaultUpdateSchema {
-        requireNotNull(this.prefix)
-        require(this.prefix!!.isNotEmpty()) { "'prefix' cannot be empty" }
+        requireNotNull(this.prefixes)
+        require(this.prefixes!!.isNotEmpty()) { "'prefix' cannot be empty" }
         require(!this.classifiers.isEmpty()) { "'classifiers' cannot be empty" }
 
-        return DefaultUpdateSchema(prefix = prefix!!, divider = divider, classifiers = classifiers.toList())
+        return DefaultUpdateSchema(prefixes = prefixes!!, divider = divider, classifiers = classifiers.toList())
     }
 }

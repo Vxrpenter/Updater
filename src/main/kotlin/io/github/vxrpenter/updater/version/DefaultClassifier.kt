@@ -46,7 +46,7 @@ data class DefaultClassifier(
          * @return the [DefaultClassifier]
          */
         fun classifier(value: String, schema: UpdateSchema): DefaultClassifier? {
-            val version = value.replace(schema.prefix, "")
+            val version = schema.removePrefix(value)
 
             for (classifier in schema.classifiers) {
                 val classifierElement = "${classifier.divider}${classifier.value}"
