@@ -22,7 +22,7 @@ import io.github.vxrpenter.updater.upstream.Upstream
 import io.github.vxrpenter.updater.version.Version
 import io.ktor.client.HttpClient
 
-class AutoUpdater(val configuration: UpdaterConfiguration, val client: HttpClient) {
+internal class AutoUpdater(val configuration: UpdaterConfiguration, val client: HttpClient) {
     internal suspend fun checkForUpdate(currentVersion: Version, schema: UpdateSchema, upstream: Upstream) {
         val version = upstream.fetch(client = client, schema = schema)
 
