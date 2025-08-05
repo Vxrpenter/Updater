@@ -97,11 +97,11 @@ class ConfigurationBuilder {
     ) {
         val inlineNotification = InlineUpdaterConfigurationNotification().apply(builder)
         requireNotNull(inlineNotification.notify)
-        requireNotNull(inlineNotification.notification)
+        requireNotNull(inlineNotification.message)
 
         notification = UpdaterConfigurationNotification(
             notify = inlineNotification.notify!!,
-            notification = inlineNotification.notification!!
+            message = inlineNotification.message!!
         )
     }
 
@@ -113,7 +113,7 @@ class ConfigurationBuilder {
         /**
          * Message that will be prompted when a new version has been found
          */
-        var notification: String? = null
+        var message: String? = null
     )
 
     fun build(): UpdaterConfiguration {

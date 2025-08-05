@@ -59,5 +59,5 @@ data class UpdaterConfigurationNotification(
     /**
      * Message that will be prompted when a new version has been found
      */
-    val notification: String = "New update has been found. Version {version} can be downloaded from {url}"
+    val message: String = "New update has been found. Version {version} can be downloaded from {url}"
 )
