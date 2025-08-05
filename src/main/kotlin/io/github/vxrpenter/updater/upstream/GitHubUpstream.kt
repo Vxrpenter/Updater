@@ -72,9 +72,11 @@ data class GitHubUpstream (
             val components = components(value, schema)
             val classifier = DefaultClassifier.classifier(value, schema)
 
+            if (classifier != null) if (classifier.ignored) return null
+
             return DefaultVersion(value, components, classifier)
-        } catch (_: SerializationException) {
-            return null
+        } catch (e: SerializationException) {
+            throw UnsuccessfulVersionRequest("Could not correctly commence version request, ${e.message}")
         }
     }
 

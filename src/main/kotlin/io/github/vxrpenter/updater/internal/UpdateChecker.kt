@@ -18,7 +18,6 @@ package io.github.vxrpenter.updater.internal
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.github.vxrpenter.updater.configuration.UpdaterConfiguration
-import io.github.vxrpenter.updater.exceptions.UnsuccessfulVersionFetch
 import io.github.vxrpenter.updater.schema.UpdateSchema
 import io.github.vxrpenter.updater.upstream.Upstream
 import io.github.vxrpenter.updater.version.Version
@@ -30,7 +29,7 @@ class UpdateChecker(val configuration: UpdaterConfiguration, val client: HttpCli
     internal suspend fun checkForUpdate(currentVersion: Version, schema: UpdateSchema, upstream: Upstream) {
         val version = upstream.fetch(client = client, schema = schema)
 
-        version ?: throw UnsuccessfulVersionFetch("Could not fetch version from upstream")
+        version ?: return
         if (currentVersion >= version) return
 
         val update = upstream.update(version)
@@ -47,7 +46,7 @@ class UpdateChecker(val configuration: UpdaterConfiguration, val client: HttpCli
         for (upstream in upstreams) {
             val version = upstream.fetch(client = client, schema = schema)
 
-            version ?: throw UnsuccessfulVersionFetch("Could not fetch version from upstream")
+            version ?: return
             upstreamVersionPairList.add(Pair(upstream, version))
         }
 

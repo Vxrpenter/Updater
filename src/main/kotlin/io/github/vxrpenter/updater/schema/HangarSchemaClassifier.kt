@@ -26,5 +26,6 @@ data class HangarSchemaClassifier(
     /**
      * The custom channel that the version is located in
      */
-    val channel: String?
+    val channel: String?,
+    override val ignore: Boolean
 ) : SchemaClassifier

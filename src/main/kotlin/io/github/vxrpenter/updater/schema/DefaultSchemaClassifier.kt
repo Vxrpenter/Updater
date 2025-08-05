@@ -25,5 +25,6 @@ data class DefaultSchemaClassifier(
     override val value: String,
     override val divider: String,
     override val componentDivider: String = ".",
-    override val priority: Priority
+    override val priority: Priority,
+    override val ignore: Boolean = false
 ) : SchemaClassifier

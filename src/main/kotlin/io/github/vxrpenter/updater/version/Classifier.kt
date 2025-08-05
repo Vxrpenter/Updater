@@ -25,5 +25,10 @@ interface Classifier : Comparable<Classifier> {
      */
     val value: String
 
+    /**
+     * Defines if the classifier is marked as ignored by the UpdateSchema
+     */
+    val ignored: Boolean
+
     override fun compareTo(other: Classifier): Int
 }

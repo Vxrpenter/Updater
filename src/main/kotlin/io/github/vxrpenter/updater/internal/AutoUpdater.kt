@@ -17,7 +17,6 @@
 package io.github.vxrpenter.updater.internal
 
 import io.github.vxrpenter.updater.configuration.UpdaterConfiguration
-import io.github.vxrpenter.updater.exceptions.UnsuccessfulVersionFetch
 import io.github.vxrpenter.updater.schema.UpdateSchema
 import io.github.vxrpenter.updater.upstream.Upstream
 import io.github.vxrpenter.updater.version.Version
@@ -27,7 +26,7 @@ class AutoUpdater(val configuration: UpdaterConfiguration, val client: HttpClien
     internal suspend fun checkForUpdate(currentVersion: Version, schema: UpdateSchema, upstream: Upstream) {
         val version = upstream.fetch(client = client, schema = schema)
 
-        version ?: throw UnsuccessfulVersionFetch("Could not fetch version from upstream")
+        version ?: return
         if (currentVersion >= version) return
     }
 }

@@ -93,7 +93,8 @@ class SchemaBuilder {
                 value = classifier.value!!,
                 divider = classifier.divider!!,
                 componentDivider = classifier.componentDivider,
-                priority = classifier.priority!!
+                priority = classifier.priority!!,
+                ignore = classifier.ignore
             )
         )
     }
@@ -119,7 +120,11 @@ class SchemaBuilder {
         /**
          * The symbol that is used to divide the version components, e.g. `.` or `-`
          */
-        var componentDivider: String = "."
+        var componentDivider: String = ".",
+        /**
+         * Defines if the classifier should be ignored
+         */
+        var ignore: Boolean = false
     )
 
     fun build(): DefaultUpdateSchema {
