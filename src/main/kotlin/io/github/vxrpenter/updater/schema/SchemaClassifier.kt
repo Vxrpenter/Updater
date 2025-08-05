@@ -29,17 +29,25 @@ interface SchemaClassifier {
      * Complete classifier string
      */
     val value: String
+
     /**
      * Priority of the classifier
      */
     val priority: Priority
+
     /**
      * The symbol that is used to divide the classifier and the [Version],
      * e.g. `.` or `-`
      */
     val divider: String
+
     /**
      * The symbol that is used to divide the version components, e.g. `.` or `-`
      */
     val componentDivider: String
+
+    /**
+     * Defines if the classifier should be ignored
+     */
+    val ignore: Boolean
 }

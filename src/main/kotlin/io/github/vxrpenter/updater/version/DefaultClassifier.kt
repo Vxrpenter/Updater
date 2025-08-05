@@ -32,10 +32,12 @@ data class DefaultClassifier(
      * Priority of the classifier
      */
     val priority: Priority,
+
     /**
      * Collection of the version components
      */
-    val components: Collection<String>
+    val components: Collection<String>,
+    override val ignored: Boolean
 ) : Classifier {
     companion object {
         /**
@@ -55,7 +57,7 @@ data class DefaultClassifier(
                 val value = "$classifierElement${version.split(classifierElement).last()}"
                 val components = version.split(classifierElement).last().split(classifier.componentDivider)
 
-                return DefaultClassifier(value, classifier.priority, components)
+                return DefaultClassifier(value, classifier.priority, components, classifier.ignore)
             }
 
             return null
