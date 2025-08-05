@@ -24,7 +24,7 @@ interface UpdateSchema {
     /**
      * Defines the beginning of a version, e.g. `v` or `v.`
      */
-    val prefixes: Collection<String>
+    val prefixes: Collection<String>?
     /**
      * The symbol that is used to divide the version components, e.g. `.` or `-`
      */
@@ -46,7 +46,8 @@ interface UpdateSchema {
      * @return the version value, with removed prefixes
      */
     fun removePrefix(value: String): String {
-        val maxLength = prefixes.maxBy { it.toCharArray().size }.toCharArray().size
+        if (prefixes == null) return value
+        val maxLength = prefixes!!.maxBy { it.toCharArray().size }.toCharArray().size
 
         for (prefix in prefixes) {
             if (!value.contains(prefix) || prefix.toCharArray().size > maxLength) continue
