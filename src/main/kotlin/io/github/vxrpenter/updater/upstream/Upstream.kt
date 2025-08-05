@@ -27,7 +27,7 @@ import io.ktor.client.*
  * that allows
  * the fetching of this information through an api.
  */
-interface Upstream {
+interface Upstream : Comparable<Upstream> {
     /**
      * Priority is that used when comparing versions from multiple upstreams.
      */
@@ -60,4 +60,6 @@ interface Upstream {
      * @return the [Update]
      */
     fun update(version: Version): Update
+
+    override fun compareTo(other: Upstream): Int = upstreamPriority.compareTo(other.upstreamPriority)
 }

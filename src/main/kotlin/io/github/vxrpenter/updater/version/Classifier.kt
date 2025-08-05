@@ -19,16 +19,11 @@ package io.github.vxrpenter.updater.version
 /**
  * An interface that implements a comparable classifier.
  */
-interface Classifier {
+interface Classifier : Comparable<Classifier> {
     /**
      * Complete classifier string
      */
     val value: String
 
-    /**
-     * Compares this object with the specified object for order. Returns zero if this object is equal
-     * to the specified [other] object, a negative number if it's less than [other], or a positive number
-     * if it's greater than [other].
-     */
-    operator fun compareTo(other: Classifier): Int
+    override fun compareTo(other: Classifier): Int
 }
