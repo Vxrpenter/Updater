@@ -107,7 +107,7 @@ data class GitHubUpstream (
     }
 
     @Serializable
-    data class Release(
+    private data class Release(
         @SerialName("tag_name")
         val tagName: String
     )
