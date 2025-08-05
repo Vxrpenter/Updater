@@ -105,7 +105,7 @@ data class ModrinthUpstream(
     }
 
     @Serializable
-    data class Release(
+    private data class Release(
         @SerialName("version_number")
         val versionNumber: String
     )
