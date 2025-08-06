@@ -19,12 +19,36 @@ package io.github.vxrpenter.updater.internal
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.github.vxrpenter.updater.configuration.UpdaterConfiguration
 import io.github.vxrpenter.updater.schema.UpdateSchema
+import io.github.vxrpenter.updater.update.Update
 import io.github.vxrpenter.updater.upstream.Upstream
 import io.github.vxrpenter.updater.version.Version
 import io.ktor.client.HttpClient
 
 internal class UpdateChecker(val configuration: UpdaterConfiguration, val client: HttpClient) {
     private val logger = KotlinLogging.logger {}
+
+    internal suspend fun getUpdate(currentVersion: Version, schema: UpdateSchema, upstream: Upstream): Update? {
+        val version = upstream.fetch(client = client, schema = schema)
+
+        version ?: return null
+        if (currentVersion >= version) return null
+
+        return upstream.update(version)
+    }
+
+    internal suspend fun getMultipleUpdates(currentVersion: String, schema: UpdateSchema, upstreams: Collection<Upstream>): Collection<Update> {
+        val updateList = mutableListOf<Update>()
+
+        for (upstream in upstreams) {
+            val version = upstream.fetch(client = client, schema = schema)
+
+            version ?: continue
+            if (upstream.toVersion(version = currentVersion, schema) >= version) continue
+            updateList.add(upstream.update(version))
+        }
+
+        return updateList
+    }
 
     internal suspend fun checkForUpdate(currentVersion: Version, schema: UpdateSchema, upstream: Upstream) {
         val version = upstream.fetch(client = client, schema = schema)

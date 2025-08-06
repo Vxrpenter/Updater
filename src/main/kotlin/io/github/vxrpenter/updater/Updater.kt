@@ -27,6 +27,7 @@ import io.github.vxrpenter.updater.internal.UpdateChecker
 import io.github.vxrpenter.updater.schema.UpdateSchema
 import io.github.vxrpenter.updater.upstream.Upstream
 import io.github.vxrpenter.updater.priority.Priority
+import io.github.vxrpenter.updater.update.Update
 import io.ktor.client.*
 import io.ktor.client.engine.okhttp.*
 import io.ktor.client.plugins.contentnegotiation.*
@@ -60,6 +61,38 @@ open class Updater(private var configuration: UpdaterConfiguration) {
      * Configuration can be changed using the builders in the functions.
      */
     companion object Default : Updater(configuration = UpdaterConfiguration())
+
+    /**
+     * Returns an update when a version update was found from the supplied upstream.
+     * When no version could be returned, null will be returned.
+     *
+     * @param currentVersion complete version of the application
+     * @param schema defines the version deserialization
+     * @param upstream the upstream to fetch the version from
+     * @param builder the [ConfigurationBuilder]
+     * @return an [Update]
+     */
+    suspend fun getUpdate(currentVersion: String, schema: UpdateSchema, upstream: Upstream, builder: (ConfigurationBuilder.() -> Unit)? = null): Update? {
+        if (builder != null) runBuilder(builder)
+
+        return UpdateChecker(configuration, client).getUpdate(currentVersion = upstream.toVersion(currentVersion, schema), schema = schema, upstream = upstream)
+    }
+
+    /**
+     * Returns a list of updates from a collection of upstreams.
+     * When no version could be returned, the collection will be empty.
+     *
+     * @param currentVersion complete version of the application
+     * @param schema defines the version deserialization
+     * @param upstreams a collection of upstreams that versions will be fetched from
+     * @param builder the [ConfigurationBuilder]
+     * @return a [Collection] of [Update]
+     */
+    suspend fun getMultipleUpdates(currentVersion: String, schema: UpdateSchema, upstreams: Collection<Upstream>, builder: (ConfigurationBuilder.() -> Unit)? = null): Collection<Update> {
+        if (builder != null) runBuilder(builder)
+
+        return UpdateChecker(configuration, client).getMultipleUpdates(currentVersion = currentVersion, schema = schema, upstreams = upstreams)
+    }
 
     /**
      * Checks for new updates by fetching the version from the specified upstream,
