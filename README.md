@@ -15,7 +15,7 @@ Updater is a kotlin (java) library for update management. It has integration wit
 
 ## Installation
 
-<a href=""><img src="https://img.shields.io/maven-central/v/io.github.vxrpenter/updater?style=flat-square&logo=apachemaven&logoColor=f18800&color=f18800"></a>
+<a href="https://central.sonatype.com/artifact/io.github.vxrpenter/updater"><img src="https://img.shields.io/maven-central/v/io.github.vxrpenter/updater?style=flat-square&logo=apachemaven&logoColor=f18800&color=f18800"></a>
 
 ### Gradle
 ```gradle
