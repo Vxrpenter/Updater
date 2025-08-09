@@ -16,14 +16,17 @@
 
 @file:Suppress("unused", "FunctionName")
 
-package io.github.vxrpenter.updater.schema
+package io.github.vxrpenter.updater.schema.builder
 
 import io.github.vxrpenter.updater.priority.Priority
-import io.github.vxrpenter.updater.version.Version
+import io.github.vxrpenter.updater.schema.DefaultSchemaClassifier
+import io.github.vxrpenter.updater.schema.DefaultUpdateSchema
+import io.github.vxrpenter.updater.schema.SchemaClassifier
 
 /**
- * The [Schema] function is an easy way to creating a [DefaultUpdateSchema], by providing simple solutions and
- * an easy-to-understand format. If you want to use a more complex function, you can use the [SchemaBuilder].
+ * The [Schema] function is an easy way to creating a [io.github.vxrpenter.updater.schema.DefaultUpdateSchema], by providing simple solutions and
+ * an easy-to-understand format.
+ * If you want to use a more complex function, you can use the [DefaultSchemaBuilder].
  *
  * Example Usage:
  * ```kotlin
@@ -48,27 +51,22 @@ import io.github.vxrpenter.updater.version.Version
  * }
  * ```
  *
- * @param [SchemaBuilder.prefixes] Defines the beginning of a version, e.g. `v` or `v.`
- * @param [SchemaBuilder.divider] The symbol that is used to divide the version components, e.g. `.` or `-`
- * @param [SchemaBuilder.classifier] Version classifier
+ * @param [DefaultSchemaBuilder.prefixes] Defines the beginning of a version, e.g. `v` or `v.`
+ * @param [DefaultSchemaBuilder.divider] The symbol that is used to divide the version components, e.g. `.` or `-`
+ * @param [DefaultSchemaBuilder.classifier] Version classifier
  *
- * @return the [DefaultUpdateSchema]
- * @see UpdateSchema
+ * @return the [io.github.vxrpenter.updater.schema.DefaultUpdateSchema]
+ * @see io.github.vxrpenter.updater.schema.UpdateSchema
  */
-inline fun Schema(
-    builder: SchemaBuilder.() -> Unit = {}
-) : DefaultUpdateSchema {
-    val internalBuilder = SchemaBuilder()
+inline fun Schema(builder: DefaultSchemaBuilder.() -> Unit = {}) : DefaultUpdateSchema {
+    val internalBuilder = DefaultSchemaBuilder()
     internalBuilder.builder()
     val schema = internalBuilder.build()
     return schema
 }
 
-class SchemaBuilder {
-    /**
-     * Defines the beginning of a version, e.g. `v` or `v.`
-     */
-    var prefixes: Collection<String> = emptyList()
+class DefaultSchemaBuilder : SchemaBuilder {
+    override var prefixes: Collection<String> = emptyList()
     /**
      * Add one prefix to[prefixes]
      */
@@ -78,27 +76,24 @@ class SchemaBuilder {
         prefixes = prefixList
     }
 
-    /**
-     * The symbol that is used to divide the version components, e.g. `.` or `-`
-     */
-    var divider: String = "."
+    override var divider: String = "."
     /**
      * Set the [divider]
      */
     fun setDivider(divider: String) = apply { this.divider = divider }
 
-    private var classifiers: MutableCollection<SchemaClassifier> = mutableListOf()
+    override var classifiers: MutableCollection<SchemaClassifier> = mutableListOf()
 
 
     /**
-     * A [DefaultSchemaClassifier]
+     * A [io.github.vxrpenter.updater.schema.DefaultSchemaClassifier]
      *
      * @see SchemaClassifier
      */
-    fun classifier(
-        builder: InlineSchemaClassifier.() -> Unit
+    override fun classifier(
+        builder: SchemaClassifierBuilder.() -> Unit
     ) {
-        val classifier = InlineSchemaClassifier().apply(builder)
+        val classifier = DefaultSchemaClassifierBuilder().apply(builder)
         requireNotNull(classifier.value)
         requireNotNull(classifier.divider)
         requireNotNull(classifier.priority)
@@ -117,44 +112,23 @@ class SchemaBuilder {
      * Add one classifier to [classifiers]
      */
     fun addClassifier(value: String, divider: String, priority: Priority, componentDivider: String = ".", ignore: Boolean = false) = apply {
-        classifiers.add(DefaultSchemaClassifier(
-            value = value,
-            divider = divider,
-            componentDivider = componentDivider,
-            priority = priority,
-            ignore = ignore
-        ))
+        classifiers.add(
+            DefaultSchemaClassifier(
+                value = value,
+                divider = divider,
+                componentDivider = componentDivider,
+                priority = priority,
+                ignore = ignore
+            )
+        )
     }
 
-    fun customClassifier(classifier: SchemaClassifier) {
+    override fun customClassifier(classifier: SchemaClassifier) {
         classifiers.add(classifier)
     }
 
-    data class InlineSchemaClassifier(
-        /**
-         * Complete classifier string
-         */
-        var value: String? = null,
-        /**
-         * Priority of the classifier
-         */
-        var divider: String? = null,
-        /**
-         * The symbol that is used to divide the classifier and the [Version],
-         * e.g. `.` or `-`
-         */
-        var priority: Priority? = null,
-        /**
-         * The symbol that is used to divide the version components, e.g. `.` or `-`
-         */
-        var componentDivider: String = ".",
-        /**
-         * Defines if the classifier should be ignored
-         */
-        var ignore: Boolean = false
-    )
-
-    fun build(): DefaultUpdateSchema {
+    override fun build(): DefaultUpdateSchema {
+        require(!this.prefixes.isEmpty()) { "'prefixes' cannot be empty" }
         require(!this.classifiers.isEmpty()) { "'classifiers' cannot be empty" }
 
         return DefaultUpdateSchema(prefixes = prefixes, divider = divider, classifiers = classifiers.toList())

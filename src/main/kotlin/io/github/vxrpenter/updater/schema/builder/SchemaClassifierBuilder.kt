@@ -1,0 +1,51 @@
+/*
+ * Copyright (c) 2025 Vxrpenter and the Updater contributors
+ *
+ * Licenced under the MIT License, any non-license compliant usage of this file(s) content
+ * is prohibited. If you did not receive a copy of the license with this file, you
+ * may obtain the license at
+ *
+ *  https://mit-license.org/
+ *
+ * This software may be used commercially if the usage is license compliant. The software
+ * is provided without any sort of WARRANTY, and the authors cannot be held liable for
+ * any form of claim, damages or other liabilities.
+ *
+ * Note: This is no legal advice, please read the license conditions
+ */
+
+package io.github.vxrpenter.updater.schema.builder
+
+import io.github.vxrpenter.updater.priority.Priority
+import io.github.vxrpenter.updater.schema.SchemaClassifier
+import io.github.vxrpenter.updater.version.Version
+
+interface SchemaClassifierBuilder {
+    /**
+     * Complete classifier string
+     */
+    var value: String?
+
+    /**
+     * Priority of the classifier
+     */
+    var divider: String?
+
+    /**
+     * The symbol that is used to divide the classifier and the [Version],
+     * e.g. `.` or `-`
+     */
+    var priority: Priority?
+
+    /**
+     * The symbol that is used to divide the version components, e.g. `.` or `-`
+     */
+    var componentDivider: String
+
+    /**
+     * Defines if the classifier should be ignored
+     */
+    var ignore: Boolean
+
+    fun build(): SchemaClassifier
+}
