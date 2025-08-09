@@ -20,7 +20,7 @@ package io.github.vxrpenter.updater
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.github.vxrpenter.updater.annotations.ExperimentalScheduler
-import io.github.vxrpenter.updater.configuration.ConfigurationBuilder
+import io.github.vxrpenter.updater.configuration.builder.ConfigurationBuilder
 import io.github.vxrpenter.updater.configuration.UpdaterConfiguration
 import io.github.vxrpenter.updater.internal.AutoUpdater
 import io.github.vxrpenter.updater.internal.UpdateChecker

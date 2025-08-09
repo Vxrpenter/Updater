@@ -16,15 +16,17 @@
 
 @file:Suppress("unused", "FunctionName")
 
-package io.github.vxrpenter.updater.configuration
+package io.github.vxrpenter.updater.configuration.builder
 
+import io.github.vxrpenter.updater.configuration.UpdaterConfiguration
+import io.github.vxrpenter.updater.configuration.UpdaterConfigurationNotification
 import io.ktor.client.*
 import io.ktor.client.engine.okhttp.*
 import kotlinx.serialization.json.Json
 import kotlin.time.Duration
 
 /**
- * The [Configuration] function is an easy way to creating a [UpdaterConfiguration], by providing simple solutions and
+ * The [Configuration] function is an easy way to creating a [io.github.vxrpenter.updater.configuration.UpdaterConfiguration], by providing simple solutions and
  * an easy-to-understand format.
  * If you want to use a more complex function, you can use the [ConfigurationBuilder].
  *
@@ -50,7 +52,7 @@ import kotlin.time.Duration
  * @param [ConfigurationBuilder.writeTimeout] The [HttpClient] (with [OkHttpEngine]) write timout
  * @param [ConfigurationBuilder.notification] The notification settings
  *
- * @return the [UpdaterConfiguration]
+ * @return the [io.github.vxrpenter.updater.configuration.UpdaterConfiguration]
  * @see ConfigurationBuilder
  */
 inline fun Configuration(
