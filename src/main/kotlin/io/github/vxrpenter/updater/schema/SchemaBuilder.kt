@@ -68,11 +68,25 @@ class SchemaBuilder {
     /**
      * Defines the beginning of a version, e.g. `v` or `v.`
      */
-    var prefixes: Collection<String>? = null
+    var prefixes: Collection<String> = emptyList()
+    /**
+     * Add one prefix to[prefixes]
+     */
+    fun addPrefix(prefix: String) = apply {
+        val prefixList = prefixes.toMutableList()
+        prefixList.add(prefix)
+        prefixes = prefixList
+    }
+
     /**
      * The symbol that is used to divide the version components, e.g. `.` or `-`
      */
     var divider: String = "."
+    /**
+     * Set the [divider]
+     */
+    fun setDivider(divider: String) = apply { this.divider = divider }
+
     private var classifiers: MutableCollection<SchemaClassifier> = mutableListOf()
 
 
@@ -86,6 +100,7 @@ class SchemaBuilder {
     ) {
         val classifier = InlineSchemaClassifier().apply(builder)
         requireNotNull(classifier.value)
+        requireNotNull(classifier.divider)
         requireNotNull(classifier.priority)
 
         classifiers.add(
@@ -97,6 +112,18 @@ class SchemaBuilder {
                 ignore = classifier.ignore
             )
         )
+    }
+    /**
+     * Add one classifier to [classifiers]
+     */
+    fun addClassifier(value: String, divider: String, priority: Priority, componentDivider: String = ".", ignore: Boolean = false) = apply {
+        classifiers.add(DefaultSchemaClassifier(
+            value = value,
+            divider = divider,
+            componentDivider = componentDivider,
+            priority = priority,
+            ignore = ignore
+        ))
     }
 
     fun customClassifier(classifier: SchemaClassifier) {
