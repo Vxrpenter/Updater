@@ -21,11 +21,9 @@ import kotlinx.coroutines.*
 import kotlin.time.Duration
 
 @ExperimentalScheduler
-fun CoroutineScope.scheduleWithDelay(period: Duration, task: suspend () -> Unit): Job {
-    return launch {
-        while (isActive) {
-            task()
-            delay(period)
-        }
+fun CoroutineScope.scheduleWithDelay(period: Duration, task: suspend () -> Unit): Job = launch {
+    while (isActive) {
+        task()
+        delay(period)
     }
 }
