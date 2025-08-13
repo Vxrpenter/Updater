@@ -33,6 +33,8 @@ dependencies {
     api(libs.ktor.client.engine.okhttp)
     api(libs.ktor.client.content.negotiation)
     api(libs.ktor.serialization.kotlinx.json)
+
+    implementation("ch.qos.logback:logback-classic:1.5.18")
 }
 
 tasks.getByName("dokkaHtml", DokkaTask::class) {
@@ -40,8 +42,8 @@ tasks.getByName("dokkaHtml", DokkaTask::class) {
         includes.from("packages.md")
         jdkVersion.set(8)
         sourceLink {
-            localDirectory.set(file("src/main/kotlin"))
-            remoteUrl.set(URI("https://github.com/Vxrpenter/Updater/tree/main/src/main/kotlin").toURL())
+            localDirectory.set(file("src/master/kotlin"))
+            remoteUrl.set(URI("https://github.com/Vxrpenter/Updater/tree/master/src/main/kotlin").toURL())
             remoteLineSuffix.set("#V")
         }
     }
