@@ -54,7 +54,7 @@ open class Updater(private var configuration: UpdaterConfiguration) {
      * An [HttpClient], that is configured using the [configuration].
      * This client will be passed onto all upstream fetching logic to execute calls.
      */
-    private var client: HttpClient = createClient()
+    private var client: HttpClient? = null
 
     /**
      * The default updater object using the default configuration.
@@ -74,8 +74,9 @@ open class Updater(private var configuration: UpdaterConfiguration) {
      */
     suspend fun getUpdate(currentVersion: String, schema: UpdateSchema, upstream: Upstream, builder: (ConfigurationBuilder.() -> Unit)? = null): Update? {
         if (builder != null) runBuilder(builder)
+        if (client == null) client = createClient()
 
-        return UpdateChecker(configuration, client).getUpdate(currentVersion = upstream.toVersion(currentVersion, schema), schema = schema, upstream = upstream)
+        return UpdateChecker(configuration, client!!).getUpdate(currentVersion = upstream.toVersion(currentVersion, schema), schema = schema, upstream = upstream)
     }
 
     /**
@@ -90,8 +91,9 @@ open class Updater(private var configuration: UpdaterConfiguration) {
      */
     suspend fun getMultipleUpdates(currentVersion: String, schema: UpdateSchema, upstreams: Collection<Upstream>, builder: (ConfigurationBuilder.() -> Unit)? = null): Collection<Update> {
         if (builder != null) runBuilder(builder)
+        if (client == null) client = createClient()
 
-        return UpdateChecker(configuration, client).getMultipleUpdates(currentVersion = currentVersion, schema = schema, upstreams = upstreams)
+        return UpdateChecker(configuration, client!!).getMultipleUpdates(currentVersion = currentVersion, schema = schema, upstreams = upstreams)
     }
 
     /**
@@ -107,8 +109,9 @@ open class Updater(private var configuration: UpdaterConfiguration) {
     @OptIn(ExperimentalScheduler::class)
     fun checkUpdates(currentVersion: String, schema: UpdateSchema, upstream: Upstream, builder: (ConfigurationBuilder.() -> Unit)? = null) {
         if (builder != null) runBuilder(builder)
+        if (client == null) client = createClient()
 
-        start { UpdateChecker(configuration, client).checkForUpdate(currentVersion = upstream.toVersion(currentVersion, schema), schema = schema, upstream = upstream) }
+        start { UpdateChecker(configuration, client!!).checkForUpdate(currentVersion = upstream.toVersion(currentVersion, schema), schema = schema, upstream = upstream) }
     }
 
     /**
@@ -126,15 +129,17 @@ open class Updater(private var configuration: UpdaterConfiguration) {
     @OptIn(ExperimentalScheduler::class)
     fun checkMultipleUpdates(currentVersion: String, schema: UpdateSchema, upstreams: Collection<Upstream>, builder: (ConfigurationBuilder.() -> Unit)? = null) {
         if (builder != null) runBuilder(builder)
+        if (client == null) client = createClient()
 
-        start { UpdateChecker(configuration, client).checkMultipleUpdates(currentVersion = currentVersion, schema = schema, upstreams = upstreams) }
+        start { UpdateChecker(configuration, client!!).checkMultipleUpdates(currentVersion = currentVersion, schema = schema, upstreams = upstreams) }
     }
 
     @Deprecated("Do not use, currently not fully implemented")
     fun autoUpdate(currentVersion: String, schema: UpdateSchema, upstream: Upstream, builder: (ConfigurationBuilder.() -> Unit)? = null) {
         if (builder != null) runBuilder(builder)
+        if (client == null) client = createClient()
 
-        start { AutoUpdater(configuration, client).checkForUpdate(currentVersion = upstream.toVersion(currentVersion, schema), schema = schema, upstream = upstream) }
+        start { AutoUpdater(configuration, client!!).checkForUpdate(currentVersion = upstream.toVersion(currentVersion, schema), schema = schema, upstream = upstream) }
     }
 
     private fun createClient(): HttpClient = HttpClient(engineFactory = OkHttp) {
