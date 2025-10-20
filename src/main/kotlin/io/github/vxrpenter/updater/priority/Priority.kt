@@ -29,6 +29,12 @@ package io.github.vxrpenter.updater.priority
 @JvmInline
 value class Priority(private val rawValue: Double) : Comparable<Priority> {
     companion object {
+        /** Returns a [Priority] equal to this [Byte] converted to double. */
+        inline val Byte.priority : Priority get() = toPriority()
+
+        /** Returns a [Priority] equal to this [Short] converted to double. */
+        inline val Short.priority : Priority get() = toPriority()
+
         /** Returns a [Priority] equal to this [Int] converted to double. */
         inline val Int.priority : Priority get() = toPriority()
 
@@ -40,6 +46,12 @@ value class Priority(private val rawValue: Double) : Comparable<Priority> {
 
         /** Returns a [Priority] equal to this [Double]. */
         inline val Double.priority : Priority get() = toPriority()
+
+        /** Returns a [Priority] equal to this [Byte] converted to double. */
+        fun Byte.toPriority() : Priority = Priority(this.toDouble())
+
+        /** Returns a [Priority] equal to this [Short] converted to double. */
+        fun Short.toPriority() : Priority = Priority(this.toDouble())
 
         /** Returns a [Priority] equal to this [Int] converted to double. */
         fun Int.toPriority(): Priority = Priority(this.toDouble())
@@ -53,6 +65,12 @@ value class Priority(private val rawValue: Double) : Comparable<Priority> {
         /** Returns a [Priority] equal to this [Double]. */
         fun Double.toPriority(): Priority = Priority(this)
     }
+
+    /** Converts the priority into a [Int] */
+    fun toByte(): Byte = rawValue.toInt().toByte()
+
+    /** Converts the priority into a [Long] */
+    fun toShort(): Short = rawValue.toInt().toShort()
 
     /** Converts the priority into a [Int] */
     fun toInt(): Int = this.rawValue.toInt()
