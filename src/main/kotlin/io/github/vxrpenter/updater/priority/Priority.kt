@@ -35,6 +35,9 @@ value class Priority(private val rawValue: Double) : Comparable<Priority> {
         /** Returns a [Priority] equal to this [Long] converted to double. */
         inline val Long.priority : Priority get() = toPriority()
 
+        /** Returns a [Priority] equal to this [Float] converted to double. */
+        inline val Float.priority : Priority get() = toPriority()
+
         /** Returns a [Priority] equal to this [Double]. */
         inline val Double.priority : Priority get() = toPriority()
 
@@ -44,22 +47,26 @@ value class Priority(private val rawValue: Double) : Comparable<Priority> {
         /** Returns a [Priority] equal to this [Long] converted to double. */
         fun Long.toPriority() : Priority = Priority(this.toDouble())
 
+        /** Returns a [Priority] equal to this [Float] converted to double. */
+        fun Float.toPriority() : Priority = Priority(this.toDouble())
+
         /** Returns a [Priority] equal to this [Double]. */
         fun Double.toPriority(): Priority = Priority(this)
     }
 
-    /** Converts the priority into an integer */
+    /** Converts the priority into a [Int] */
     fun toInt(): Int = this.rawValue.toInt()
 
-    /** Converts the priority into a long */
+    /** Converts the priority into a [Long] */
     fun toLong(): Long = this.rawValue.toLong()
 
-    /** Converts the priority into a double */
+    /** Converts the priority into a [Float] */
+    fun toFloat(): Float = this.rawValue.toFloat()
+
+    /** Converts the priority into a [Double] */
     fun toDouble(): Double = this.rawValue
 
-    /**
-     * Returns priority whose value is the sum of this ann [other] priority values.
-     */
+    /** Returns priority whose value is the sum of this ann [other] priority values. */
     operator fun plus(other: Priority): Priority = this.rawValue.plus(other.rawValue).toPriority()
 
     /** Returns priority whose value is the difference between this ann [other] priority values. */
