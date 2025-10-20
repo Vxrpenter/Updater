@@ -70,7 +70,7 @@ internal class UpdateChecker(val configuration: UpdaterConfiguration, val client
         for (upstream in upstreams) {
             val version = upstream.fetch(client = client, schema = schema)
 
-            version ?: return
+            version ?: continue
             upstreamVersionPairList.add(Pair(upstream, version))
         }
 
