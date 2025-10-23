@@ -48,8 +48,8 @@ import kotlin.time.Duration
  *
  * @param [ConfigurationBuilder.json] The JSON deserializer used by the [HttpClient]
  * @param [ConfigurationBuilder.periodic] Defines the time between periodic version checks
- * @param [ConfigurationBuilder.readTimeout] The [HttpClient] (with [OkHttpEngine]) read timout
- * @param [ConfigurationBuilder.writeTimeout] The [HttpClient] (with [OkHttpEngine]) write timout
+ * @param [ConfigurationBuilder.readTimeout] The [HttpClient] (with [OkHttpEngine]) read timeout
+ * @param [ConfigurationBuilder.writeTimeout] The [HttpClient] (with [OkHttpEngine]) write timeout
  * @param [ConfigurationBuilder.notification] The notification settings
  *
  * @return the [io.github.vxrpenter.updater.configuration.UpdaterConfiguration]
@@ -77,12 +77,12 @@ class ConfigurationBuilder {
     var periodic: Duration? = null
 
     /**
-     * The [HttpClient] (with [OkHttpEngine]) read timout
+     * The [HttpClient] (with [OkHttpEngine]) read timeout
      */
     var readTimeout: Duration = defaultConfig.readTimeout
 
     /**
-     * The [HttpClient] (with [OkHttpEngine]) write timout
+     * The [HttpClient] (with [OkHttpEngine]) write timeout
      */
     var writeTimeout: Duration = defaultConfig.writeTimeout
 
@@ -92,7 +92,7 @@ class ConfigurationBuilder {
     private var notification: UpdaterConfigurationNotification = defaultConfig.notification
 
     /**
-     * The [HttpClient] (with [OkHttpEngine]) read timout
+     * The [HttpClient] (with [OkHttpEngine]) read timeout
      */
     fun notification(
         builder: InlineUpdaterConfigurationNotification.() -> Unit

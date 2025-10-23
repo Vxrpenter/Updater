@@ -80,7 +80,7 @@ open class Updater(private var configuration: UpdaterConfiguration) {
     }
 
     /**
-     * Returns a list of updates from a collection of upstreams.
+     * Returns a list of updates from a collection of upstream's.
      * When no version could be returned, the collection will be empty.
      *
      * @param currentVersion complete version of the application

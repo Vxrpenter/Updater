@@ -33,8 +33,6 @@ dependencies {
     api(libs.ktor.client.engine.okhttp)
     api(libs.ktor.client.content.negotiation)
     api(libs.ktor.serialization.kotlinx.json)
-
-    implementation("ch.qos.logback:logback-classic:1.5.18")
 }
 
 tasks.getByName("dokkaHtml", DokkaTask::class) {

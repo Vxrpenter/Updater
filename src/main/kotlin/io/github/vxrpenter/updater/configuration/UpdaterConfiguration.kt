@@ -35,11 +35,11 @@ data class UpdaterConfiguration(
      */
     val periodic: Duration? = null,
     /**
-     * The [HttpClient] (with [OkHttpEngine]) read timout
+     * The [HttpClient] (with [OkHttpEngine]) read timeout
      */
     val readTimeout: Duration = 30.seconds,
     /**
-     * The [HttpClient] (with [OkHttpEngine]) write timout
+     * The [HttpClient] (with [OkHttpEngine]) write timeout
      */
     val writeTimeout: Duration = 30.seconds,
     /**

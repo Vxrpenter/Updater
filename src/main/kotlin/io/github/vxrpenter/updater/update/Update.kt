@@ -25,7 +25,7 @@ interface Update {
      */
     val value: String
     /**
-     * Url that directly leads to a download location/is the downloadlink
+     * Url that directly leads to a download location
      */
     val url: String
 }

@@ -18,9 +18,12 @@ package io.github.vxrpenter.updater.version
 
 import io.github.vxrpenter.updater.schema.SchemaClassifier
 
-open class VersionComparisonHandler {
+private const val deprecationMessage = "This is not a permanent solution and will be replaced in the near future"
+@Deprecated(deprecationMessage)
+internal class VersionComparisonHandler {
     companion object {
-        fun returnPrioritisedVersion(list: Collection<Pair<String, SchemaClassifier>>): String {
+        @Deprecated(deprecationMessage)
+        internal fun returnPrioritisedVersion(list: Collection<Pair<String, SchemaClassifier>>): String {
             var prioritizedVersion = ""
             var prioritisedClassifier: SchemaClassifier? = null
 
