@@ -38,14 +38,19 @@ import kotlinx.serialization.SerializationException
  * The Codeberg upstream.
  */
 class CodebergUpstream (
-    /**
-     * User that the repository resides under
-     */
+    /** User that the repository resides under */
     val user: String,
-    /**
-     * Name of the repository
-     */
+    /** Name of the repository */
     val repo: String,
+    override val baseUrl: String? = "https://codeberg.org/api/v1/",
+    override val baseUrlEndpoint: String? = "repos/$user/$repo/releases/latest",
+    override val releaseBaseUrl: String? = "https://codeberg.org/",
+    /**
+     * The endpoint where the release should lead to [[baseUrl]+[baseUrlEndpoint]]
+     *
+     * - **{version}** the current version
+     */
+    override val releaseBaseUrlEndpoint: String? = "$user/$repo/releases/tag/{version}",
     override val upstreamPriority: Priority = 1.priority
 ) : Upstream {
     /**
@@ -58,8 +63,7 @@ class CodebergUpstream (
      * @throws UnsuccessfulVersionRequest when version request fails
      */
     override suspend fun fetch(client: HttpClient, schema: UpdateSchema): DefaultVersion? {
-        val project = "$user/$repo"
-        val url = "https://codeberg.org/api/v1/repos/${project}/releases/latest"
+        val url = "$baseUrl$baseUrlEndpoint"
         val call = client.get(url)
         if (!call.status.value.toString().startsWith("2")) throw UnsuccessfulVersionRequest("Could not correctly commence version request, returned ${call.status.value}")
 
@@ -98,8 +102,7 @@ class CodebergUpstream (
      * @throws VersionTypeMismatch when [version] is not [DefaultVersion]
      */
     override fun update(version: Version): Update { if (version !is DefaultVersion) throw VersionTypeMismatch("Version type ${version.javaClass} cannot be ${DefaultVersion::class.java}")
-        val project = "$user/$repo"
-        val releaseUrl = "https://codeberg.org/$project/releases/tag/${version.value}"
+        val releaseUrl = "$releaseBaseUrl$releaseBaseUrlEndpoint".replace("{version}", version.value)
 
         return DefaultUpdate(value = version.value, url = releaseUrl)
     }

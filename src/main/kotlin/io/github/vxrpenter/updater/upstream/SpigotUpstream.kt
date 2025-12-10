@@ -37,10 +37,12 @@ import io.ktor.client.statement.*
  * The Spigot upstream.
  */
 data class SpigotUpstream(
-    /**
-     * Id of the project
-     */
+    /** Id of the project */
     val projectId: String,
+    override val baseUrl: String? = "https://api.spigotmc.org/legacy/",
+    override val baseUrlEndpoint: String? = "update.php?resource=$projectId",
+    override val releaseBaseUrl: String? = "https://www.spigotmc.org/",
+    override val releaseBaseUrlEndpoint: String? = "resources/$projectId/history",
     override val upstreamPriority: Priority = 0.priority
 ): Upstream {
     /**
@@ -53,7 +55,7 @@ data class SpigotUpstream(
      * @throws UnsuccessfulVersionRequest when version request fails
      */
     override suspend fun fetch(client: HttpClient, schema: UpdateSchema): DefaultVersion? {
-        val url = "https://api.spigotmc.org/legacy/update.php?resource=$projectId"
+        val url = "$baseUrl$baseUrlEndpoint"
         val call = client.get(url)
         if (!call.status.value.toString().startsWith("2")) throw UnsuccessfulVersionRequest("Could not correctly commence version request, returned ${call.status.value}")
 
@@ -86,7 +88,7 @@ data class SpigotUpstream(
      * @throws VersionTypeMismatch when [version] is not [DefaultVersion]
      */
     override fun update(version: Version): DefaultUpdate { if (version !is DefaultVersion) throw VersionTypeMismatch("Version type ${version.javaClass} cannot be ${DefaultVersion::class.java}")
-        val releaseUrl = "https://www.spigotmc.org/resources/$projectId/history"
+        val releaseUrl = "$releaseBaseUrl$releaseBaseUrlEndpoint"
 
         return DefaultUpdate(version.value, releaseUrl)
     }

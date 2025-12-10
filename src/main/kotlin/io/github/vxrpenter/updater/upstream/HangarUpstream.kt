@@ -43,10 +43,22 @@ private val versions = mutableListOf<Pair<String, SchemaClassifier>>()
  * The Hangar upstream.
  */
 data class HangarUpstream(
-    /**
-     * Id of the project
-     */
+    /** Id of the project */
     val projectId: String,
+    override val baseUrl: String? = "https://hangar.papermc.io/api/v1/",
+    /**
+     * The endpoint from where the data is requested [[baseUrl]+[baseUrlEndpoint]]
+     *
+     * - **{classifier}** the current classifier
+     */
+    override val baseUrlEndpoint: String? = "$projectId/latest?channel={classifier}",
+    override val releaseBaseUrl: String? = "https://hangar.papermc.io/",
+    /**
+     * The endpoint where the release should lead to [[baseUrl]+[baseUrlEndpoint]]
+     *
+     * - **{version}** the current version
+     */
+    override val releaseBaseUrlEndpoint: String? = "$projectId/versions/{version}",
     override val upstreamPriority: Priority = 0.priority
 ) : Upstream {
     /**
@@ -61,7 +73,7 @@ data class HangarUpstream(
      */
     override suspend fun fetch(client: HttpClient, schema: UpdateSchema): DefaultVersion? {
         for (classifier in schema.classifiers) { if (classifier !is HangarSchemaClassifier) throw ClassifierTypeMismatch("Classifier type ${classifier.javaClass} cannot be ${HangarSchemaClassifier::class.java}")
-            val url = "https://hangar.papermc.io/api/v1/projects/${projectId}/latest?channel=${classifier.channel}"
+            val url = "$baseUrl$baseUrlEndpoint".replace("{classifier}", classifier.channel.toString())
             val call = client.get(url)
             if (!call.status.value.toString().startsWith("2")) throw UnsuccessfulVersionRequest("Could not correctly commence version request, returned ${call.status.value}")
 
@@ -97,9 +109,9 @@ data class HangarUpstream(
      * @throws VersionTypeMismatch when [version] is not [DefaultVersion]
      */
     override fun update(version: Version): DefaultUpdate { if (version !is DefaultVersion) throw VersionTypeMismatch("Version type ${version.javaClass} cannot be ${DefaultVersion::class.java}")
-        val version = VersionComparisonHandler.returnPrioritisedVersion(list = versions)
-        val releaseUrl = "https://hangar.papermc.io/${projectId}/versions/$version"
+        val currentVersion = VersionComparisonHandler.returnPrioritisedVersion(list = versions)
+        val releaseUrl = "$releaseBaseUrl$releaseBaseUrlEndpoint".replace("{version}", currentVersion)
 
-        return DefaultUpdate(version, releaseUrl)
+        return DefaultUpdate(currentVersion, releaseUrl)
     }
 }
