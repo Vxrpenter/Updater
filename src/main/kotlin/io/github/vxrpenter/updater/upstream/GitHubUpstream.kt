@@ -40,14 +40,19 @@ import kotlinx.serialization.SerializationException
  * The GitHub upstream.
  */
 data class GitHubUpstream (
-    /**
-     * User that the repository resides under
-     */
+    /** User that the repository resides under */
     val user: String,
-    /**
-     * Name of the repository
-     */
+    /** Name of the repository */
     val repo: String,
+    override val baseUrl: String? = "https://api.github.com/",
+    override val baseUrlEndpoint: String? = "repos/$user/$repo/releases",
+    override val releaseBaseUrl: String? = "https://github.com/",
+    /**
+     * The endpoint where the release should lead to [[baseUrl]+[baseUrlEndpoint]]
+     *
+     * - **{version}** the current version
+     */
+    override val releaseBaseUrlEndpoint: String? = "$user/$repo/releases/tag/{version}",
     override val upstreamPriority: Priority = 0.priority
 ) : Upstream {
     /**
@@ -60,8 +65,7 @@ data class GitHubUpstream (
      * @throws UnsuccessfulVersionRequest when version request fails
      */
     override suspend fun fetch(client: HttpClient, schema: UpdateSchema): DefaultVersion? {
-        val project = "$user/$repo"
-        val url = "https://api.github.com/repos/${project}/releases"
+        val url = "$baseUrl$baseUrlEndpoint"
         val call = client.get(url)
         if (!call.status.value.toString().startsWith("2")) throw UnsuccessfulVersionRequest("Could not correctly commence version request, returned ${call.status.value}")
 
@@ -100,8 +104,7 @@ data class GitHubUpstream (
      * @throws VersionTypeMismatch when [version] is not [DefaultVersion]
      */
     override fun update(version: Version): Update { if (version !is DefaultVersion) throw VersionTypeMismatch("Version type ${version.javaClass} cannot be ${DefaultVersion::class.java}")
-        val project = "$user/$repo"
-        val releaseUrl = "https://github.com/$project/releases/tag/${version.value}"
+        val releaseUrl = "$releaseBaseUrl".replace("{version}", version.value)
 
         return DefaultUpdate(value = version.value, url = releaseUrl)
     }

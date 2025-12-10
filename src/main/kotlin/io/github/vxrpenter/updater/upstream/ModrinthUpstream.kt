@@ -40,14 +40,19 @@ import kotlinx.serialization.Serializable
  * The Modrinth upstream.
  */
 data class ModrinthUpstream(
-    /**
-     * Id of the project
-     */
+    /** Id of the project */
     val projectId: String,
-    /**
-     * Type of the project
-     */
+    /** Type of the project */
     val modrinthProjectType: ModrinthProjectType,
+    override val baseUrl: String? = "https://api.modrinth.com/v2/",
+    override val baseUrlEndpoint: String? = "project/$projectId/version",
+    override val releaseBaseUrl: String? = "https://modrinth.com/",
+    /**
+     * The endpoint where the release should lead to [[baseUrl]+[baseUrlEndpoint]]
+     *
+     * - **{version}** the current version
+     */
+    override val releaseBaseUrlEndpoint: String? = "${modrinthProjectType.value}/$projectId/version/{version}",
     override val upstreamPriority: Priority = 0.priority
 ) : Upstream {
     /**
@@ -60,7 +65,7 @@ data class ModrinthUpstream(
      * @throws UnsuccessfulVersionRequest when version request fails
      */
     override suspend fun fetch(client: HttpClient, schema: UpdateSchema): DefaultVersion? {
-        val url = "https://api.modrinth.com/v2/project/${projectId}/version"
+        val url = "$baseUrl$baseUrlEndpoint"
         val call = client.get(url)
         if (!call.status.value.toString().startsWith("2")) throw UnsuccessfulVersionRequest("Could not correctly commence version request, returned ${call.status.value}")
 
@@ -99,7 +104,7 @@ data class ModrinthUpstream(
      * @throws VersionTypeMismatch when [version] is not [DefaultVersion]
      */
     override fun update(version: Version): DefaultUpdate { if (version !is DefaultVersion) throw VersionTypeMismatch("Version type ${version.javaClass} cannot be ${DefaultVersion::class.java}")
-        val releaseUrl = "https://modrinth.com/${modrinthProjectType.value}/$projectId/version/${version.value}"
+        val releaseUrl = "$releaseBaseUrl$releaseBaseUrlEndpoint".replace("{version}", version.value)
 
         return DefaultUpdate(version.value, releaseUrl)
     }

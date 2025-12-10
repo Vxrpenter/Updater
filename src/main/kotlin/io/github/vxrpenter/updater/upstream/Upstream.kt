@@ -28,10 +28,20 @@ import io.ktor.client.*
  * the fetching of this information through an api.
  */
 interface Upstream : Comparable<Upstream> {
-    /**
-     * Priority is that used when comparing versions from multiple upstreams.
-     */
+    /** Priority is that used when comparing versions from multiple upstreams. */
     val upstreamPriority: Priority
+
+    /** The url that is used as a base for all api requests */
+    val baseUrl: String?
+
+    /** The endpoint from where the data is requested [[baseUrl]+[baseUrlEndpoint]] */
+    val baseUrlEndpoint: String?
+
+    /** The url that is used as a base for all releases */
+    val releaseBaseUrl: String?
+
+    /** The endpoint where the release should lead to [[baseUrl]+[baseUrlEndpoint]] */
+    val releaseBaseUrlEndpoint: String?
 
     /**
      * Fetches a version object from the upstream.
