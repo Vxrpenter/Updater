@@ -104,7 +104,7 @@ data class GitHubUpstream (
      * @throws VersionTypeMismatch when [version] is not [DefaultVersion]
      */
     override fun update(version: Version): Update { if (version !is DefaultVersion) throw VersionTypeMismatch("Version type ${version.javaClass} cannot be ${DefaultVersion::class.java}")
-        val releaseUrl = "$releaseBaseUrl".replace("{version}", version.value)
+        val releaseUrl = "$releaseBaseUrl$releaseBaseUrlEndpoint".replace("{version}", version.value)
 
         return DefaultUpdate(value = version.value, url = releaseUrl)
     }
